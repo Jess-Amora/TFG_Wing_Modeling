@@ -1,0 +1,553 @@
+
+
+function [results] = construirAla(avion,datosEstructural,cargas)
+
+% Parámetros de entrada:
+    %   - wingParams: Estructura con los siguientes campos:
+    %       * Lf: Longitud del fuselaje en la unión del ala
+    %       * c1: Cuerda en el encastre
+    %       * c2: Cuerda en la punta
+    %       * x_local_ala: Coordenadas locales de la envergadura
+    %       * y_global_punta_ala_borde_ataque: Coordenada Y del borde de ataque en la punta
+    %       * Distancia_larguero_anterior_cuerda_porcentaje: Porcentaje de la cuerda para el larguero anterior
+    %       * Distancia_larguero_posterior_cuerda_porcentaje: Porcentaje de la cuerda para el larguero posterior
+    %       * numero_de_puntos_en_las_lineas: Resolución de las líneas
+    %       * distancia_centro_aerodinamico: Posición del centro aerodinámico
+    %       * distancia_eje_de_referencia_estructural_cuerda: Posición del eje estructural
+    %       * flecha_radianes: Ángulo de flecha en radianes
+    %       * Lw: Longitud del ala (semienvergadura)
+
+    
+            
+    % Extraer parámetros
+    % Geometría
+    Lf = avion.geometria.Lf;
+    Lw = avion.geometria.Lw;
+    c1 = avion.geometria.c1;
+    c2 = avion.geometria.c2;
+    b = avion.geometria.b;
+    MTOW = avion.MTOW;
+
+    y_global_punta_ala_borde_ataque = avion.geometria.y_global_punta_ala_borde_ataque;
+    flecha_radianes = avion.geometria.flecha.radian;
+    % Datos estructural
+    Distancia_larguero_anterior_cuerda_porcentaje = datosEstructural.distancia_larguero_anterior_cuerda_porcentaje;
+    Distancia_larguero_posterior_cuerda_porcentaje = datosEstructural.distancia_larguero_posterior_cuerda_porcentaje;
+    distancia_entre_larguerillo = datosEstructural.distancia_entre_larguerillo;
+    distancia_centro_aerodinamico = datosEstructural.distancia_centro_aerodinamico;
+    distancia_eje_de_referencia_estructural_cuerda = datosEstructural.distancia_eje_de_referencia_estructural_cuerda;
+    numero_de_puntos_en_las_lineas = datosEstructural.numero_de_puntos_en_las_lineas;
+    distancia_entre_costillas = datosEstructural.distancia_entre_costillas;
+    n = datosEstructural.n;
+
+    % Coordenadas
+    x_local_ala = avion.coordenadas.x_local_ala;
+
+    % Cargas
+    schrenk = cargas.schrenk;
+
+    % La línea del larguero anterior
+    linea_larguero_anterior=linspace(c1*Distancia_larguero_anterior_cuerda_porcentaje,y_global_punta_ala_borde_ataque+Distancia_larguero_anterior_cuerda_porcentaje*c2,numero_de_puntos_en_las_lineas);
+    
+    % La línea del larguero posterior
+    linea_larguero_posterior=linspace(c1*Distancia_larguero_posterior_cuerda_porcentaje,y_global_punta_ala_borde_ataque+Distancia_larguero_posterior_cuerda_porcentaje*c2,numero_de_puntos_en_las_lineas);
+    
+    % La línea de los centros aerodinámicos
+    linea_centro_aerodinamico=linspace(c1*distancia_centro_aerodinamico,c1*distancia_centro_aerodinamico+Lw*sin(flecha_radianes),numero_de_puntos_en_las_lineas);
+    
+    % % La línea del eje de referencia estructural
+    linea_eje_estructural=linspace(c1*distancia_eje_de_referencia_estructural_cuerda,c2*distancia_eje_de_referencia_estructural_cuerda+y_global_punta_ala_borde_ataque,numero_de_puntos_en_las_lineas);
+
+    %% ETAPA 2: Discretizaciçon
+    % Nomenclatura
+    % Los valores con constante_... son los valores de la constante/la ordenada
+    % al origen (y_0 o y(x=0) de la ecuación lineal y = y_0 + m * x. En esos
+    % puntos, se dibujan las líneas.
+    % 
+    % Los variables coord_..._..._ son las coordenadas de las dos líneas. 
+    % l es el vector que contiene la distribución de sustentación. x_l y y_l
+    %   son sus coordenadas (punto medio linea aerodinamico)
+    % coord_aerodinamica_costillas_punto_medio - las coordenadas de todos los
+    %   puntos medio en la linea aerodinamica
+    % coord_aerodinamica_costillas - las coordenadas de todos los
+    %   puntos de intersección aerodinamica-costillas
+    % costillas - es la matriz que contiene todas las lineas de las costillas
+    %   que tiene un tamaño de (numero de costillas, (x,y), numero de puntos en
+    %   las lineas)
+    
+    
+    %cálculos previos
+    
+    % En esta parte se calculan los pendientes de las líneas.
+    pendiente_larguero_anterior = (linea_larguero_anterior(end) - linea_larguero_anterior(1)) / (Lw);
+    pendiente_larguero_posterior = (linea_larguero_posterior(end) - linea_larguero_posterior(1)) / (Lw);
+    pendiente_eje_estructural = (linea_eje_estructural(end) - linea_eje_estructural(1)) / (Lw);
+    % pendiente_centro_aerodinamico = tan(flecha_radianes);
+    pendiente_perpendicular_larguero_posterior = -1 / pendiente_larguero_posterior;
+    
+    % Cálculos de los valores de los cortes de las líneas en el eje y vertical (x=0).
+    % A(x=0) = A(Lf) - pendiente * Lf
+    constante_linea_larguero_anterior = linea_larguero_anterior(1) - pendiente_larguero_anterior * Lf;
+    constante_linea_larguero_posterior = linea_larguero_posterior(1) - pendiente_larguero_posterior * Lf;
+    constante_linea_eje_estructural = linea_eje_estructural(1) - pendiente_eje_estructural * Lf;
+    % constante_linea_centro_aerodinamico = linea_centro_aerodinamico(1) - pendiente_centro_aerodinamico * Lf;
+    
+    % % Para verificación: Esta línea es para cálcular la longitud del larguero posterior total
+    % % Esta línea es para calcular el promedio del número de costillas que es lacoord_interseccion_aerod_cost
+    % % longitud/distancia_entre_costillas
+    longitud_larguero_posterior=norm([Lw+Lf y_global_punta_ala_borde_ataque+c2*Distancia_larguero_posterior_cuerda_porcentaje]-[Lf c1*Distancia_larguero_posterior_cuerda_porcentaje]);
+    promedio_num_costillas = longitud_larguero_posterior/distancia_entre_costillas;
+    numero_costillas=floor(promedio_num_costillas);
+    
+    % Dimensiones costillas (encastre-punta, (x,y), posterior-anterior)
+    costillas = zeros(numero_costillas,2,numero_de_puntos_en_las_lineas);
+    
+    % intersección centro aerodinámico
+    coord_aerodinamico_costillas = zeros(numero_costillas,2);
+    coord_aerodinamica_costillas_punto_medio= zeros(numero_costillas-1,2);
+        
+    % Sustentación
+    l=zeros(numero_costillas-1,1);
+    
+    % El ángulo de la línea del larguero posterior
+    alfa_larguero_posterior_radianes=atan(pendiente_larguero_posterior);
+    
+    
+    % Esta parte es para generar los puntos en la linea larguero posterior para
+    % construir las costillas
+    %costillas datos
+
+    % Está línea está construyendo las coordenadas en el larguero posterior
+    coord_costillas_larguero_posterior_x = Lf:distancia_entre_costillas*cos(alfa_larguero_posterior_radianes):(numero_costillas-1)*distancia_entre_costillas*cos(alfa_larguero_posterior_radianes)+Lf;
+    coord_costillas_larguero_posterior_y = spline(x_local_ala,linea_larguero_posterior,coord_costillas_larguero_posterior_x);
+    
+    % Esta parte es para ver si este bien colocado los origen de las costillas
+    % plot(coord_costillas_larguero_posterior_x,coord_costillas_larguero_posterior_y, 'o', 'MarkerSize', 8, 'MarkerEdgeColor', 'b', 'MarkerFaceColor', 'k')
+    % norm([coord_costillas_larguero_posterior_x(2) coord_costillas_larguero_posterior_y(2)]-[coord_costillas_larguero_posterior_x(1) coord_costillas_larguero_posterior_y(2)])
+    % numero_costillas
+    % distancia_entre_costillas
+    
+    % Es un valor para hallar la intersección de la costilla al larguero
+    % anterior siendo la costilla es una linea perpendicular al larguero
+    % posterior
+    constante_perpendicular_larguero_posterior = coord_costillas_larguero_posterior_y - pendiente_perpendicular_larguero_posterior * coord_costillas_larguero_posterior_x;
+    
+    
+    for i = 1:numero_costillas
+        
+        % Está coordenada coord_costillas_larguero_anterior es la coordenada de
+        % las intersecciones entre la costilla y el larguero anterior
+        coord_costillas_larguero_anterior_x = -(constante_linea_larguero_anterior - constante_perpendicular_larguero_posterior(i)) / (pendiente_larguero_anterior - pendiente_perpendicular_larguero_posterior);
+        coord_costillas_larguero_anterior_y = pendiente_larguero_anterior * coord_costillas_larguero_anterior_x + constante_linea_larguero_anterior;
+    
+        % plot(coord_costillas_larguero_anterior_y,coord_costillas_larguero_anterior_x,'d')
+        costillas(i,1,:)=linspace(coord_costillas_larguero_posterior_x(i),coord_costillas_larguero_anterior_x,numero_de_puntos_en_las_lineas);
+        costillas(i,2,:)=linspace(coord_costillas_larguero_posterior_y(i),coord_costillas_larguero_anterior_y,numero_de_puntos_en_las_lineas);
+    
+    
+        % Estos plot es para verificar que esten calculados bien.
+        % plot(coord_costillas_larguero_anterior_x,coord_costillas_larguero_anterior_y,'o');
+        % plot(squeeze (costillas(i,1,:)),squeeze (costillas(i,2,:)));
+    
+    
+        % Las intersecciones de las costillas con la línea de los centros aerodinámicos
+        [coord_aerodinamico_costillas(i,1),coord_aerodinamico_costillas(i,2),~] = polyxpoly(costillas(i,1,:),costillas(i,2,:),x_local_ala,linea_centro_aerodinamico);
+    
+    
+        %punto medio
+        if i~=1
+            
+            % Se guardan los puntos medio entre costillas de la línea de los centros
+            % aerodinámicos.
+            coord_aerodinamica_costillas_punto_medio(i-1,1)= (coord_aerodinamico_costillas(i-1,1)+coord_aerodinamico_costillas(i,1))/2;
+            coord_aerodinamica_costillas_punto_medio(i-1,2) = (coord_aerodinamico_costillas(i-1,2)+coord_aerodinamico_costillas(i,2))/2;
+            %plot(coord_aerodinamica_costillas_punto_medio(i-1,1),coord_aerodinamica_costillas_punto_medio(i-1,2),'d')
+    
+            % Se aplican las cargas aerodinámicas en ese punto medio. Más
+            % información ver chatgpt notes
+            %Sustentación
+            l(i-1) = spline (x_local_ala,schrenk,coord_aerodinamica_costillas_punto_medio(i-1,1));
+            l(i-1) = l(i-1) * n * MTOW * 2 / Lw^2;
+    
+        end
+    
+    
+    end
+    
+    % Verificación perpendicularidad costilla-larg_post
+    x1=costillas(1,1,1);
+    y1=costillas(1,2,1);
+    x2=costillas(1,1,2);
+    y2=costillas(1,2,2);
+    x3=x_local_ala(1);
+    y3=linea_larguero_posterior(1);
+    x4=x_local_ala(2);
+    y4=linea_larguero_posterior(2);
+    m1 = (y2 - y1) / (x2 - x1); % Slope of Line 1
+    m2 = (y4 - y3) / (x4 - x3); % Slope of Line 2
+    
+    
+    
+    % Añadiendo el resto de las costillas
+    % el trianglo que está formado por los vértices (Lf,c1*distancia larguero
+    % posterior), (Lf,c1*distancia larguero anterior), (x_cotilla1,y_costilla1)
+    % linea_interseccion_costilla_fuselaje=linspace(c1*Distancia_larguero_posterior_cuerda_porcentaje,0,numero)
+    % [0.25*c1 linea_centro_aerodinamico(1)]
+    
+    % numero_costillas_triangulo=floor((c1*Distancia_larguero_posterior_cuerda_porcentaje)/(.4/sin(alfa_larguero_posterior_radianes)))-1;
+    % numero_costillas_triangulo = 0;
+    % Sólo cojo a partir de la línea de los centros aerodinámicos hacia arriba
+    coord_costillas_larguero_posterior_y_triangulo = c1*Distancia_larguero_posterior_cuerda_porcentaje:-distancia_entre_costillas/sin(alfa_larguero_posterior_radianes):c1*.25;
+    numero_costillas_triangulo = size(squeeze(coord_costillas_larguero_posterior_y_triangulo),2)-1;
+    coord_costillas_larguero_posterior_x_triangulo = Lf*ones(numero_costillas_triangulo,1);
+    coord_costillas_larguero_posterior_y_triangulo(1) = [];
+    
+    
+    % plot(coord_costillas_larguero_posterior_x_triangulo,coord_costillas_larguero_posterior_y_triangulo,'o')
+    
+    costillas_triangulo = zeros(numero_costillas_triangulo,2,numero_de_puntos_en_las_lineas);
+    
+    % %intersección centro aerodinámico
+    coord_aerodinamica_costillas_triangulo=zeros(numero_costillas_triangulo,2);
+    coord_aerodinamica_costillas_punto_medio_triangulo=zeros(numero_costillas_triangulo-1,2);
+    
+    % Las constantes/ordenada de origen de las líneas de las costillas dentro
+    % del triangulo. Se necesitan estos, porque para calcular las
+    % intersecciones costillas-larguero anterior, se requieren estos puntos.
+    constante_perpendicular_larguero_posterior_triangulo = coord_costillas_larguero_posterior_y_triangulo - pendiente_perpendicular_larguero_posterior * coord_costillas_larguero_posterior_x_triangulo';
+    
+    
+    % Sustentación
+    l_triangulo=zeros(numero_costillas_triangulo-1,1);
+    
+    for i = 1:numero_costillas_triangulo
+    
+    
+        coord_costillas_larguero_anterior_x_triangulo = (constante_perpendicular_larguero_posterior_triangulo(i) - constante_linea_larguero_anterior) / (pendiente_larguero_anterior - pendiente_perpendicular_larguero_posterior);
+        coord_costillas_larguero_anterior_y_triangulo = pendiente_larguero_anterior * coord_costillas_larguero_anterior_x_triangulo + constante_linea_larguero_anterior;
+    
+        % plot(coord_costillas_larguero_anterior_x_triangulo,coord_costillas_larguero_anterior_y_triangulo,'d')
+    
+        % plot(coord_costillas_larguero_anterior_y,coord_costillas_larguero_anterior_x,'d')
+        costillas_triangulo(i,1,:)=linspace(coord_costillas_larguero_posterior_x_triangulo(i),coord_costillas_larguero_anterior_x_triangulo,numero_de_puntos_en_las_lineas);
+        costillas_triangulo(i,2,:)=linspace(coord_costillas_larguero_posterior_y_triangulo(i),coord_costillas_larguero_anterior_y_triangulo,numero_de_puntos_en_las_lineas);
+    
+        % plot(squeeze(costillas_triangulo(i,1,:)),squeeze(costillas_triangulo(i,2,:)))
+    
+        %%% intersección costillas x centro aerodinámico
+        [coord_aerodinamica_costillas_triangulo(i,1),coord_aerodinamica_costillas_triangulo(i,2),~] = polyxpoly(costillas_triangulo(i,1,:),costillas_triangulo(i,2,:),x_local_ala,linea_centro_aerodinamico);
+    
+    
+        %punto medio
+        if i~=1
+    
+            coord_aerodinamica_costillas_punto_medio_triangulo(i-1,1)= (coord_aerodinamica_costillas_triangulo(i-1,1)+coord_aerodinamica_costillas_triangulo(i,1))/2;
+            coord_aerodinamica_costillas_punto_medio_triangulo(i-1,2) = (coord_aerodinamica_costillas_triangulo(i-1,2)+coord_aerodinamica_costillas_triangulo(i,2))/2;
+            % plot(coord_aerodinamica_costillas_punto_medio_triangulo(i-1,1),coord_aerodinamica_costillas_punto_medio_triangulo(i-1,2),'d')
+    
+            % Sustentación
+            l_triangulo(i-1)=spline(x_local_ala,schrenk,coord_aerodinamica_costillas_punto_medio_triangulo(i-1,1));
+            l_triangulo(i-1)=l_triangulo(i-1)*n*MTOW*2/Lw^2;
+            % f5=stem3(coord_aerodinamica_costillas_punto_medio_triangulo(i-1,1),coord_aerodinamica_costillas_punto_medio_triangulo(i-1,2),l(i-1),'b');
+            % view(3)
+    
+        end
+     
+    end
+    
+    
+    % Sustentación triangulo
+    %
+    x_union_triangulo_resto = (coord_aerodinamica_costillas_triangulo(1,1)+coord_aerodinamico_costillas(1,1))/2;
+    y_union_triangulo_resto = (coord_aerodinamica_costillas_triangulo(1,2)+coord_aerodinamico_costillas(1,2))/2;
+    %plot(x_union_triangulo_resto,y_union_triangulo_resto,'d')
+    l_union=spline(x_local_ala,schrenk,x_union_triangulo_resto);
+    l_union=l_union*n*MTOW*2/Lw^2;
+    
+    % Sustentación de la distribución continua (l(x)) 
+    l_triangulo=flip(l_triangulo);
+    l = [l_triangulo; l_union; l ];
+    x_l = [flip(coord_aerodinamica_costillas_punto_medio_triangulo(:,1)) ;x_union_triangulo_resto; coord_aerodinamica_costillas_punto_medio(:,1)];
+    y_l = [flip(coord_aerodinamica_costillas_punto_medio_triangulo(:,2)) ;y_union_triangulo_resto; coord_aerodinamica_costillas_punto_medio(:,2)];
+    % stem3(x_l,y_l,l,'b')
+    % view(3)
+    % Juntando todo
+    coord_aerodinamica_costillas_punto_medio = [flip(coord_aerodinamica_costillas_punto_medio_triangulo)' [x_union_triangulo_resto y_union_triangulo_resto]'  coord_aerodinamica_costillas_punto_medio']';
+    coord_aerodinamico_costillas = [flip(coord_aerodinamica_costillas_triangulo)' coord_aerodinamico_costillas'];
+    
+    % Dimension costillas 
+    % Dim 1(numero de costillas) orden de costillas de izquierda a derecha, es decir,  desde fuselaje hast la punta
+    % Dim 2 (X,Y)
+    % Dim 3 (desde posterior hasta anterior)
+    costillas = cat(1,flip(costillas_triangulo),costillas);
+    
+    
+    
+    
+    
+    
+    % Para encontrar la k constante de la sustentación
+    
+    numero_costillas = numero_costillas_triangulo+numero_costillas;
+    
+    
+    % Sustentación de la distribución continua (L_ala)
+    L = zeros(numero_costillas-3,1);
+    % x_L = zeros(size(L,1),1);
+    x_L = x_l(2:end-1);
+    % y_L = zeros(size(L,1),1);
+    y_L = y_l(2:end-1);
+    for i = 2:numero_costillas-2
+        L(i-1)=(1/6) *(x_l(i+1)-x_l(i)) * (2*l(i)+l(i+1)) + (1/6)*(x_l(i)-x_l(i-1)) * (l(i)+2*l(i-1));
+    end
+    
+    cociente_L_W_inicial=2*sum(L)/n/MTOW;
+    cociente_L_W_inicial
+    
+    % Larguerillos
+    longitud_porcentaje_cuerda_largueros = Distancia_larguero_posterior_cuerda_porcentaje - Distancia_larguero_anterior_cuerda_porcentaje; % Es la longitud entre los largueros anterior y posterior
+    numero_larguerillos_total = floor(c1*longitud_porcentaje_cuerda_largueros/distancia_entre_larguerillo);
+    numero_larguerillos_costilla_final = floor(c2*longitud_porcentaje_cuerda_largueros/distancia_entre_larguerillo);
+    larguerillos = zeros (numero_larguerillos_total,2,numero_de_puntos_en_las_lineas);
+
+    coord_encastre_larguerillo_x = Lf * ones(numero_larguerillos_total,1);
+    coord_encastre_larguerillo_y = c1*Distancia_larguero_posterior_cuerda_porcentaje-(distancia_entre_larguerillo*linspace(1,numero_larguerillos_total,numero_larguerillos_total));
+    constante_encastre_larguerillo = (coord_encastre_larguerillo_y' - pendiente_larguero_posterior * coord_encastre_larguerillo_x);
+
+    for i=1:numero_larguerillos_costilla_final
+        larguerillos(i,:,:) = [linspace(Lf,Lf+Lw,numero_de_puntos_en_las_lineas) ... 
+            ;linspace(c1*Distancia_larguero_posterior_cuerda_porcentaje-(i*distancia_entre_larguerillo) , y_global_punta_ala_borde_ataque+ c2*Distancia_larguero_posterior_cuerda_porcentaje-(i*distancia_entre_larguerillo), numero_de_puntos_en_las_lineas)];
+
+    end
+
+
+    for i=(numero_larguerillos_costilla_final+1):numero_larguerillos_total
+
+        coord_larguerillo_larguero_anterior_x = -(constante_linea_larguero_anterior - constante_encastre_larguerillo(i)) / (pendiente_larguero_anterior - pendiente_larguero_posterior);
+        coord_larguerillo_larguero_anterior_y = pendiente_larguero_anterior * coord_larguerillo_larguero_anterior_x + constante_linea_larguero_anterior;
+
+
+        larguerillos(i,:,:) = [linspace(Lf,coord_larguerillo_larguero_anterior_x,numero_de_puntos_en_las_lineas) ... 
+            ;linspace(c1*Distancia_larguero_posterior_cuerda_porcentaje-(i*distancia_entre_larguerillo) , coord_larguerillo_larguero_anterior_y, numero_de_puntos_en_las_lineas)];
+
+    end
+    
+    
+    
+    % stem3(x_l(2:end),y_l(2:end),L )
+    % view(3)
+    
+    % plot costillas
+    
+    % hold on
+    % for i =1:numero_costillas
+    %     % plot(costillas(i,1,1),costillas(i,2,1),'pentagram');
+    %     % plot(costillas(i,1,end),costillas(i,2,end),'hexagram');
+    %     % % plot(squeeze(costillas(i,1,:)),squeeze(costillas(i,2,:)),'r','LineWidth',3);
+    % end
+    
+    % (ALA) Reparto de cargas desde el punto del centro aerodinámico hasta las esquinas de los puntos de las intersecciones de los largueros x las costillas.
+    
+    
+    % Se crean líneas perpendiculares a las costillas x en los cortes con los
+    % largueros donde se aplican las cargas. 
+    % y_intercept es la constante es decir y(x=0)
+    y_intercept = y_l - pendiente_perpendicular_larguero_posterior * x_l;
+    
+    
+    coord_interseccion_paralela_costillas_pasa_por_A = zeros(size(y_intercept,1),2,3); % dimension es num_costillas y (X,Y) y (larguero anterior;larguero posterior,eje estructural)
+    
+    %numero_costillas-3 , porque mi L(x) tiene una dimension de
+    %numero_costillas-3 x l(x) tiene una dimension de numero_costillas -1
+    %longitudes
+    size_L=size(L,1);
+    h_A_aero = zeros(size_L,1);
+    h_R_aero = zeros(size_L,1);
+    h_A_masico = zeros(size_L,1);
+    h_R_masico = zeros(size_L,1);
+    l1_A = zeros(size_L,1);
+    l2_A = zeros(size_L,1);
+    l1_R = zeros(size_L,1);
+    l2_R = zeros(size_L,1);
+    %Cargas
+    P_A_aero = zeros(size_L,1);
+    P_R_aero = zeros(size_L,1);
+    R1_A_aero = zeros(size_L,1);
+    R1_R_aero = zeros(size_L,1);
+    R2_A_aero = zeros(size_L,1);
+    R2_R_aero = zeros(size_L,1);
+    P_A_masico = zeros(size_L,1);
+    P_R_masico = zeros(size_L,1);
+    R1_A_masico = zeros(size_L,1);
+    R1_R_masico = zeros(size_L,1);
+    R2_A_masico = zeros(size_L,1);
+    R2_R_masico = zeros(size_L,1);
+    
+    
+    % En este bucle se calculan las coordenadas de los puntos de la línea
+    % (P_A,L_i,P_R) de la guia en largueros posterior y anterior y, el eje de
+    % referencia estructural.
+    
+    
+    for i = 1:size(x_l,1) 
+        
+        if i <= numero_costillas_triangulo
+    
+        %posterior
+        coord_interseccion_paralela_costillas_pasa_por_A(i,1,2) = Lf;
+        coord_interseccion_paralela_costillas_pasa_por_A(i,2,2)  = pendiente_perpendicular_larguero_posterior * Lf + y_intercept(i);
+    
+        else
+    
+        %posterior
+        coord_interseccion_paralela_costillas_pasa_por_A(i,1,2) = (constante_linea_larguero_posterior - y_intercept(i)) / (pendiente_perpendicular_larguero_posterior - pendiente_larguero_posterior);
+        coord_interseccion_paralela_costillas_pasa_por_A(i,2,2)  = pendiente_perpendicular_larguero_posterior * coord_interseccion_paralela_costillas_pasa_por_A(i,1,2) + y_intercept(i);
+    
+        end
+    
+       %anterior
+        coord_interseccion_paralela_costillas_pasa_por_A(i,1,1) = (constante_linea_larguero_anterior - y_intercept(i)) / (pendiente_perpendicular_larguero_posterior - pendiente_larguero_anterior);
+        coord_interseccion_paralela_costillas_pasa_por_A(i,2,1)  = pendiente_perpendicular_larguero_posterior * coord_interseccion_paralela_costillas_pasa_por_A(i,1,1) + y_intercept(i);
+    
+        %eje estructural
+        coord_interseccion_paralela_costillas_pasa_por_A(i,1,3) = (constante_linea_eje_estructural - y_intercept(i)) / (pendiente_perpendicular_larguero_posterior - pendiente_eje_estructural);
+        coord_interseccion_paralela_costillas_pasa_por_A(i,2,3)  = pendiente_perpendicular_larguero_posterior * coord_interseccion_paralela_costillas_pasa_por_A(i,1,3) + y_intercept(i);
+    
+    
+        % plot(x_l(i),y_l(i),'d')
+        % plot(coord_interseccion_paralela_costillas_pasa_por_A(i,1,1),coord_interseccion_paralela_costillas_pasa_por_A(i,2,1),'pentagram')
+        % plot(coord_interseccion_paralela_costillas_pasa_por_A(i,1,2),coord_interseccion_paralela_costillas_pasa_por_A(i,2,2),'pentagram')
+        % plot(coord_interseccion_paralela_costillas_pasa_por_A(i,1,3),coord_interseccion_paralela_costillas_pasa_por_A(i,2,3),'pentagram')
+        % y_temp = y_intercept(i) + x_local_ala(i) * pendiente_perpendicular_larguero_posterior
+        % plot(x_local_ala(i),y_temp,'hexagram')
+    
+    end
+    %1 anterior 2 posterior 3 eje estructural
+    error_esquinas_aero = 1e6*ones(size(L));
+    error_medio_aero = 1e6*ones(size(L));
+    % Cálculo de los longitudes x las cargas
+    
+    for i=1:size(L,1)
+        % longitudes
+        h_A_aero(i) = norm([x_L(i) y_L(i)] - coord_interseccion_paralela_costillas_pasa_por_A(i+1,:,1));
+        h_R_aero(i) = norm([x_L(i) y_L(i)] - coord_interseccion_paralela_costillas_pasa_por_A(i+1,:,2));
+    
+        h_A_masico(i) = norm(coord_interseccion_paralela_costillas_pasa_por_A(i+1,:,3) - coord_interseccion_paralela_costillas_pasa_por_A(i+1,:,1));
+        h_R_masico(i) = norm(coord_interseccion_paralela_costillas_pasa_por_A(i+1,:,3) - coord_interseccion_paralela_costillas_pasa_por_A(i+1,:,2));
+    
+        l1_A(i) = norm(costillas(i+1,:,end)-coord_interseccion_paralela_costillas_pasa_por_A(i+1,:,1));
+        l2_A(i) = norm(costillas(i+2,:,end)-coord_interseccion_paralela_costillas_pasa_por_A(i+1,:,1));
+        l1_R(i) = norm(costillas(i+1,:,1)-coord_interseccion_paralela_costillas_pasa_por_A(i+1,:,2));
+        l2_R(i) = norm(costillas(i+2,:,1)-coord_interseccion_paralela_costillas_pasa_por_A(i+1,:,2));
+    
+        %cargas aero
+        P_A_aero(i) = L(i) * h_R_aero(i) /(h_A_aero(i)+h_R_aero(i));
+        P_R_aero(i) = L(i) * h_A_aero(i) /(h_A_aero(i)+h_R_aero(i));
+        R1_A_aero(i) = P_A_aero(i) * l2_A(i)/(l1_A(i)+l2_A(i));
+        R2_A_aero(i) = P_A_aero(i) * l1_A(i)/(l1_A(i)+l2_A(i));
+        R1_R_aero(i) = P_R_aero(i) * l2_R(i)/(l1_R(i)+l2_R(i));
+        R2_R_aero(i) = P_R_aero(i) * l1_R(i)/(l1_R(i)+l2_R(i));
+    
+        % %cargas masa
+        % P_A_masica(i) = peso_combustible_semiala * h_R_masico(i) /(h_A_masico(i)+h_R_masico(i));
+        % P_R_masica(i) = peso_combustible_semiala * h_A_masico(i) /(h_A_masico(i)+h_R_masico(i));
+        % R1_A_masica(i) = P_A_masica(i) * l2_A(i)/(l1_A(i)+l2_A(i));
+        % R2_A_masica(i) = P_A_masica(i) * l1_A(i)/(l1_A(i)+l2_A(i));
+        % R1_R_masica(i) = P_R_masica(i) * l2_R(i)/(l1_R(i)+l2_R(i));
+        % R2_R_masica(i) = P_R_masica(i) * l1_R(i)/(l1_R(i)+l2_R(i));
+    
+        error_esquinas_aero(i) = L(i)- (R1_A_aero(i) + R2_A_aero(i) + R1_R_aero(i) + R2_R_aero(i));
+        error_medio_aero(i) = L(i) - (P_A_aero(i) + P_R_aero(i));
+    
+        % error_esquinas_masica(i) = peso_combustible_semiala- (R1_A_masica(i) + R2_A_masica(i) + R1_R_masica(i) + R2_R_masica(i));
+        % error_medio_masica(i) = peso_combustible_semiala - (P_A_masica(i) + P_R_masica(i));
+    end
+    
+    
+    
+    % Cálculo de el momento flector y de la torsión
+    
+    x_L_flip = flip(x_L);
+    y_L_flip = flip(y_L);
+    L_flip = flip(L);
+    mom_flector = zeros(length(L),1);
+    torsion = zeros(length(L),1);
+    
+    for i = 1:length(L)-1
+        if i==1
+            mom_flector(i) = L_flip(i) * ( x_L_flip(i) - x_L_flip(i+1) );
+            torsion(i) = L_flip(i) * ( y_L_flip(i) - y_L_flip(i+1) );
+        else
+            mom_flector(i) = L_flip(i-1) * ( x_L_flip(i) - x_L_flip(i+1) ) + mom_flector(i-1);
+            torsion(i) = L_flip(i-1) * ( y_L_flip(i) - y_L_flip(i+1) ) + torsion(i-1);
+        end
+    end
+    
+    mom_flector(end) = mom_flector(end-1) + L(1) * (x_L(1) - Lf);
+    torsion(end) = torsion(end-1) + L(1) * (y_L(1) - c1 * distancia_centro_aerodinamico);
+    
+
+
+    % H
+    dimension = struct('numero_costillas',numero_costillas,'numero_costillas_triangulo',numero_costillas_triangulo,'costillas',costillas);
+    H_caja = construirH_caja(avion,datosEstructural,dimension);
+    
+    % % Generate the airfoil
+    % m = naca.m;
+    % p = naca.p;
+    % t = naca.t;
+    % show_graph = false;
+    % [x_naca, y_u_naca, y_l_naca] = naca6series(m, p, t, c, datosEstructural, avion, show_graph);
+    % H_
+
+
+
+    % Datos Generales
+    results.costillas = costillas; %
+    results.numero_costillas = numero_costillas;
+    results.numero_costillas_triangulo = numero_costillas_triangulo;
+    results.cociente_L_W_inicial = cociente_L_W_inicial;
+    results.mom_flector = flip(mom_flector);
+    results.torsion = flip(torsion);
+    results.H_caja = H_caja;
+
+    % Larguerillo
+    results.numero_larguerillos_total = numero_larguerillos_total;
+    results.numero_larguerillos_costilla_final = numero_larguerillos_costilla_final;
+    results.larguerillos = larguerillos;
+
+    % Coordenadas
+    % l(y)
+    results.x_l = x_l;
+    results.y_l = y_l;
+    results.l = l;    
+    % L(y)
+    results.x_L = x_L;
+    results.y_L = y_L;
+    results.L = L;
+    results.coord_aerodinamica_costillas_punto_medio = coord_aerodinamica_costillas_punto_medio; %(x,y)
+    results.coord_aerodinamico_costillas = coord_aerodinamico_costillas; %(x,y)
+    results.coord_interseccion_paralela_costillas_pasa_por_A = coord_interseccion_paralela_costillas_pasa_por_A; % dimension es num_costillas y (X,Y) y (larguero anterior;larguero posterior,eje estructural)
+    % results.y_L = y_L; 
+    
+    % Geometria
+    results.geometria.linea_larguero_anterior = linea_larguero_anterior; % (x_local_ala,linea)
+    results.geometria.linea_larguero_posterior = linea_larguero_posterior; % (x_local_ala,linea)
+    results.geometria.linea_centro_aerodinamico = linea_centro_aerodinamico; % (x_local_ala,linea)
+    results.geometria.linea_eje_estructural = linea_eje_estructural; % (x_local_ala,linea)
+    results.geometria.pendiente_larguero_anterior = pendiente_larguero_anterior;
+    results.geometria.pendiente_larguero_posterior = pendiente_larguero_posterior;
+    results.geometria.pendiente_eje_estructural = pendiente_eje_estructural;
+    results.geometria.pendiente_perpendicular_larguero_posterior = pendiente_perpendicular_larguero_posterior;
+    results.geometria.constante_linea_larguero_anterior = constante_linea_larguero_anterior; 
+    results.geometria.linea_larguero_anterior = linea_larguero_anterior; 
+    results.geometria.constante_linea_larguero_posterior = constante_linea_larguero_posterior;
+    results.geometria.constante_linea_eje_estructural = constante_linea_eje_estructural; 
+    results.geometria.alfa_larguero_posterior_radianes = alfa_larguero_posterior_radianes; 
+    results.geometria.constante_perpendicular_larguero_posterior = constante_perpendicular_larguero_posterior; 
+    results.geometria.coord_costillas_larguero_anterior_x = coord_costillas_larguero_anterior_x;
+    results.geometria.coord_costillas_larguero_anterior_y = coord_costillas_larguero_anterior_y; 
+    results.geometria.constante_perpendicular_larguero_posterior_triangulo = constante_perpendicular_larguero_posterior_triangulo; 
+  
+    
+end
