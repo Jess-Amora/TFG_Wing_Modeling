@@ -1,6 +1,6 @@
 
 
-function [results] = construirAla_v9(avion,datosEstructural,cargas,output_command)
+function [results] = construirAla_v10(avion,datosEstructural,cargas,output_command)
 
 % Parámetros de entrada:
     %   - wingParams: Estructura con los siguientes campos:
@@ -449,7 +449,7 @@ function [results] = construirAla_v9(avion,datosEstructural,cargas,output_comman
         index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter) = counter_quitar_nodos_larguerillos_menor_Lf;
     end
 
-            %% Construyendo los nodos en los larguerillos
+     %% Construyendo los nodos en los larguerillos
     % Creando un matriz que contiene el id local del nodo junto con el
     % index del larguerillo y de la costilla. De dimensión 
     % (id_local, Lf + index_costilla, index_larguerillo)
@@ -510,8 +510,42 @@ function [results] = construirAla_v9(avion,datosEstructural,cargas,output_comman
             [temp_intersect id_local] = cortes_de_dos_funciones_lineales_v2([Lf 1],inf,[intersecciones_costillas_larguerillos(index_larguerillo_counter,index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter)+1,:)], pendiente_larguero_posterior);
 
 
-            nodos_larguerillos = [nodos_larguerillos temp_intersect intersecciones_costillas_larguerillos(index_larguerillo_counter,index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter)+1:(index_larguerillos_anterior(index_larguerillo_counter)-1),:)];
+            % La construcción del larguerillo
+            nodos_larguerillos = [nodos_larguerillos temp_intersect intersecciones_costillas_larguerillos(index_larguerillo_counter,index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter)+1:(index_larguerillos_anterior(index_larguerillo_counter)),:)];
             
+            
+            
+           
+
+            % Se añade el ultimo nodo del corte del larguerillo y el
+            % larguero anterior.
+            temp = cortes_de_dos_funciones_lineales_v2(larguerillos(index_larguerillo_counter,:,1), pendiente_larguero_posterior, [Lf c1*Distancia_larguero_anterior_cuerda_porcentaje], pendiente_larguero_anterior);
+            % distancia_temp = temp-nodos_larguerillos(1,end,:);
+
+                % En las siguientes 5 líneas, es para quitar los nodos en las
+                % puntas de los larguerillos que están muy pegados, porque al
+                % hacer las superficies, se crean superficies inestables en
+                % sentido MEF.
+                tolerance_nodos_pegados = distancia_entre_costillas * 0.07;
+                distancia_nodos_pegados = sqrt(sum((temp - nodos_larguerillos(:, end, :)).^2, 'all'));
+                if distancia_nodos_pegados < tolerance_nodos_pegados
+                    % Remove the last node if it's too close
+                    % id_nodo_local_larguerillo_costilla(size(nodos_larguerillos,2),:) = [];
+                    nodos_larguerillos(:, end, :) = [];
+                    
+                else
+                    % Creando los nodo que esté perpendicular al larguerillo en el
+                    % punto que pertence a ese larguerillo y el larguero anterior.
+                    % Calculate delta x and delta y
+                    delta_x = 0.1495 / sqrt(1 + pendiente_perpendicular_larguero_posterior^2);
+                    delta_y = pendiente_perpendicular_larguero_posterior * delta_x;
+                    
+                    % Calculate the new point
+                    x2 = temp(1) - delta_x;
+                    y2 = temp(2) - delta_y;
+                    nodos_larguerillos = insert_perpendicular_node(nodos_larguerillos, pendiente_larguero_posterior, [x2 y2], numero_costillas*2-1);
+                end
+
             % Actualizando el id_nodo_local_larguerillo_costilla
             % for index_costilla 
             % for index_costilla = index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter)+1:index_larguerillos_anterior(index_larguerillo_counter)
@@ -521,28 +555,28 @@ function [results] = construirAla_v9(avion,datosEstructural,cargas,output_comman
             id_nodo_local_larguerillo_costilla(temp_size_nodos+1,2) = -1;
             id_nodo_local_larguerillo_costilla(temp_size_nodos+1,3) = index_larguerillo_counter;
             counter_nodos_id = 1;
+
             for index_id = temp_size_nodos+2:size(nodos_larguerillos,2)
                 id_nodo_local_larguerillo_costilla(index_id,1) = index_id;
                 id_nodo_local_larguerillo_costilla(index_id,2) = index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter)+counter_nodos_id;
                 id_nodo_local_larguerillo_costilla(index_id,3) = index_larguerillo_counter;
                 counter_nodos_id = counter_nodos_id + 1;
             end
-
-            % Se añade el ultimo nodo del corte del larguerillo y el
-            % larguero anterior.
-            temp = cortes_de_dos_funciones_lineales(larguerillos(index_larguerillo_counter,:,1), pendiente_larguero_posterior, [Lf c1*Distancia_larguero_anterior_cuerda_porcentaje], pendiente_larguero_anterior);
+            
             nodos_larguerillos = [nodos_larguerillos temp];
-
+            
             temp_number_1 = size(nodos_larguerillos,2);
             id_nodo_local_larguerillo_costilla(temp_number_1,1) = temp_number_1;
             id_nodo_local_larguerillo_costilla(temp_number_1,2) = -2;
             id_nodo_local_larguerillo_costilla(temp_number_1,3) = index_larguerillo_counter;
-    
+            
 
             
             Numero_nodos_elementos_ala(index_larguerillo_counter+2,1) = size(nodos_larguerillos,2) - temp_size_nodos;
             % counter_nodo_larguerillo_ala = counter_nodo_larguerillo_ala + index_larguerillos_anterior(index_larguerillo_counter);
             
+            
+
             if output_command
                 % Existe +1 en la linea de abajo, porque hay que añadir el nodo del
                 % encastre.
@@ -551,7 +585,7 @@ function [results] = construirAla_v9(avion,datosEstructural,cargas,output_comman
                 fprintf('Numero de nodos en el larguerillo numero %d = %d\n',index_larguerillo_counter, Numero_nodos_elementos_ala(index_larguerillo_counter+2,1));
                 % fprintf('Nodos %d : %d\n', temp_size_nodos+1+Numero_nodos_dos_largueros,size(nodos_larguerillos,2)+Numero_nodos_dos_largueros);
             end
-    
+            
         else
             disp('Se quitó un larguerillo: Cambia el numero de larguerillo total en el ala -1')
             quitar_larguerillo = quitar_larguerillo + 1;
@@ -559,6 +593,53 @@ function [results] = construirAla_v9(avion,datosEstructural,cargas,output_comman
     end
     
     numero_larguerillos_total = numero_larguerillos_total - quitar_larguerillo;
+    
+
+    % for index_larguerillo_actual = numero_larguerillos_costilla_final+1:numero_larguerillos_total
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % 
+    % end
+    % % Esta parte es para construir los nodos en los larguerillos en
+    % % la parte cerca del larguero anterior para crear superficies
+    % % en esas zonas bonitas.
+    % 
+    % % Find unique stringer IDs and count occurrences
+    % [unique_stringers, ~, idx] = unique(id_nodo_local_larguerillo_costilla(:,3));
+    % node_counts = accumarray(idx, 1);
+    % tolerance = 1e-5; % Tolerance for matching nodes
+    % nodes_missing = []; % Store missing nodes
+    % 
+    % for index_larguerillo = numero:numero_larguerillos_total
+    % % Step 1: Start comparison from halfway in the current stringer
+    % halfway_idx = ceil(size(nodes_current, 1) / 2);
+    % 
+    % 
+    % % Compare nodes
+    % for i = halfway_idx:size(nodes_current, 1)
+    %     current_node = nodes_current(i, 2:4); % Extract x, y, z of current node
+    %     match_found = false; % Flag to check if match exists
+    % 
+    %     for j = 1:size(nodes_previous, 1)
+    %         previous_node = nodes_previous(j, 2:4); % Extract x, y, z of previous node
+    %         distance = sqrt(sum((current_node - previous_node).^2));
+    % 
+    %         if distance < tolerance
+    %             match_found = true;
+    %             break;
+    %         end
+    %     end
+    % 
+    %     if ~match_found
+    %         nodes_missing = [nodes_missing; nodes_current(i, :)];
+    %     end
+    % end
+
     %% Construyendo las barras en los larguerillos
     % % Creando las barras en los largueros posterior y anterior
     barras_ala_larguero_posterior = [];
