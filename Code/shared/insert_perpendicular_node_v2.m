@@ -1,14 +1,13 @@
-function updated_node_vector = insert_perpendicular_node_v2(node_vector, slope, point, ribs_total, rib_index, stringer_index)
-% Updated Function to insert a node into a 1xNx4 node vector based on geometry and slope
-%
+function updated_node_vector = insert_perpendicular_node_v3(node_vector, slope, point, ribs_total)
+% Updated Function to insert a node into a 1xNx4 node vector based on geometry and slope.
+% Rib and Stringer indices are now inferred directly from the node vector.
+
 % Inputs:
 %   node_vector: 1xNx4 matrix of node data [x, y, rib_index, stringer_index]
 %   slope: Desired slope of the rear spar
 %   point: Coordinates of the new perpendicular node [x, y]
 %   ribs_total: Number of ribs (nodes) from the end to check
-%   rib_index (optional): Index of the rib for the new node
-%   stringer_index (optional): Index of the stringer for the new node
-%
+
 % Outputs:
 %   updated_node_vector: 1x(N+1)x4 matrix with the new node inserted in order
 
@@ -22,17 +21,10 @@ function updated_node_vector = insert_perpendicular_node_v2(node_vector, slope, 
     if ribs_total > size(node_vector, 2)
         error('ribs_total exceeds the number of available nodes.');
     end
-    if nargin < 5 || isempty(rib_index)
-        rib_index = -1; % Default rib index if not provided
-    end
-    if nargin < 6 || isempty(stringer_index)
-        stringer_index = -1; % Default stringer index if not provided
-    end
 
     %% Initialization
     num_nodes = size(node_vector, 2);
     start_idx = max(1, num_nodes - ribs_total); % Ensure bounds are not exceeded
-
     insert_idx = -1; % Default to no insertion
 
     %% Loop Through the Last `ribs_total` Node Pairs
@@ -52,6 +44,16 @@ function updated_node_vector = insert_perpendicular_node_v2(node_vector, slope, 
                 break;
             end
         end
+    end
+
+    %% Infer rib_index and stringer_index from nearest node
+    if insert_idx > 0
+        rib_index = node_vector(1, insert_idx, 3); % Rib index from nearest node
+        stringer_index = node_vector(1, insert_idx, 4); % Stringer index from nearest node
+    else
+        % Use the last node's rib and stringer indices as fallback
+        rib_index = node_vector(1, end, 3);
+        stringer_index = node_vector(1, end, 4);
     end
 
     %% Prepare the Updated Node Vector
