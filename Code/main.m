@@ -9,7 +9,7 @@ addpath('./fuselage_builder');
 loadedData = load('../Data/TFG_amora.mat');
 TFG_Amora = loadedData.TFG_Amora;
 
-% Flag construir ala
+%% Flag construir ala
 FlagConstruirCargas = false;
 FlagConstruirAla = false;
 FlagConstruirFuselaje = false;
@@ -25,11 +25,12 @@ FlagConstruirAla7 = false;
 FlagConstruirAla8 = false;
 FlagConstruirAla9 = false;
 FlagConstruirAla10 = false;
-FlagConstruirAla11 = true;
+FlagConstruirAla11 = false;
+FlagConstruirAla12 = true;
 output_command8 = false;
 mesh_generar6 = false;
 
-%
+%% Datos
 avion = TFG_Amora.aviones.a350_1000;
 datosEstructural = TFG_Amora.datosEstructural;
 cargas = TFG_Amora.aviones.a350_1000.cargas;
@@ -44,12 +45,15 @@ ala8 = avion.ala8;
 ala9 = avion.ala9;
 ala10 = avion.ala10;
 ala11 = avion.ala11;
+ala12 = avion.ala12;
 % fuselaje = avion.fuselaje;
 % fuselaje2 = avion.fuselaje2;
 % fuselaje3 = avion.fuselaje3;
 numero_de_puntos = datosEstructural.numero_de_puntos_en_las_lineas;
 x_local_ala = avion.coordenadas.x_local_ala;
 
+
+%% Flag cargas
 if FlagConstruirCargas
     cargas = schrenk_1(avion,datosEstructural);
     TFG_Amora.aviones.a350_1000.cargas = cargas;
@@ -57,7 +61,7 @@ if FlagConstruirCargas
     cargas = TFG_Amora.aviones.a350_1000.cargas;
 end
 
-
+%% Flag alas
 if FlagConstruirAla
     results = construirAla(avion,datosEstructural,cargas);
     TFG_Amora.aviones.a350_1000.ala = results;
@@ -136,6 +140,15 @@ if FlagConstruirAla11
     save('../Data/TFG_amora.mat', 'TFG_Amora');
     
 end
+
+%% Flag ala ultimo 12
+if FlagConstruirAla12
+    results = construirAla_v12(avion,datosEstructural,cargas,output_command8);
+    TFG_Amora.aviones.a350_1000.ala12 = results;
+    ala12 = results;
+    save('../Data/TFG_amora.mat', 'TFG_Amora');
+    
+end
 % FlagConstruirAlatestpatran = true;
 % if FlagConstruirAlatestpatran
 %     results = construirAla_v8(avion,datosEstructuraltest,cargas,false);
@@ -144,7 +157,7 @@ end
 %     alapatrantest = TFG_Amora.aviones.a350_1000.alapatrantest;
 % end
 
-
+%% Flag fuselaje
 if FlagConstruirFuselaje
     results = construirFuselaje(avion,datosEstructural);
     TFG_Amora.aviones.a350_1000.fuselaje = results;
@@ -178,7 +191,7 @@ end
 
 
 
-
+%% Plot
 % PLOTS-----------------------------------------------------------------------
 % schrenk(avion,datosEstructural)
 % plotschrenk(avion,datosEstructural)
@@ -199,7 +212,7 @@ end
 % plotAla2Dcostilla_fuselaje(avion,datosEstructural,ala)
 % plotAla2Dcostilla_total(avion,datosEstructural,ala,fuselaje)
 
-%mesh
+%% plot mesh
 % plotAla2D_mesh(avion,datosEstructural,ala3)
 % plotAla2D_mesh_solo_nodos(avion,datosEstructural,ala4)
 % plotAla2D_mesh_fuselaje(avion,datosEstructural,fuselaje3,ala8)
@@ -225,9 +238,13 @@ end
 % plotfilename = strcat('../Results/Figures/plotAla2D_mesh_solo_nodos_v6','ala10', '_TFG_Amora_aviones_a350_1000');
 % plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala10,plottitle,'' ,'',plotfilename);
 
-plottitle = strcat('plotAla2D_mesh_solo_nodos_v6__ala11', '_TFG_Amora.aviones.a350_1000');
-plotfilename = strcat('../Results/Figures/plotAla2D_mesh_solo_nodos_v6_ala11_TFG_Amora_aviones_a350_1000');
-plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala11,plottitle,'' ,'',plotfilename);
+% plottitle = strcat('plotAla2D_mesh_solo_nodos_v6__ala11_TFG_Amora.aviones.a350_1000');
+% plotfilename = strcat('../Results/Figures/plotAla2D_mesh_solo_nodos_v6_ala11_TFG_Amora_aviones_a350_1000');
+% plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala11,plottitle,'' ,'',plotfilename);
+%% plot actual
+plottitle = strcat('plotAla2D_mesh_solo_nodos_v6__ala12_TFG_Amora.aviones.a350_1000_datos_estructual');
+plotfilename = strcat('../Results/Figures/plotAla2D_mesh_solo_nodos_v6_ala12_TFG_Amora_aviones_a350_1000_datos_estructual');
+plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala12,plottitle,'' ,'',plotfilename);
 
 % Mesh barras
 % [nodos elementos] = generar_barras(avion,datosEstructural,ala4,fuselaje2);
@@ -236,7 +253,7 @@ plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala11,plottitle,'' ,'',plotf
 % [nodos elementos] = generar_barras_v4(avion,datosEstructural,ala4,fuselaje2);
 % [nodos elementos] = generar_barras_v5(avion,datosEstructural,ala4,fuselaje2);
 
-
+%% Nada
 % 3D
 % 
 % % z-function (constant for simplicity)
@@ -253,7 +270,7 @@ plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala11,plottitle,'' ,'',plotf
 % create3DMap_v2(nodos, elementos, z_upper, z_lower, nodeFile, elementFile);
 % create3DMap_v3(nodos, elementos, z_upper, z_lower, nodeFile, elementFile);
 
-%%
+%
 %mom torsion
 % plotAlaMom(avion,datosEstructural,ala)
 % plotAlaTorsion(avion,datosEstructural,ala)
@@ -273,7 +290,7 @@ plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala11,plottitle,'' ,'',plotf
 
 
 
-%% H
+% H
 % % Lw = avion.geometria.Lw;
 % Lf = avion.geometria.Lf;
 % numero_costillas = ala.numero_costillas;

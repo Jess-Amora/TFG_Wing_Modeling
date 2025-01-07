@@ -6,7 +6,7 @@ TFG_Amora = loadedData.TFG_Amora;
 avion = TFG_Amora.aviones.a350_1000;
 datosEstructural = TFG_Amora.datosEstructural;
 cargas = TFG_Amora.aviones.a350_1000.cargas;
-ala = TFG_Amora.aviones.a350_1000.ala11;
+ala = TFG_Amora.aviones.a350_1000.ala12;
 fuselaje = TFG_Amora.aviones.a350_1000.fuselaje4;
 H = 1;
 % generar_estructura_v1(avion,datosEstructural,ala,fuselaje,H)
@@ -63,13 +63,13 @@ H = 1;
     index_larguerillos_anterior_ala = ala.mesh.index_larguerillos_anterior; % Número de intersección que hace el larguerillo con la costillas y su punto medio (Punto medio entre costillas).
     nodos_posterior_ala = ala.mesh.nodos_posterior'; % Los nodos en el larguero posterior.
     nodos_anterior_ala = ala.mesh.nodos_anterior'; % Los nodos en el larguero posterior.
-    nodos_ala_global = ala.mesh.nodos_ala_global; % Los nodos en el larguero posterior.
+    % nodos_ala_global = ala.mesh.nodos_ala_global; % Los nodos en el larguero posterior.
     % barras
 
     barras_ala_larguero_anterior = ala.mesh.barras_ala_larguero_anterior;
     barras_ala_larguero_posterior = ala.mesh.barras_ala_larguero_posterior;
     barras_ala_larguerillos = ala.mesh.barras_ala_larguerillos;
-    barras_ala_global = ala.mesh.barras_ala_global ;
+    % barras_ala_global = ala.mesh.barras_ala_global ;
 
     %% Mesh FUSELAJE
     larguerillos_fuselaje = fuselaje.larguerillos_fuselaje;

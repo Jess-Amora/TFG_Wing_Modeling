@@ -1,6 +1,6 @@
 
 
-function [results] = construirAla_v11(avion,datosEstructural,cargas,output_command)
+function [results] = construirAla_v12(avion,datosEstructural,cargas,output_command)
 
 % Parámetros de entrada:
     %   - wingParams: Estructura con los siguientes campos:
@@ -435,7 +435,7 @@ function [results] = construirAla_v11(avion,datosEstructural,cargas,output_comma
     % Matriz "intersecciones_costillas_larguerillos" de las coordenadas de las intersecciones de los
     % larguerillos-costilla_costilla_medio de dimension
     % (num_larguerillo,num_cost_cost_med,(x,y))
-    intersecciones_costillas_larguerillos = cortes_de_dos_funciones_lineales(squeeze(larguerillos(:,:,1)),pendiente_larguero_posterior,costilla_costilla_medio(:,1:2),pendiente_perpendicular_larguero_posterior);
+    intersecciones_costillas_larguerillos = cortes_de_dos_funciones_lineales_v3(squeeze(larguerillos(:,:,1)),pendiente_larguero_posterior,costilla_costilla_medio(:,1:2),pendiente_perpendicular_larguero_posterior);
     counter_quitar_nodos_larguerillos_menor_Lf = 0;
     index_counter_quitar_nodos_larguerillos_menor_Lf = zeros(numero_larguerillos_total,1);
 
@@ -463,7 +463,7 @@ function [results] = construirAla_v11(avion,datosEstructural,cargas,output_comma
         temp_size_nodos = size(nodos_larguerillos,2);
         % Hay que unir el primer nodo del larguerillo con el encastre
         % (línea vertical). 
-        [temp_intersect id_local] = cortes_de_dos_funciones_lineales_v2([Lf 1],inf,[intersecciones_costillas_larguerillos(index_larguerillo_counter,index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter)+1,:)], pendiente_larguero_posterior);
+        temp_intersect = cortes_de_dos_funciones_lineales_v3([Lf 1],inf,[intersecciones_costillas_larguerillos(index_larguerillo_counter,index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter)+1,:)], pendiente_larguero_posterior,index_larguerillo_counter,-1);
 
         nodos_larguerillos = [nodos_larguerillos temp_intersect intersecciones_costillas_larguerillos(index_larguerillo_counter,index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter)+1:index_larguerillos_anterior(index_larguerillo_counter),:)];
         
@@ -508,7 +508,7 @@ function [results] = construirAla_v11(avion,datosEstructural,cargas,output_comma
 
             % Hay que unir el primer nodo del larguerillo con el encastre
             % (línea vertical). 
-            [temp_intersect id_local] = cortes_de_dos_funciones_lineales_v2([Lf 1],inf,[intersecciones_costillas_larguerillos(index_larguerillo_counter,index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter)+1,:)], pendiente_larguero_posterior);
+            temp_intersect = cortes_de_dos_funciones_lineales_v3([Lf 1],inf,[intersecciones_costillas_larguerillos(index_larguerillo_counter,index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter)+1,:)], pendiente_larguero_posterior,index_larguerillo_counter,-1);
 
 
             % La construcción del larguerillo
@@ -536,7 +536,7 @@ function [results] = construirAla_v11(avion,datosEstructural,cargas,output_comma
 
             % Se añade el ultimo nodo del corte del larguerillo y el
             % larguero anterior.
-            temp = cortes_de_dos_funciones_lineales_v2(larguerillos(index_larguerillo_counter,:,1), pendiente_larguero_posterior, [Lf c1*Distancia_larguero_anterior_cuerda_porcentaje], pendiente_larguero_anterior);
+            temp = cortes_de_dos_funciones_lineales_v3(larguerillos(index_larguerillo_counter,:,1), pendiente_larguero_posterior, [Lf c1*Distancia_larguero_anterior_cuerda_porcentaje], pendiente_larguero_anterior,index_larguerillo_counter,-2);
             % distancia_temp = temp-nodos_larguerillos(1,end,:);
 
                 % En las siguientes 5 líneas, es para quitar los nodos en las
@@ -544,6 +544,8 @@ function [results] = construirAla_v11(avion,datosEstructural,cargas,output_comma
                 % hacer las superficies, se crean superficies inestables en
                 % sentido MEF.
                 tolerance_nodos_pegados = distancia_entre_costillas * 0.07;
+                % size(temp)
+                % size(nodos_larguerillos)
                 distancia_nodos_pegados = sqrt(sum((temp - nodos_larguerillos(:, end, :)).^2, 'all'));
                 if distancia_nodos_pegados < tolerance_nodos_pegados
                     %actualizar el id_nodo_local_larguerillo_costilla
@@ -563,7 +565,7 @@ function [results] = construirAla_v11(avion,datosEstructural,cargas,output_comma
                     % Calculate the new point
                     x2 = temp(1) - delta_x;
                     y2 = temp(2) - delta_y;
-                    nodos_larguerillos = insert_perpendicular_node(nodos_larguerillos, pendiente_larguero_posterior, [x2 y2], numero_costillas*2-1);
+                    nodos_larguerillos = insert_perpendicular_node_v2(nodos_larguerillos, pendiente_larguero_posterior, [x2 y2], numero_costillas*2-1);
                 end
 
             
@@ -708,9 +710,9 @@ function [results] = construirAla_v11(avion,datosEstructural,cargas,output_comma
     end
     
    
-    %% Juntar los nodos y los elementos
-    nodos_ala_global = [nodos_posterior';nodos_anterior';squeeze(nodos_larguerillos)];
-    barras_ala_global = [barras_ala_larguero_posterior';barras_ala_larguero_anterior';barras_ala_larguerillos'];
+    % %% Juntar los nodos y los elementos
+    % nodos_ala_global = [nodos_posterior';nodos_anterior';squeeze(nodos_larguerillos)];
+    % barras_ala_global = [barras_ala_larguero_posterior';barras_ala_larguero_anterior';barras_ala_larguerillos'];
 
     %% Guardando los nodos y los elementos en el archivo .csv
     % 
@@ -959,11 +961,11 @@ function [results] = construirAla_v11(avion,datosEstructural,cargas,output_comma
     results.mesh.index_larguerillos_anterior = index_larguerillos_anterior; % Número de intersección que hace el larguerillo con la costillas y su punto medio (Punto medio entre costillas).
     results.mesh.nodos_posterior = nodos_posterior; % Los nodos en el larguero posterior.
     results.mesh.nodos_anterior = nodos_anterior; % Los nodos en el larguero posterior.
-    results.mesh.nodos_ala_global = nodos_ala_global; % Los nodos en el larguero posterior.
+    % results.mesh.nodos_ala_global = nodos_ala_global; % Los nodos en el larguero posterior.
     % barras
     results.mesh.barras_ala_larguero_anterior = barras_ala_larguero_anterior;
     results.mesh.barras_ala_larguero_posterior = barras_ala_larguero_posterior;
     results.mesh.barras_ala_larguerillos = barras_ala_larguerillos;
-    results.mesh.barras_ala_global = barras_ala_global;
+    % results.mesh.barras_ala_global = barras_ala_global;
 
 end
