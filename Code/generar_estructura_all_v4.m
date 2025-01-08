@@ -16,89 +16,97 @@ H = 1;
 % generar_estructura_v1(avion,datosEstructural,ala,fuselaje,H)
 
 % function generar_estructura_v1(avion,datosEstructural,ala,fuselaje,H)
-    % Extraer parámetros
-    % Geometría
-    Lf = avion.geometria.Lf;
-    Lw = avion.geometria.Lw;
-    c1 = avion.geometria.c1;
-    c2 = avion.geometria.c2;
-    b = avion.geometria.b;
+% Extraer parámetros
+% Geometría
+Lf = avion.geometria.Lf;
+Lw = avion.geometria.Lw;
+c1 = avion.geometria.c1;
+c2 = avion.geometria.c2;
+b = avion.geometria.b;
 
-    y_global_punta_ala_borde_ataque = avion.geometria.y_global_punta_ala_borde_ataque;
-    flecha_radianes = avion.geometria.flecha.radian;
+y_global_punta_ala_borde_ataque = avion.geometria.y_global_punta_ala_borde_ataque;
+flecha_radianes = avion.geometria.flecha.radian;
 
-    % Datos estructural
-    Distancia_larguero_anterior_cuerda_porcentaje = datosEstructural.distancia_larguero_anterior_cuerda_porcentaje;
-    Distancia_larguero_posterior_cuerda_porcentaje = datosEstructural.distancia_larguero_posterior_cuerda_porcentaje;
-    distancia_centro_aerodinamico = datosEstructural.distancia_centro_aerodinamico;
-    distancia_eje_de_referencia_estructural_cuerda = datosEstructural.distancia_eje_de_referencia_estructural_cuerda;
-    numero_de_puntos_en_las_lineas = datosEstructural.numero_de_puntos_en_las_lineas;
-    distancia_entre_costillas = datosEstructural.distancia_entre_costillas;
-    distancia_entre_larguerillo = datosEstructural.distancia_entre_larguerillo;
+% Datos estructural
+Distancia_larguero_anterior_cuerda_porcentaje = datosEstructural.distancia_larguero_anterior_cuerda_porcentaje;
+Distancia_larguero_posterior_cuerda_porcentaje = datosEstructural.distancia_larguero_posterior_cuerda_porcentaje;
+distancia_centro_aerodinamico = datosEstructural.distancia_centro_aerodinamico;
+distancia_eje_de_referencia_estructural_cuerda = datosEstructural.distancia_eje_de_referencia_estructural_cuerda;
+numero_de_puntos_en_las_lineas = datosEstructural.numero_de_puntos_en_las_lineas;
+distancia_entre_costillas = datosEstructural.distancia_entre_costillas;
+distancia_entre_larguerillo = datosEstructural.distancia_entre_larguerillo;
 
-    % Coordenadas
-    x_local_ala = avion.coordenadas.x_local_ala;
-    y = avion.coordenadas.y;
-    x = avion.coordenadas.y;
-    
-    % Ala 
-    numero_larguerillos_total = ala.numero_larguerillos_total;
-    linea_larguero_anterior = ala.geometria.linea_larguero_anterior;
-    linea_larguero_posterior = ala.geometria.linea_larguero_posterior;
-    numero_costillas = ala.numero_costillas;
-    numero_costillas_triangulo = ala.numero_costillas_triangulo;
-    numero_larguerillos_costilla_final = ala.numero_larguerillos_costilla_final;
-    % nodos_larguerillos = ala.mesh.nodos_larguerillos;
-    
-    % Fuselaje
-    numero_costillas_fuselaje = floor(Lf/distancia_entre_costillas);
-    costillas_fuselaje = fuselaje.costillas_fuselaje;
-    larguerillos_fuselaje = fuselaje.larguerillos_fuselaje;
+% Coordenadas
+x_local_ala = avion.coordenadas.x_local_ala;
+y = avion.coordenadas.y;
+x = avion.coordenadas.y;
 
-    %% Mesh ALA
-    intersecciones_costillas_larguerillos_ala = ala.mesh.intersecciones_costillas_larguerillos;
-    Numero_nodos_elementos_ala = ala.mesh.Numero_nodos_elementos_ala;
-    id_nodo_local_larguerillo_costilla = ala.mesh.id_nodo_local_larguerillo_costilla; % dim (id_local, Lf + index_costilla, index_larguerillo)
-    index_counter_quitar_nodos_larguerillos_menor_Lf = ala.mesh.index_counter_quitar_nodos_larguerillos_menor_Lf; 
-    index_larguerillos_anterior = ala.mesh.index_larguerillos_anterior;
+% Ala 
+numero_larguerillos_total = ala.numero_larguerillos_total;
+linea_larguero_anterior = ala.geometria.linea_larguero_anterior;
+linea_larguero_posterior = ala.geometria.linea_larguero_posterior;
+numero_costillas = ala.numero_costillas;
+numero_costillas_triangulo = ala.numero_costillas_triangulo;
+numero_larguerillos_costilla_final = ala.numero_larguerillos_costilla_final;
+% nodos_larguerillos = ala.mesh.nodos_larguerillos;
 
-    % nodos
+% Fuselaje
+numero_costillas_fuselaje = floor(Lf/distancia_entre_costillas);
+costillas_fuselaje = fuselaje.costillas_fuselaje;
+larguerillos_fuselaje = fuselaje.larguerillos_fuselaje;
 
-    nodos_larguerillos = squeeze(ala.mesh.nodos_larguerillos); % larguerillos
-    nodos_larguerillos(:, [3, 4]) = nodos_larguerillos(:, [4, 3]);
-    nodos_larguerillos(:, 5) = (1:size(nodos_larguerillos, 1))';
-    index_larguerillos_anterior_ala = ala.mesh.index_larguerillos_anterior; % Número de intersección que hace el larguerillo con la costillas y su punto medio (Punto medio entre costillas).
-    nodos_posterior_ala = ala.mesh.nodos_posterior'; % Los nodos en el larguero posterior.
-    nodos_anterior_ala = ala.mesh.nodos_anterior'; % Los nodos en el larguero posterior.
-    % nodos_ala_global = ala.mesh.nodos_ala_global; % Los nodos en el larguero posterior.
-    % barras
+%% Mesh ALA
+intersecciones_costillas_larguerillos_ala = ala.mesh.intersecciones_costillas_larguerillos;
+Numero_nodos_elementos_ala = ala.mesh.Numero_nodos_elementos_ala;
+id_nodo_local_larguerillo_costilla = ala.mesh.id_nodo_local_larguerillo_costilla; % dim (id_local, Lf + index_costilla, index_larguerillo)
+index_counter_quitar_nodos_larguerillos_menor_Lf = ala.mesh.index_counter_quitar_nodos_larguerillos_menor_Lf; 
+index_larguerillos_anterior = ala.mesh.index_larguerillos_anterior;
 
-    barras_ala_larguero_anterior = ala.mesh.barras_ala_larguero_anterior;
-    barras_ala_larguero_posterior = ala.mesh.barras_ala_larguero_posterior;
-    barras_ala_larguerillos = ala.mesh.barras_ala_larguerillos;
-    % barras_ala_global = ala.mesh.barras_ala_global ;
+% nodos
 
-    %% Mesh FUSELAJE
-    larguerillos_fuselaje = fuselaje.larguerillos_fuselaje;
-    costillas_fuselaje = fuselaje.costillas_fuselaje;
-    numero_costillas_fuselaje = fuselaje.numero_costillas_fuselaje;
-    
-    % nodos
-    
-    nodos_larguerillos_fuselaje = fuselaje.mesh.nodos_larguerillos_fuselaje; % larguerillos
-    nodos_posterior_fuselaje = fuselaje.mesh.nodos_posterior_fuselaje; % Los nodos en el larguero posterior.
-    nodos_anterior_fuselaje = fuselaje.mesh.nodos_anterior_fuselaje; % Los nodos en el larguero posterior.
-    
-    % barras
-    
-    barras_fuselaje_larguero_posterior = fuselaje.mesh.barras_fuselaje_larguero_posterior;
-    barras_fuselaje_larguero_anterior = fuselaje.mesh.barras_fuselaje_larguero_anterior;
-    barras_fuselaje_larguerillos  = fuselaje.mesh.barras_fuselaje_larguerillos;
+nodos_larguerillos = squeeze(ala.mesh.nodos_larguerillos); % larguerillos
+nodos_larguerillos(:, [3, 4]) = nodos_larguerillos(:, [4, 3]);
+nodos_larguerillos(:, 5) = (1:size(nodos_larguerillos, 1))';
+index_larguerillos_anterior_ala = ala.mesh.index_larguerillos_anterior; % Número de intersección que hace el larguerillo con la costillas y su punto medio (Punto medio entre costillas).
+nodos_posterior_ala = ala.mesh.nodos_posterior'; % Los nodos en el larguero posterior.
+nodos_anterior_ala = ala.mesh.nodos_anterior'; % Los nodos en el larguero posterior.
+% nodos_ala_global = ala.mesh.nodos_ala_global; % Los nodos en el larguero posterior.
+% barras
 
-    %% PARAMETROS NUEVOS
-    threshold_distance = distancia_entre_costillas * 0.07;
+barras_ala_larguero_anterior = ala.mesh.barras_ala_larguero_anterior;
+barras_ala_larguero_posterior = ala.mesh.barras_ala_larguero_posterior;
+barras_ala_larguerillos = ala.mesh.barras_ala_larguerillos;
+% barras_ala_global = ala.mesh.barras_ala_global ;
 
-    %% TEMPORARY ID SYSTEM DOCUMENTATION 
+%% Mesh FUSELAJE
+larguerillos_fuselaje = fuselaje.larguerillos_fuselaje;
+costillas_fuselaje = fuselaje.costillas_fuselaje;
+numero_costillas_fuselaje = fuselaje.numero_costillas_fuselaje;
+
+% nodos
+
+nodos_larguerillos_fuselaje = fuselaje.mesh.nodos_larguerillos_fuselaje; % larguerillos
+nodos_posterior_fuselaje = fuselaje.mesh.nodos_posterior_fuselaje; % Los nodos en el larguero posterior.
+nodos_anterior_fuselaje = fuselaje.mesh.nodos_anterior_fuselaje; % Los nodos en el larguero posterior.
+
+% barras
+
+barras_fuselaje_larguero_posterior = fuselaje.mesh.barras_fuselaje_larguero_posterior;
+barras_fuselaje_larguero_anterior = fuselaje.mesh.barras_fuselaje_larguero_anterior;
+barras_fuselaje_larguerillos  = fuselaje.mesh.barras_fuselaje_larguerillos;
+
+%% PARAMETROS NUEVOS
+threshold_distance = distancia_entre_costillas * 0.07;
+[max_rib, max_stringer] = get_max_indices(nodos_larguerillos);
+
+%% Standardization
+% nodos_posterior_ala = standardize_nodes(nodos_posterior_ala,[],"rear spar");
+% nodos_anterior_ala = standardize_nodes(nodos_anterior_ala,[],"front spar");
+% nodos_larguerillos = standardize_nodes(nodos_larguerillos,[],"stringers");
+
+%% Cálculos previos
+
+%% TEMPORARY ID SYSTEM DOCUMENTATION 
 % The nodos_larguerillos vector integrates local node data with Local IDs in the 5th column.
 % This script will use nodos_larguerillos for defining:
 % 1. Transverse line elements (Rear Spar ↔ First Stringer, Last Stringer ↔ Front Spar)
@@ -155,88 +163,108 @@ end
 % Initialize the surface matrix
 superficie_horizontal_larguero_pasterior = [];
 
-% Define rib range based on geometric constraints
+% Define rib range
 start_rib = index_counter_quitar_nodos_larguerillos_menor_Lf(1) + 1;
 end_rib = index_larguerillos_anterior_ala(1) - 1;
 
-% Loop through the rib range
-for index_costilla = start_rib:end_rib
-    % Define target ribs
-    target_ribs = [index_costilla, index_costilla + 1]; % Current rib and the next one
-    target_stringers = 1; % We only focus on stringer 1 for now
+% Handle Rear Spar Surfaces
+% temp_nodes = preprocess_nodes(nodos_larguerillos);
+superficie_horizontal_larguero_pasterior = create_rear_spar_surfaces(...
+    nodos_larguerillos, start_rib, end_rib, TEMP_ID_BASE_larguero_posterior);
 
-    % Logical indexing to select nodes for the current ribs and stringer
-    rib1_nodes = nodos_larguerillos(nodos_larguerillos(:, 3) == target_ribs(1) & ...
-                                  nodos_larguerillos(:, 4) == target_stringers, :);
-    rib2_nodes = nodos_larguerillos(nodos_larguerillos(:, 3) == target_ribs(2) & ...
-                                  nodos_larguerillos(:, 4) == target_stringers, :);
+%% 📐 Create Horizontal Stiffening Panels (stringers surfaces)
+% 📊 Stringer Surface Region Division: Regular and Irregular Parts
 
-    % Validate node availability
-    if isempty(rib1_nodes) || isempty(rib2_nodes)
-        warning('Skipping rib %d: Insufficient nodes detected.', index_costilla);
-        continue;
-    end
+% Define rib indices for stringer surface regions:
+% Regular Region: Stringers end at the last rib.
+% Irregular Region: Stringers end at the front spar with non-standard geometry.
 
-    % Extract Local IDs
-    node_id_rib1 = rib1_nodes(1, 5); % Local ID of the node in the first rib
-    node_id_rib2 = rib2_nodes(1, 5); % Local ID of the node in the second rib
+quad_surfaces_regular = [];
+warnings = [];
 
-    % Create the surface panel using Local IDs and TEMP IDs
-    superficie_horizontal_larguero_pasterior = [
-        superficie_horizontal_larguero_pasterior; 
-        TEMP_ID_BASE_larguero_posterior - target_ribs(1), ... % Temp ID for rib 1
-        TEMP_ID_BASE_larguero_posterior - target_ribs(2), ... % Temp ID for rib 2
-        node_id_rib1, node_id_rib2 % Node Local IDs
-    ];
-end
-
-
-
-% %% 📐 Create Horizontal Stiffening Panels (Stringer Surfaces)
-% max_stringer = max(nodos_transversales(:, 4));
-% 
-% for stringer_idx = 1:max_stringer - 1
-%     for i = 1:length(rib_indices) - 1
-%         rib1 = rib_indices(i);
-%         rib2 = rib_indices(i + 1);
-% 
-%         % Get nodes for the current stringer and ribs
-%         rib1_nodes = nodos_transversales(nodos_transversales(:, 3) == rib1 & ...
-%                                         (nodos_transversales(:, 4) == stringer_idx | nodos_transversales(:, 4) == stringer_idx + 1), :);
-%         rib2_nodes = nodos_transversales(nodos_transversales(:, 3) == rib2 & ...
-%                                         (nodos_transversales(:, 4) == stringer_idx | nodos_transversales(:, 4) == stringer_idx + 1), :);
-% 
-%         if size(rib1_nodes, 1) < 2 || size(rib2_nodes, 1) < 2
-%             continue;
-%         end
-% 
-%         % Create the surface using Local IDs
-%         superficie_horizontal_larguerillo = [
-%             superficie_horizontal_larguerillo; 
-%             rib1_nodes(1, 5), rib2_nodes(1, 5), rib1_nodes(2, 5), rib2_nodes(2, 5)
-%         ];
-%     end
-% end
-
-%%
-% Initialize surface vectors
-quad_surfaces = [];
-tri_surfaces = [];
-warnings = {};
-max_stringer_index = max(nodos_larguerillos(:, 4));
-
-
-% Loop through stringers
-for stringer_index = numero_larguerillos_costilla_final:max_stringer_index - 1
+% Loop through stringers in the stinger regular zones
+for stringer_index = 1:numero_larguerillos_costilla_final-1
+    % Define rib range from wing geometry
+    start_rib = index_counter_quitar_nodos_larguerillos_menor_Lf(stringer_index) + 1;
+    end_rib = max_rib;
+    
     current_stringer_nodes = nodos_larguerillos(nodos_larguerillos(:, 4) == stringer_index, :);
     next_stringer_nodes = nodos_larguerillos(nodos_larguerillos(:, 4) == stringer_index + 1, :);
     
-    [quad, tri, warn] = create_surfaces_for_stringer(current_stringer_nodes, next_stringer_nodes, threshold_distance,);
+    [quad, warn] = create_surfaces_for_stringer_regular_v2(...
+        current_stringer_nodes, next_stringer_nodes, threshold_distance, start_rib, end_rib);
     
-    quad_surfaces = [quad_surfaces; quad];
-    tri_surfaces = [tri_surfaces; tri];
+    quad_surfaces_regular = [quad_surfaces_regular; quad];
     warnings = [warnings; warn];
 end
+
+tri_surfaces_regular = [];
+plottitle = strcat('Verification Plot for Regular Region');
+plotfilename = strcat('../Results/Figures/plot_surfaces_verification_v2_regular_ala12_TFG_Amora_aviones_a350_1000_datos_estructual');
+plot_surfaces_verification_v3(nodos_larguerillos, quad_surfaces_regular, tri_surfaces_regular,nodos_anterior_ala,nodos_posterior_ala, ...
+    'regular',plottitle, plotfilename);
+
+% Loop through stringers in the stinger irregular zones
+quad_surfaces_irregular = [];
+tri_surfaces = [];
+
+%% 🛡️ Loop Through Stringers in the Irregular Zones
+for stringer_index = numero_larguerillos_costilla_final:max_stringer-1
+    % Define start rib as usual
+    start_rib = index_counter_quitar_nodos_larguerillos_menor_Lf(stringer_index) + 1;
+    
+    % Extract nodes for current and next stringers
+    current_stringer_nodes = nodos_larguerillos(nodos_larguerillos(:, 4) == stringer_index, :);
+    next_stringer_nodes = nodos_larguerillos(nodos_larguerillos(:, 4) == stringer_index + 1, :);
+    
+    % Identify unique rib indices in the next stringer
+    next_rib_indices = unique(next_stringer_nodes(:, 3)); % Extract unique rib indices
+    
+    % Handle irregular end rib logic
+    if any(next_rib_indices == -2)
+        % Remove -2 temporarily to find second-to-last rib
+        valid_ribs = next_rib_indices(next_rib_indices ~= -2);
+        
+        if ~isempty(valid_ribs)
+            % Safely select the maximum valid rib
+            second_to_last_rib = max(valid_ribs);
+        else
+            % Fallback if no valid ribs exist
+            warning('No valid ribs found besides -2. Using fallback rib index.');
+            second_to_last_rib = -1; % Default to root rib
+        end
+    else
+        % If -2 does not exist, use the maximum rib
+        second_to_last_rib = max(next_rib_indices);
+    end
+    
+    % Define end_rib dynamically
+    end_rib = second_to_last_rib;
+    
+    %% ✅ Process Up to the Second-to-Last Rib (Regular-like Behavior)
+    [quad, warn] = create_surfaces_for_stringer_regular_v2(...
+        current_stringer_nodes, next_stringer_nodes, threshold_distance, start_rib, end_rib);
+    
+    quad_surfaces_irregular = [quad_surfaces_irregular; quad];
+    warnings = [warnings; warn];
+    
+    % %% 🛠️ Handle the Final Rib (-2) Separately
+    % if any(next_rib_indices == -2)
+    %     [tri, warn_tri] = handle_front_spar_irregularities(...
+    %         current_stringer_nodes, next_stringer_nodes, threshold_distance);
+    % 
+    %     tri_surfaces_irregular = [tri_surfaces_irregular; tri];
+    %     warnings = [warnings; warn_tri];
+    % end
+end
+
+
+tri_surfaces_irregular =[];
+
+plottitle = strcat('Verification Plot for Irregular Region');
+plotfilename = strcat('../Results/Figures/plot_surfaces_verification_v2_irregular_ala12_TFG_Amora_aviones_a350_1000_datos_estructual');
+plot_surfaces_verification_v3(nodos_larguerillos, quad_surfaces_irregular, tri_surfaces_irregular,nodos_anterior_ala,nodos_posterior_ala, ...
+    'irrregular',plottitle, plotfilename);
 
 %% ✅ Display Results
 disp('✅ Transverse Bars (barras_costillas_ala) created successfully.');
@@ -246,19 +274,21 @@ disp('✅ Stringer Surfaces (superficie_horizontal_larguerillo) created successf
 
 %% Save results and plots
 % Define save path
-plottitle = strcat('plot_surfaces_verification_v1__ala12_TFG_Amora.aviones.a350_1000_datos_estructual');
-plotfilename = strcat('../Results/Figures/plot_surfaces_verification_v1_ala12_TFG_Amora_aviones_a350_1000_datos_estructual');
-% plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala12,plottitle,'' ,'',plotfilename);
-% Call the plot function
-% plot_surfaces_verification_v1(nodos_larguerillos, quad_surfaces, tri_surfaces, plotfilename);
+% plottitle = strcat('plot_surfaces_verification_v1__ala12_TFG_Amora.aviones.a350_1000_datos_estructual');
+% plotfilename = strcat('../Results/Figures/plot_surfaces_verification_v1_ala12_TFG_Amora_aviones_a350_1000_datos_estructual');
+% % plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala12,plottitle,'' ,'',plotfilename);
+% % Call the plot function
+% % plot_surfaces_verification_v1(nodos_larguerillos, quad_surfaces, tri_surfaces, plotfilename);
 
-
+quad_all = [quad_surfaces_regular quad_surfaces_irregular];
+tri_all = [tri_surfaces_irregular];
+plottitle = strcat('Verification Plot for all Region');
+plotfilename = strcat('../Results/Figures/plot_surfaces_verification_v2_all_ala12_TFG_Amora_aviones_a350_1000_datos_estructual');
+plot_surfaces_verification_v3(nodos_larguerillos, quad_all, tri_all,nodos_anterior_ala,nodos_posterior_ala, ...
+    'irrregular',plottitle, plotfilename);
 
 
     
-
-
-
     % % Larguerillo (Dentro de la "superficie alar")
     % for i = 1: size(nodos_largueros_posterior,1)
     % 

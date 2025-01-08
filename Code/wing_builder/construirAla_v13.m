@@ -1,6 +1,6 @@
 
 
-function [results] = construirAla_v12(avion,datosEstructural,cargas,output_command)
+function [results] = construirAla_v13(avion,datosEstructural,cargas,output_command)
 
 % Parámetros de entrada:
     %   - wingParams: Estructura con los siguientes campos:
@@ -498,6 +498,7 @@ function [results] = construirAla_v12(avion,datosEstructural,cargas,output_comma
         end
     end
     
+    inserted_nodes =[];
     quitar_larguerillo = 0;
     for index_larguerillo_counter = numero_larguerillos_costilla_final+1:numero_larguerillos_total % El bucle para cada larguerillo
 
@@ -544,8 +545,8 @@ function [results] = construirAla_v12(avion,datosEstructural,cargas,output_comma
             slope = pendiente_larguero_posterior;
             perpendicular_slope = pendiente_perpendicular_larguero_posterior;    
             
-            nodos_larguerillos = adjust_nodos_larguerillos(nodos_larguerillos, slope, perpendicular_slope, numero_costillas*2-1, distancia_entre_larguerillo_vertical, alfa_larguero_posterior_radianes, threshold_distance);
-
+            [nodos_larguerillos inserted_nodes_temp]= adjust_nodos_larguerillos_v2(nodos_larguerillos, slope, perpendicular_slope, numero_costillas*2-1, distancia_entre_larguerillo_vertical, alfa_larguero_posterior_radianes, threshold_distance);
+            inserted_nodes = [inserted_nodes inserted_nodes_temp];
             Numero_nodos_elementos_ala(index_larguerillo_counter+2,1) = size(nodos_larguerillos,2) - temp_size_nodos;
             % counter_nodo_larguerillo_ala = counter_nodo_larguerillo_ala + index_larguerillos_anterior(index_larguerillo_counter);
             
@@ -924,6 +925,7 @@ function [results] = construirAla_v12(avion,datosEstructural,cargas,output_comma
     results.mesh.index_counter_quitar_nodos_larguerillos_menor_Lf = index_counter_quitar_nodos_larguerillos_menor_Lf;
     results.mesh.Numero_nodos_elementos_ala = Numero_nodos_elementos_ala;
     results.mesh.id_nodo_local_larguerillo_costilla = id_nodo_local_larguerillo_costilla;
+    results.mesh.inserted_nodes = inserted_nodes;
     % nodos
     results.mesh.nodos_larguerillos = nodos_larguerillos; % larguerillos
     results.mesh.index_larguerillos_anterior = index_larguerillos_anterior; % Número de intersección que hace el larguerillo con la costillas y su punto medio (Punto medio entre costillas).

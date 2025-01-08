@@ -26,7 +26,8 @@ FlagConstruirAla8 = false;
 FlagConstruirAla9 = false;
 FlagConstruirAla10 = false;
 FlagConstruirAla11 = false;
-FlagConstruirAla12 = true;
+FlagConstruirAla12 = false;
+FlagConstruirAla13 = true;
 output_command8 = false;
 mesh_generar6 = false;
 
@@ -46,6 +47,7 @@ ala9 = avion.ala9;
 ala10 = avion.ala10;
 ala11 = avion.ala11;
 ala12 = avion.ala12;
+% ala13 = avion.ala13;
 % fuselaje = avion.fuselaje;
 % fuselaje2 = avion.fuselaje2;
 % fuselaje3 = avion.fuselaje3;
@@ -141,11 +143,19 @@ if FlagConstruirAla11
     
 end
 
-%% Flag ala ultimo 12
 if FlagConstruirAla12
     results = construirAla_v12(avion,datosEstructural,cargas,output_command8);
     TFG_Amora.aviones.a350_1000.ala12 = results;
     ala12 = results;
+    save('../Data/TFG_amora.mat', 'TFG_Amora');
+    
+end
+
+%% Flag ala ultimo 13
+if FlagConstruirAla13
+    results = construirAla_v13(avion,datosEstructural,cargas,output_command8);
+    TFG_Amora.aviones.a350_1000.ala13 = results;
+    ala13 = results;
     save('../Data/TFG_amora.mat', 'TFG_Amora');
     
 end
@@ -241,10 +251,14 @@ end
 % plottitle = strcat('plotAla2D_mesh_solo_nodos_v6__ala11_TFG_Amora.aviones.a350_1000');
 % plotfilename = strcat('../Results/Figures/plotAla2D_mesh_solo_nodos_v6_ala11_TFG_Amora_aviones_a350_1000');
 % plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala11,plottitle,'' ,'',plotfilename);
+
+% plottitle = strcat('plotAla2D_mesh_solo_nodos_v6__ala12_TFG_Amora.aviones.a350_1000_datos_estructual');
+% plotfilename = strcat('../Results/Figures/plotAla2D_mesh_solo_nodos_v6_ala12_TFG_Amora_aviones_a350_1000_datos_estructual');
+% plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala12,plottitle,'' ,'',plotfilename);
 %% plot actual
-plottitle = strcat('plotAla2D_mesh_solo_nodos_v6__ala12_TFG_Amora.aviones.a350_1000_datos_estructual');
-plotfilename = strcat('../Results/Figures/plotAla2D_mesh_solo_nodos_v6_ala12_TFG_Amora_aviones_a350_1000_datos_estructual');
-plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala12,plottitle,'' ,'',plotfilename);
+plottitle = strcat('plotAla2D_mesh_solo_nodos_v6__ala13_TFG_Amora.aviones.a350_1000_datos_estructual');
+plotfilename = strcat('../Results/Figures/plotAla2D_mesh_solo_nodos_v6_ala13_TFG_Amora_aviones_a350_1000_datos_estructual');
+plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala13,plottitle,'' ,'',plotfilename);
 
 % Mesh barras
 % [nodos elementos] = generar_barras(avion,datosEstructural,ala4,fuselaje2);
