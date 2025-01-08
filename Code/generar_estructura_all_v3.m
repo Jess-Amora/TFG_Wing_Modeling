@@ -1,12 +1,16 @@
 clear all
-close all
+% close all
     
+addpath('./shared');
+addpath('./wing_builder');
+addpath('./fuselage_builder');
+
 loadedData = load('../Data/TFG_amora.mat');
 TFG_Amora = loadedData.TFG_Amora;
 avion = TFG_Amora.aviones.a350_1000;
 datosEstructural = TFG_Amora.datosEstructural;
 cargas = TFG_Amora.aviones.a350_1000.cargas;
-ala = TFG_Amora.aviones.a350_1000.ala11;
+ala = TFG_Amora.aviones.a350_1000.ala12;
 fuselaje = TFG_Amora.aviones.a350_1000.fuselaje4;
 H = 1;
 % generar_estructura_v1(avion,datosEstructural,ala,fuselaje,H)
@@ -44,7 +48,8 @@ H = 1;
     numero_costillas = ala.numero_costillas;
     numero_costillas_triangulo = ala.numero_costillas_triangulo;
     numero_larguerillos_costilla_final = ala.numero_larguerillos_costilla_final;
-
+    % nodos_larguerillos = ala.mesh.nodos_larguerillos;
+    
     % Fuselaje
     numero_costillas_fuselaje = floor(Lf/distancia_entre_costillas);
     costillas_fuselaje = fuselaje.costillas_fuselaje;
@@ -60,16 +65,18 @@ H = 1;
     % nodos
 
     nodos_larguerillos = squeeze(ala.mesh.nodos_larguerillos); % larguerillos
+    nodos_larguerillos(:, [3, 4]) = nodos_larguerillos(:, [4, 3]);
+    nodos_larguerillos(:, 5) = (1:size(nodos_larguerillos, 1))';
     index_larguerillos_anterior_ala = ala.mesh.index_larguerillos_anterior; % Número de intersección que hace el larguerillo con la costillas y su punto medio (Punto medio entre costillas).
     nodos_posterior_ala = ala.mesh.nodos_posterior'; % Los nodos en el larguero posterior.
     nodos_anterior_ala = ala.mesh.nodos_anterior'; % Los nodos en el larguero posterior.
-    nodos_ala_global = ala.mesh.nodos_ala_global; % Los nodos en el larguero posterior.
+    % nodos_ala_global = ala.mesh.nodos_ala_global; % Los nodos en el larguero posterior.
     % barras
 
     barras_ala_larguero_anterior = ala.mesh.barras_ala_larguero_anterior;
     barras_ala_larguero_posterior = ala.mesh.barras_ala_larguero_posterior;
     barras_ala_larguerillos = ala.mesh.barras_ala_larguerillos;
-    barras_ala_global = ala.mesh.barras_ala_global ;
+    % barras_ala_global = ala.mesh.barras_ala_global ;
 
     %% Mesh FUSELAJE
     larguerillos_fuselaje = fuselaje.larguerillos_fuselaje;
@@ -88,208 +95,162 @@ H = 1;
     barras_fuselaje_larguero_anterior = fuselaje.mesh.barras_fuselaje_larguero_anterior;
     barras_fuselaje_larguerillos  = fuselaje.mesh.barras_fuselaje_larguerillos;
 
-    %% 
+    %% PARAMETROS NUEVOS
+    threshold_distance = distancia_entre_costillas * 0.07;
 
-    %% TEMPORARY ID SYSTEM DOCUMENTATION
-    % 📚 Purpose
-    % The Temporary ID System is designed to address missing connections between structural nodes in the wing structure model. Specifically:
-    % 
-    % Rear Spar → First Stringer
-    % Last Stringer → Front Spar
-    % These connections are crucial for completing the structural geometry but may not always be directly available in the initial local node datasets.
-    % 
-    % The Temporary IDs serve as placeholders to ensure:
-    % 
-    % Continuity: Every rib has consistent connections.
-    % Modularity: Calculations can proceed without waiting for final global node assignments.
-    % Traceability: Temporary connections are easily identifiable for later updates to global node IDs.
-    % 🛠️ Implementation Workflow
-    % Identify Missing Connections:
-    % 
-    % Check if nodes between rear spar → first stringer and last stringer → front spar are missing for each rib.
-    % Assign Temporary IDs:
-    % 
-    % A unique numerical Temporary ID is assigned to each missing connection:
-    % Rear Spar → First Stringer: TEMP_ID_BASE + (Rib Index * 100) + 1
-    % Last Stringer → Front Spar: TEMP_ID_BASE + (Rib Index * 100) + 2
-    % Perform Local Calculations:
-    % 
-    % Use these Temporary IDs in the connection matrix.
-    % Convert to Global IDs:
-    % 
-    % In the final step, Temporary IDs are replaced with their corresponding Global Node IDs.
-    % 📊 Temporary ID Format
-    % Base ID: -100000
-    % ID Formula: TEMP_ID_BASE + (Rib Index * 100) + Offset
-    % Offset 1: Rear Spar → First Stringer
-    % Offset 2: Last Stringer → Front Spar
-    % Example: For the 25th rib:
-    % 
-    % Rear Spar → First Stringer: -102501
-    % Last Stringer → Front Spar: -102502
-    % Initialize temporary IDs
+    %% TEMPORARY ID SYSTEM DOCUMENTATION 
+% The nodos_larguerillos vector integrates local node data with Local IDs in the 5th column.
+% This script will use nodos_larguerillos for defining:
+% 1. Transverse line elements (Rear Spar ↔ First Stringer, Last Stringer ↔ Front Spar)
+% 2. Horizontal stiffening panels (superficies)
 
-    TEMP_ID_BASE_larguero_posterior = -1 * 10e5;  % Es la base de la id provisional
-    TEMP_ID_BASE_larguero_anterior = -2 * 10e5;  % Es la base de la id provisional
+%% 🛠️ Initialize Constants
+TEMP_ID_BASE_larguero_posterior = -1 * 10e5; % Temporary ID for Rear Spar
+TEMP_ID_BASE_larguero_anterior = -2 * 10e5; % Temporary ID for Front Spar
 
-    %% Creando Los elementos en los larguerillos en la dirección transversal larguero posterior-anterior
-    % Inicializar matriz de barras para costillas
-    barras_costillas_ala = [];
+%% 🧱 Initialize Element Matrices
+barras_costillas_ala = [];                % Transverse Bar Elements
+superficie_horizontal_larguero_pasterior = []; % Rear Spar Horizontal Panels
+superficie_horizontal_larguerillo = [];   % Stringer Horizontal Panels
+
+%% 📊 Sort and Group Nodes by Rib Index
+% Ensure nodos_larguerillos includes Local IDs in column 5
+if size(nodos_larguerillos, 2) < 5
+    nodos_larguerillos(:, 5) = (1:size(nodos_larguerillos, 1))';
+end
+
+% Sort by Rib (3rd col) and Stringer (4th col) while preserving Local IDs
+nodos_transversales = sortrows(nodos_larguerillos, [3, 4]);
+rib_indices = unique(nodos_transversales(:, 3)); % Unique Rib Indices
+
+%% 📐 Create Transverse Line Elements
+% Empezando desde el encastre hasta la punta y desde el larguero posterior
+% al larguero anterior.
+for i = 1:length(rib_indices)
+    current_rib = rib_indices(i);
+    rib_nodes = nodos_transversales(nodos_transversales(:, 3) == current_rib, :);
     
-    % Ordenar nodos por costilla (columna 2)
-    nodos_transversales = sortrows(id_nodo_local_larguerillo_costilla, 2);
-    % max_costilla_costilla_media = max(id_nodo_local_larguerillo_costilla(:,2);
-
-    % Recorrer cada larguerillo (elemento en columna 3)
-    for index_costilla = 1:max(id_nodo_local_larguerillo_costilla(:,2))
-        % Extraer nodos pertenecientes al larguerillo actual
-        nodos_actuales = nodos_transversales(nodos_transversales(:,2) == index_costilla, :);
-        
-        % Comprobar si hay suficientes nodos en el larguerillo
-        if size(nodos_actuales,1) < 2
-            continue; % No hay suficientes nodos para crear barras
-        end
-        
-        % Mitiendo el nodo en el larguero posterior
-        barras_costillas_ala = [barras_costillas_ala; TEMP_ID_BASE_larguero_posterior - index_costilla, nodos_actuales(1,1)];
-
-
-        % Crear conexiones entre costillas (nodos consecutivos)
-        for i = 1:size(nodos_actuales,1)-1
-            nodo_inicio = nodos_actuales(i,1);
-            nodo_fin = nodos_actuales(i+1,1);
-            
-
-            barras_costillas_ala = [barras_costillas_ala; nodo_inicio, nodo_fin];
-
-        end
-
-        % Mitiendo el nodo en el larguero anterior
-        barras_costillas_ala = [barras_costillas_ala; nodo_fin, TEMP_ID_BASE_larguero_anterior - index_costilla];
-
-
-    end
-
-    %% Paneles rigidizadores horizontales
-    % Disclaimer: I want to simplify everything. There are many cases that
-    % could happend when you change the structural parameters. I am
-    % limiting those structural parameters by not changing a lot most of
-    % them, specially, the geometric parameters.
-    % In the first surface, which is in the corner rear_spar-root, I do not
-    % know, if I need to do some previous calculations, but the data
-    % suggest not necesarry.
-
-    
-    superficie_horizontal_larguero_pasterior = [];
-    superficie_horizontal_larguerillo = [];
-    
-    % Se construyen las superficies en el larguero posterior.
-    for index_costilla = index_counter_quitar_nodos_larguerillos_menor_Lf(1) + 1 : index_larguerillos_anterior_ala(1)-1
-        target_ribs = [index_costilla, index_costilla + 1];         % Specific ribs
-        target_stringers = [1];  % Specific stringers
-
-        % Logical indexing with pair matching
-        matching_rows = (id_nodo_local_larguerillo_costilla(:,2) == target_ribs(1) & id_nodo_local_larguerillo_costilla(:,3) == target_stringers(1)) | ...
-                        (id_nodo_local_larguerillo_costilla(:,2) == target_ribs(2) & id_nodo_local_larguerillo_costilla(:,3) == target_stringers(1)) ;
-
-        % Extract Node IDs
-        node_ids = id_nodo_local_larguerillo_costilla(matching_rows, 1);
-        
-        % Guardando las superficies 
-        superficie_horizontal_larguero_pasterior = [superficie_horizontal_larguero_pasterior; TEMP_ID_BASE_larguero_posterior-index_costilla, TEMP_ID_BASE_larguero_posterior-index_costilla-1, node_ids(1),node_ids(2) ];
+    % Ensure sufficient nodes in the rib
+    if size(rib_nodes, 1) < 2
+        continue;
     end
     
-    %% 📐 Create Horizontal Stiffening Panels (Intermediate Surfaces without Spar Boundaries)
-    % Purpose: Create stiffening surfaces that do not interact with front or rear spars.
+    % Rear Spar Connection (Using Local ID)
+    barras_costillas_ala = [barras_costillas_ala; TEMP_ID_BASE_larguero_posterior + current_rib, rib_nodes(1, 5)];
     
-    % Initialize the surface matrix
-    superficie_horizontal_larguerillo = [];
+    % Transverse Connections Between Consecutive Nodes (Using Local ID)
+    for j = 1:size(rib_nodes, 1) - 1
+        nodo_inicio = rib_nodes(j, 5); % Local ID of start node
+        nodo_fin = rib_nodes(j + 1, 5); % Local ID of end node
+        barras_costillas_ala = [barras_costillas_ala; nodo_inicio, nodo_fin];
+    end
     
-    % Loop through stringers (excluding final stringer to prevent out-of-bounds indexing)
-    for index_larguerillo = 1:numero_larguerillos_costilla_final - 1
-    
-        % Define rib range for this stringer
-        start_rib = index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo) + 1;
-        end_rib = index_larguerillos_anterior_ala(index_larguerillo) - 1;
-    
-        % Iterate through ribs in the defined range
-        for index_costilla = start_rib:end_rib
-            % Define target ribs and stringers
-            target_ribs = [index_costilla, index_costilla + 1];  % Consecutive ribs
-            target_stringers = [index_larguerillo, index_larguerillo + 1]; % Consecutive stringers
-    
-            % Logical indexing to select nodes
-            rib1_stringer1 = nodos_larguerillo(nodos_larguerillo(:, 3) == target_ribs(1) & ...
-                                              nodos_larguerillo(:, 4) == target_stringers(1), :);
-            rib1_stringer2 = nodos_larguerillo(nodos_larguerillo(:, 3) == target_ribs(1) & ...
-                                              nodos_larguerillo(:, 4) == target_stringers(2), :);
-            rib2_stringer1 = nodos_larguerillo(nodos_larguerillo(:, 3) == target_ribs(2) & ...
-                                              nodos_larguerillo(:, 4) == target_stringers(1), :);
-            rib2_stringer2 = nodos_larguerillo(nodos_larguerillo(:, 3) == target_ribs(2) & ...
-                                              nodos_larguerillo(:, 4) == target_stringers(2), :);
-    
-            % Validate that all four nodes exist
-            if isempty(rib1_stringer1) || isempty(rib1_stringer2) || isempty(rib2_stringer1) || isempty(rib2_stringer2)
-                warning('Skipping stringer %d and rib %d due to missing nodes.', index_larguerillo, index_costilla);
-                continue;
-            end
-    
-            % Extract Local IDs for the four nodes
-            node_id_1 = rib1_stringer1(1, 5); % Rib 1, Stringer 1
-            node_id_2 = rib1_stringer2(1, 5); % Rib 1, Stringer 2
-            node_id_3 = rib2_stringer1(1, 5); % Rib 2, Stringer 1
-            node_id_4 = rib2_stringer2(1, 5); % Rib 2, Stringer 2
-    
-            % Create the surface using Local IDs
-            superficie_horizontal_larguerillo = [
-                superficie_horizontal_larguerillo; 
-                node_id_1, node_id_3, node_id_2, node_id_4
-            ];
-        end
+    % Front Spar Connection (Using Local ID)
+    barras_costillas_ala = [barras_costillas_ala; nodo_fin, TEMP_ID_BASE_larguero_anterior + current_rib];
+end
+
+%% 📐 Create Horizontal Stiffening Panels (Rear Spar Surfaces)
+% Purpose: Create stiffening surfaces adjacent to the rear spar within a specific rib range.
+
+% Initialize the surface matrix
+superficie_horizontal_larguero_pasterior = [];
+
+% Define rib range based on geometric constraints
+start_rib = index_counter_quitar_nodos_larguerillos_menor_Lf(1) + 1;
+end_rib = index_larguerillos_anterior_ala(1) - 1;
+
+% Loop through the rib range
+for index_costilla = start_rib:end_rib
+    % Define target ribs
+    target_ribs = [index_costilla, index_costilla + 1]; % Current rib and the next one
+    target_stringers = 1; % We only focus on stringer 1 for now
+
+    % Logical indexing to select nodes for the current ribs and stringer
+    rib1_nodes = nodos_larguerillos(nodos_larguerillos(:, 3) == target_ribs(1) & ...
+                                  nodos_larguerillos(:, 4) == target_stringers, :);
+    rib2_nodes = nodos_larguerillos(nodos_larguerillos(:, 3) == target_ribs(2) & ...
+                                  nodos_larguerillos(:, 4) == target_stringers, :);
+
+    % Validate node availability
+    if isempty(rib1_nodes) || isempty(rib2_nodes)
+        warning('Skipping rib %d: Insufficient nodes detected.', index_costilla);
+        continue;
     end
 
-    
-    for index_larguerillo = numero_larguerillos_costilla_final: numero_larguerillos_total
+    % Extract Local IDs
+    node_id_rib1 = rib1_nodes(1, 5); % Local ID of the node in the first rib
+    node_id_rib2 = rib2_nodes(1, 5); % Local ID of the node in the second rib
 
-        % Define rib range for this stringer
-        start_rib = index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo) + 1;
-        end_rib = index_larguerillos_anterior_ala(index_larguerillo) - 1;
+    % Create the surface panel using Local IDs and TEMP IDs
+    superficie_horizontal_larguero_pasterior = [
+        superficie_horizontal_larguero_pasterior; 
+        TEMP_ID_BASE_larguero_posterior - target_ribs(1), ... % Temp ID for rib 1
+        TEMP_ID_BASE_larguero_posterior - target_ribs(2), ... % Temp ID for rib 2
+        node_id_rib1, node_id_rib2 % Node Local IDs
+    ];
+end
+
+
+
+% %% 📐 Create Horizontal Stiffening Panels (Stringer Surfaces)
+% max_stringer = max(nodos_transversales(:, 4));
+% 
+% for stringer_idx = 1:max_stringer - 1
+%     for i = 1:length(rib_indices) - 1
+%         rib1 = rib_indices(i);
+%         rib2 = rib_indices(i + 1);
+% 
+%         % Get nodes for the current stringer and ribs
+%         rib1_nodes = nodos_transversales(nodos_transversales(:, 3) == rib1 & ...
+%                                         (nodos_transversales(:, 4) == stringer_idx | nodos_transversales(:, 4) == stringer_idx + 1), :);
+%         rib2_nodes = nodos_transversales(nodos_transversales(:, 3) == rib2 & ...
+%                                         (nodos_transversales(:, 4) == stringer_idx | nodos_transversales(:, 4) == stringer_idx + 1), :);
+% 
+%         if size(rib1_nodes, 1) < 2 || size(rib2_nodes, 1) < 2
+%             continue;
+%         end
+% 
+%         % Create the surface using Local IDs
+%         superficie_horizontal_larguerillo = [
+%             superficie_horizontal_larguerillo; 
+%             rib1_nodes(1, 5), rib2_nodes(1, 5), rib1_nodes(2, 5), rib2_nodes(2, 5)
+%         ];
+%     end
+% end
+
+%%
+% Initialize surface vectors
+quad_surfaces = [];
+tri_surfaces = [];
+warnings = {};
+max_stringer_index = max(nodos_larguerillos(:, 4));
+
+
+% Loop through stringers
+for stringer_index = numero_larguerillos_costilla_final:max_stringer_index - 1
+    current_stringer_nodes = nodos_larguerillos(nodos_larguerillos(:, 4) == stringer_index, :);
+    next_stringer_nodes = nodos_larguerillos(nodos_larguerillos(:, 4) == stringer_index + 1, :);
     
-        % Iterate through ribs in the defined range
-        for index_costilla = start_rib:end_rib
-            % Define target ribs and stringers
-            target_ribs = [index_costilla, index_costilla + 1];  % Consecutive ribs
-            target_stringers = [index_larguerillo, index_larguerillo + 1]; % Consecutive stringers
+    [quad, tri, warn] = create_surfaces_for_stringer(current_stringer_nodes, next_stringer_nodes, threshold_distance);
     
-            % Logical indexing to select nodes
-            rib1_stringer1 = nodos_larguerillo(nodos_larguerillo(:, 3) == target_ribs(1) & ...
-                                              nodos_larguerillo(:, 4) == target_stringers(1), :);
-            rib1_stringer2 = nodos_larguerillo(nodos_larguerillo(:, 3) == target_ribs(1) & ...
-                                              nodos_larguerillo(:, 4) == target_stringers(2), :);
-            rib2_stringer1 = nodos_larguerillo(nodos_larguerillo(:, 3) == target_ribs(2) & ...
-                                              nodos_larguerillo(:, 4) == target_stringers(1), :);
-            rib2_stringer2 = nodos_larguerillo(nodos_larguerillo(:, 3) == target_ribs(2) & ...
-                                              nodos_larguerillo(:, 4) == target_stringers(2), :);
-    
-            % Validate that all four nodes exist
-            if isempty(rib1_stringer1) || isempty(rib1_stringer2) || isempty(rib2_stringer1) || isempty(rib2_stringer2)
-                warning('Skipping stringer %d and rib %d due to missing nodes.', index_larguerillo, index_costilla);
-                continue;
-            end
-    
-            % Extract Local IDs for the four nodes
-            node_id_1 = rib1_stringer1(1, 5); % Rib 1, Stringer 1
-            node_id_2 = rib1_stringer2(1, 5); % Rib 1, Stringer 2
-            node_id_3 = rib2_stringer1(1, 5); % Rib 2, Stringer 1
-            node_id_4 = rib2_stringer2(1, 5); % Rib 2, Stringer 2
-    
-            % Create the surface using Local IDs
-            superficie_horizontal_larguerillo = [
-                superficie_horizontal_larguerillo; 
-                node_id_1, node_id_3, node_id_2, node_id_4
-            ];
-        end
-    end
+    quad_surfaces = [quad_surfaces; quad];
+    tri_surfaces = [tri_surfaces; tri];
+    warnings = [warnings; warn];
+end
+
+%% ✅ Display Results
+disp('✅ Transverse Bars (barras_costillas_ala) created successfully.');
+disp('✅ Rear Spar Surfaces (superficie_horizontal_larguero_pasterior) created successfully.');
+disp('✅ Stringer Surfaces (superficie_horizontal_larguerillo) created successfully.');
+
+
+%% Save results and plots
+% Define save path
+plottitle = strcat('plot_surfaces_verification_v1__ala12_TFG_Amora.aviones.a350_1000_datos_estructual');
+plotfilename = strcat('../Results/Figures/plot_surfaces_verification_v1_ala12_TFG_Amora_aviones_a350_1000_datos_estructual');
+% plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala12,plottitle,'' ,'',plotfilename);
+% Call the plot function
+plot_surfaces_verification_v1(nodos_larguerillos, quad_surfaces, tri_surfaces, plotfilename);
 
 
 
@@ -315,12 +276,6 @@ H = 1;
     %     node_ids = id_nodo_local_larguerillo_costilla(matching_rows, 1);
     % 
     % end
-
-    
-
-
-
-
 
     % %% ============================================================
     % %                   📖 3D WING STRUCTURE DOCUMENTATION 📖
@@ -451,7 +406,6 @@ H = 1;
     % % ============================================================
     % % Remember: If anything feels unclear or challenging, just let me know!
     % % We're in this together. 🚀✨
-
 
 
 

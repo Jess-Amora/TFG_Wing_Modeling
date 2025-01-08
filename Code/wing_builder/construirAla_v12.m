@@ -215,8 +215,8 @@ function [results] = construirAla_v12(avion,datosEstructural,cargas,output_comma
     % del triangulo. Se necesitan estos, porque para calcular las
     % intersecciones costillas-larguero anterior, se requieren estos puntos.
     constante_perpendicular_larguero_posterior_triangulo = coord_costillas_larguero_posterior_y_triangulo - pendiente_perpendicular_larguero_posterior * coord_costillas_larguero_posterior_x_triangulo';
-    size(constante_perpendicular_larguero_posterior_triangulo)
-    size(constante_perpendicular_larguero_posterior)
+    size(constante_perpendicular_larguero_posterior_triangulo);
+    size(constante_perpendicular_larguero_posterior);
     constante_perpendicular_larguero_posterior = [constante_perpendicular_larguero_posterior_triangulo';constante_perpendicular_larguero_posterior'];
     
     %% Sustentación
@@ -537,44 +537,15 @@ function [results] = construirAla_v12(avion,datosEstructural,cargas,output_comma
             % Se añade el ultimo nodo del corte del larguerillo y el
             % larguero anterior.
             temp = cortes_de_dos_funciones_lineales_v3(larguerillos(index_larguerillo_counter,:,1), pendiente_larguero_posterior, [Lf c1*Distancia_larguero_anterior_cuerda_porcentaje], pendiente_larguero_anterior,index_larguerillo_counter,-2);
-            % distancia_temp = temp-nodos_larguerillos(1,end,:);
-
-                % En las siguientes 5 líneas, es para quitar los nodos en las
-                % puntas de los larguerillos que están muy pegados, porque al
-                % hacer las superficies, se crean superficies inestables en
-                % sentido MEF.
-                tolerance_nodos_pegados = distancia_entre_costillas * 0.07;
-                % size(temp)
-                % size(nodos_larguerillos)
-                distancia_nodos_pegados = sqrt(sum((temp - nodos_larguerillos(:, end, :)).^2, 'all'));
-                if distancia_nodos_pegados < tolerance_nodos_pegados
-                    %actualizar el id_nodo_local_larguerillo_costilla
-                    % id_nodo_local_larguerillo_costilla(size(nodos_larguerillos,2),1) = size(nodos_larguerillos,2);
-                    % id_nodo_local_larguerillo_costilla(size(nodos_larguerillos,2),2) = -3;
-                    % id_nodo_local_larguerillo_costilla(size(nodos_larguerillos,2),3) = index_larguerillo_counter;
-                    % Quitar el último nodo si está muy cerca del nodo
-                    % penúltimo
-                    nodos_larguerillos(:, end, :) = [];
-                else
-                    % Creando los nodo que esté perpendicular al larguerillo en el
-                    % punto que pertence a ese larguerillo y el larguero anterior.
-                    % Calculate delta x and delta y
-                    delta_x = distancia_entre_larguerillo_vertical * cos(alfa_larguero_posterior_radianes) / sqrt(1 + pendiente_perpendicular_larguero_posterior^2);
-                    delta_y = pendiente_perpendicular_larguero_posterior * delta_x;
-                    
-                    % Calculate the new point
-                    x2 = temp(1) - delta_x;
-                    y2 = temp(2) - delta_y;
-                    nodos_larguerillos = insert_perpendicular_node_v2(nodos_larguerillos, pendiente_larguero_posterior, [x2 y2], numero_costillas*2-1);
-                end
-
-            
             nodos_larguerillos = [nodos_larguerillos temp];
+            threshold_distance = distancia_entre_costillas*.07;
             
-            temp_number_1 = size(nodos_larguerillos,2);
-            id_nodo_local_larguerillo_costilla(temp_number_1,1) = temp_number_1;
-            id_nodo_local_larguerillo_costilla(temp_number_1,2) = -2;
-            id_nodo_local_larguerillo_costilla(temp_number_1,3) = index_larguerillo_counter;
+            % nodos_larguerillos = insert_perpendicular_node_v3(nodos_larguerillos, pendiente_larguero_posterior, [x2 y2], numero_costillas*2-1,threshold_distance);
+            slope = pendiente_larguero_posterior;
+            perpendicular_slope = pendiente_perpendicular_larguero_posterior;    
+            
+            nodos_larguerillos = adjust_nodos_larguerillos(nodos_larguerillos, slope, perpendicular_slope, numero_costillas*2-1, distancia_entre_larguerillo_vertical, alfa_larguero_posterior_radianes, threshold_distance);
+            
             
 
             

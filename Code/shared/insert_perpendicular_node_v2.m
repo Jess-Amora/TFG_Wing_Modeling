@@ -1,4 +1,4 @@
-function updated_node_vector = insert_perpendicular_node_v3(node_vector, slope, point, ribs_total)
+function updated_node_vector = insert_perpendicular_node_v2(node_vector, slope, point, ribs_total)
 % Updated Function to insert a node into a 1xNx4 node vector based on geometry and slope.
 % Rib and Stringer indices are now inferred directly from the node vector.
 
@@ -66,7 +66,7 @@ function updated_node_vector = insert_perpendicular_node_v3(node_vector, slope, 
             new_node, ... % Insert new node
             node_vector(:, insert_idx+1:end, :) % Nodes after insertion
         ];
-        disp('Node successfully inserted into node vector.');
+        % disp('Node successfully inserted into node vector.');
     else
         % If no valid insertion point, append at the end
         updated_node_vector = [

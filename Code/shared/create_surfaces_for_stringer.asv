@@ -1,0 +1,61 @@
+function [quad_surfaces, tri_surfaces, warnings] = create_surfaces_for_stringer(current_stringer_nodes, next_stringer_nodes, threshold_distance)
+% Handles general surface creation between two stringers and delegates irregularities.
+%
+% Inputs:
+%   current_stringer_nodes: Nx5 matrix [x, y, rib_index, stringer_index, local_id]
+%   next_stringer_nodes: Nx5 matrix [x, y, rib_index, stringer_index, local_id]
+%   threshold_distance: Minimum distance threshold between nodes
+%
+% Outputs:
+%   quad_surfaces: Mx4 matrix (quadrilateral surfaces)
+%   tri_surfaces: Mx3 matrix (triangular surfaces)
+%   warnings: Cell array of warnings
+
+    %% Initialization
+    quad_surfaces = [];
+    tri_surfaces = [];
+    warnings = {};
+    
+    % Filter valid nodes (ignore root and front spar)
+    valid_current_nodes = current_stringer_nodes(~ismember(current_stringer_nodes(:, 3), [-1, -2]), :);
+    valid_next_nodes = next_stringer_nodes(~ismember(next_stringer_nodes(:, 3), [-1, -2]), :);
+    
+    % Sort nodes by rib index
+    valid_current_nodes = sortrows(valid_current_nodes, 3);
+    valid_next_nodes = sortrows(valid_next_nodes, 3);
+    
+    % Create normal quadrilateral surfaces
+    num_ribs = min(size(valid_current_nodes, 1), size(valid_next_nodes, 1));
+    for i = 1:num_ribs-1
+        node1 = valid_current_nodes(i, :);
+        node2 = valid_current_nodes(i+1, :);
+        node3 = valid_next_nodes(i, :);
+        node4 = valid_next_nodes(i+1, :);
+        
+        % Distance checks
+        dist12 = norm(node1(1:2) - node2(1:2));
+        dist34 = norm(node3(1:2) - node4(1:2));
+        
+        if dist12 > threshold_distance && dist34 > threshold_distance
+            quad_surfaces = [quad_surfaces; node1(5), node2(5), node3(5), node4(5)];
+        else
+            warnings{end+1} = sprintf('Node spacing issue at rib %d.', i);
+        end
+    end
+    
+    %% Handle irregularities at the front spar
+    [tri_irregular, warn_irregular] = handle_front_spar_irregularities(current_stringer_nodes, next_stringer_nodes);
+    tri_surfaces = [tri_surfaces; tri_irregular];
+    warnings = [warnings; warn_irregular];
+    
+    last_valid_nodes_current = current_stringer_nodes(end-1:end, :); % Last two valid nodes before -2
+    front_nodes_current = current_stringer_nodes(current_stringer_nodes(:, 3) == -2, :);
+    
+    last_valid_nodes_next = next_stringer_nodes(end-1:end, :); % Last two valid nodes before -2
+    front_nodes_next = next_stringer_nodes(next_stringer_nodes(:, 3) == -2, :);
+    
+    [tri_irregular, warn_irregular] = handle_front_spar_irregularities(last_valid_nodes_current, front_nodes_current, last_valid_nodes_next, front_nodes_next);
+
+
+    disp('✅ Surfaces for stringer pair created successfully.');
+end
