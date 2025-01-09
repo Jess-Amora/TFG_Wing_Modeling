@@ -43,7 +43,7 @@ function nodes_table = convert_nodes_to_table(nodes)
 
     % Handle tag (6th column)
     if size(nodes, 2) < 6
-        tag = repmat("undefined", size(nodes, 1), 1); % Default tag
+        tag = repmat("stringer", size(nodes, 1), 1); % Default tag
     else
         tag = string(nodes(:, 6));
     end
