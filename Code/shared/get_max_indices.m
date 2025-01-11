@@ -38,8 +38,8 @@ function [max_rib_index, max_stringer_index] = get_max_indices(nodos_larguerillo
     
     max_stringer_index = max(valid_stringer_indices); % Calculate maximum valid stringer index
 
-    %% ✅ Display Results (Optional)
-    fprintf('Maximum Rib Index: %d\n', max_rib_index);
-    fprintf('Maximum Stringer Index: %d\n', max_stringer_index);
+    % %% ✅ Display Results (Optional)
+    % fprintf('Maximum Rib Index: %d\n', max_rib_index);
+    % fprintf('Maximum Stringer Index: %d\n', max_stringer_index);
 
 end

@@ -101,7 +101,7 @@ barras_fuselaje_larguerillos  = fuselaje.mesh.barras_fuselaje_larguerillos;
 nodos_larguerillos = squeeze(ala.mesh.nodos_larguerillos);
 nodos_larguerillos(:, [3, 4]) = nodos_larguerillos(:, [4, 3]); % Swap rib/stringer if needed
 nodos_larguerillos_table = convert_nodes_to_table(nodos_larguerillos);
-nodos_larguerillos
+nodos_larguerillos;
 nodos_posterior_ala_table = convert_nodes_front_spars_to_table(nodos_posterior_ala);
 nodos_anterior_ala_table = convert_nodes_front_spars_to_table(nodos_anterior_ala);
 
@@ -217,7 +217,7 @@ end
 %     'regular',plottitle, plotfilename);
 
 % Loop through stringers in the stinger irregular zones
-quad_regular =[]
+quad_regular =[];
 quad_irregular = [];
 tri_surfaces = [];
 
