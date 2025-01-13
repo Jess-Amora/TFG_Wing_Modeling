@@ -23,9 +23,26 @@ function plot_stringer_regular_surfaces(combined_nodes, quad_surfaces_regular, p
     xlabel('X Coordinate');
     ylabel('Y Coordinate');
     
-    %% 🟢 Plot Combined Nodes
-    plot(combined_nodes.x, combined_nodes.y, 'ko', 'MarkerSize', 4, 'MarkerFaceColor', 'k', 'DisplayName', 'Combined Nodes');
+    %% 🟢 Plot Combined Nodes with Color Codes for Spars
+
+    % Assuming 'combined_nodes' has a column 'type' with values 'front' or 'rear'
+    % Example: combined_nodes.type = {'front', 'rear', 'front', ...};
+    front_spar_idx = strcmp(combined_nodes.tag, 'front spars'); % Logical index for front spar nodes
+    rear_spar_idx = strcmp(combined_nodes.tag, 'rear spars');  % Logical index for rear spar nodes
+    stringers_idx = strcmp(combined_nodes.tag, 'stringers');  % Logical index for rear spar nodes
+
+    % Plot Front Spar Nodes in Red
+    plot(combined_nodes.x(front_spar_idx), combined_nodes.y(front_spar_idx), ...
+         'ro', 'MarkerSize', 4, 'MarkerFaceColor', 'r', 'DisplayName', 'Front Spar Nodes');
     
+    % Plot Rear Spar Nodes in Blue
+    plot(combined_nodes.x(rear_spar_idx), combined_nodes.y(rear_spar_idx), ...
+         'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'b', 'DisplayName', 'Rear Spar Nodes');
+    
+    % Plot stringers Nodes in black
+    plot(combined_nodes.x(front_spar_idx), combined_nodes.y(stringers_idx), ...
+         'ko', 'MarkerSize', 4, 'MarkerFaceColor', 'r', 'DisplayName', 'stringers');
+
     % Add Node Labels (Optional for Debugging)
     for i = 1:height(combined_nodes)
         text(combined_nodes.x(i), combined_nodes.y(i), sprintf('%d', combined_nodes.local_id(i)), ...

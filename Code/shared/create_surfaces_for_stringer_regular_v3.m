@@ -102,7 +102,7 @@ function [quad_surfaces, warnings] = create_surfaces_for_stringer_regular_v3(...
             stringer_index, ...         % stringer_1
             stringer_index + 1, ...     % stringer_2
             node_1.rib_index, ...       % rib_1
-            node_2.rib_index, ...       % rib_2
+            node_3.rib_index, ...       % rib_2
             "quad regular", ...         % tags
             area, ...                   % area
             aspect_ratio, ...           % aspect_ratio

@@ -106,7 +106,7 @@ nodos_posterior_ala_table = convert_nodes_rear_spars_to_table_v2(nodos_posterior
 combined_nodes = create_combined_node_table_v2(nodos_larguerillos_table, nodos_anterior_ala_table, nodos_posterior_ala_table);
 
 % insert
-inserted_table = standardize_inserted_nodes(inserted_nodes);
+inserted_table = standardize_inserted_nodes_v2(inserted_nodes);
 
 %% PARAMETROS NUEVOS
 threshold_distance = distancia_entre_costillas * 0.07;
@@ -221,7 +221,7 @@ quad_irregular = [];
 quad_rectangular_regular=[];
 tri_surfaces = [];
 %% 🛡️ Loop Through Stringers in the Irregular Zones
-for stringer_index = num_stringers_last_rib:max_stringer - 1
+for stringer_index = num_stringers_last_rib+1:max_stringer - 1
     % Define start rib as usual
     start_rib = index_counter_quitar_nodos_larguerillos_menor_Lf(stringer_index) + 1;
 
@@ -266,44 +266,59 @@ for stringer_index = num_stringers_last_rib:max_stringer - 1
     quad_rectangular_regular = [quad_rectangular_regular; quad_regular_stringer];
     warnings = [warnings; warn(:)];
 
-    % %% 🔄 Updating the next_stringer_nodes with Front Spar Nodes
-    % % Extract nodes for the next stringer
-    % next_stringer_nodes = combined_nodes( ...
-    %     combined_nodes.stringer_index == stringer_index + 1, :);
-    % 
-    % % Extract front spar nodes from combined_nodes
-    % front_spar_nodes = combined_nodes(strcmp(combined_nodes.tag, 'front spars'), :);
-    % 
-    % % Find the last rib index in the next stringer
-    % if ~isempty(next_stringer_nodes)
-    %     last_rib_index = max(next_stringer_nodes.rib_index); % Maximum rib index of the next stringer
-    % else
-    %     last_rib_index = -Inf; % Placeholder if next_stringer_nodes is empty
-    % end
-    % 
-    % % Select front spar nodes corresponding to ribs >= the last rib index
-    % additional_nodes = front_spar_nodes(front_spar_nodes.rib_index >= last_rib_index, :);
-    % 
-    % % Combine the original next stringer nodes and the front spar nodes
-    % next_stringer_nodes = [next_stringer_nodes; additional_nodes];
-    % 
-    % % Debug: Check the updated next_stringer_nodes
-    % if isempty(next_stringer_nodes)
-    %     warning('Next stringer nodes are empty after including front spar nodes.');
-    % end
+    %% 🔄 Updating the next_stringer_nodes with Front Spar Nodes
+    % Extract nodes for the next stringer
+    next_stringer_nodes = combined_nodes( ...
+        combined_nodes.stringer_index == stringer_index + 1, :);
 
+    % Extract front spar nodes from combined_nodes
+    front_spar_nodes = combined_nodes(strcmp(combined_nodes.tag, 'front spars'), :);
+
+    % Find the last rib index in the next stringer
+    if ~isempty(next_stringer_nodes)
+        last_rib_index = max(next_stringer_nodes.rib_index); % Maximum rib index of the next stringer
+    else
+        last_rib_index = -Inf; % Placeholder if next_stringer_nodes is empty
+    end
+
+    % Select front spar nodes corresponding to ribs >= the last rib index
+    additional_nodes = front_spar_nodes(front_spar_nodes.rib_index >= last_rib_index, :);
+
+    % Combine the original next stringer nodes and the front spar nodes
+    next_stringer_nodes = [next_stringer_nodes; additional_nodes];
+
+    % Debug: Check the updated next_stringer_nodes
+    if isempty(next_stringer_nodes)
+        warning('Next stringer nodes are empty after including front spar nodes.');
+    end
+    % end_rib
     %% ✅ Process Up to the Second-to-Last Rib (Regular-like Behavior)
-    [quad_irregular_stringer, tri_surfaces_stringer, warn] = create_surfaces_for_stringer_irregular_v3( ...
-        combined_nodes, stringer_index, start_rib, threshold_distance);
+    [quad_irregular_stringer,tri_surfaces_stringer, warn] = create_surfaces_for_stringer_irregular_v5( ...
+        combined_nodes, inserted_table, stringer_index, end_rib);
 
     % Append the results
     quad_irregular = [quad_irregular; quad_irregular_stringer];
     tri_surfaces = [tri_surfaces; tri_surfaces_stringer];
     warnings = [warnings; warn(:)];
 end
+%% Plot
 
+% Regular
 plottitle = strcat('Verification Plot for Irregular Region with regular rectangular surfaces');
-plotfilename = strcat('../Results/Figures/plot_stringer_regular_surfaces_in_irregular_v3_generate_structure_v6_ala12_a350_1000_datos_estructual');
-% plot_stringer_regular_surfaces(combined_nodes, quad_rectangular_regular,plottitle, plotfilename);
+plotfilename = strcat('../Results/Figures/plot_stringer_regular_all_surfaces_v3_generate_structure_v6_ala12_a350_1000_datos_estructual');
+% plot_stringer_regular_surfaces_v3(combined_nodes, quad_rectangular_regular,plottitle, plotfilename,avion,datosEstructural);
 
+% Irregular quad
+plottitle = strcat('Verification Plot for Irregular Region with irregular surfaces');
+plotfilename = strcat('../Results/Figures/plot_stringer_irregular_surfaces_generate_structure_v6_ala12_a350_1000_datos_estructual');
+% plot_stringer_irregular_surfaces(combined_nodes, inserted_table, quad_irregular,plottitle, plotfilename,avion,datosEstructural);
 
+% Regular + Irregular quad
+plottitle = strcat('Verification Plot for Irregular Region with irregular surfaces');
+plotfilename = strcat('../Results/Figures/plot_stringer_irregular_surfaces_RegularandIrregular_generate_structure_v6_ala12_a350_1000_datos_estructual');
+% plot_stringer_irregular_surfaces(combined_nodes, inserted_table, [quad_rectangular_regular;quad_irregular],plottitle, plotfilename,avion,datosEstructural);
+
+% All
+plottitle = strcat('Verification Plot for all Region with irregular surfaces');
+plotfilename = strcat('../Results/Figures/plot_stringer_irregular_surfaces_v2_for_all_generate_structure_v6_ala12_a350_1000_datos_estructual');
+% plot_stringer_irregular_surfaces_v2(combined_nodes, inserted_table, [quad_surfaces_regular;quad_rectangular_regular;quad_irregular],plottitle, plotfilename,avion,datosEstructural);

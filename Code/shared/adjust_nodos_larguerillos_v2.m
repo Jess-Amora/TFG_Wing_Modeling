@@ -27,8 +27,8 @@ function [updated_node_vector, inserted_nodes] = adjust_nodos_larguerillos_v2(..
     
     if distancia_nodos < threshold_distance
         %% Case 1: Remove Last Node (Nodes too close)
-        updated_node_vector(:, end, :) = [];
-        disp('✅ Last node removed due to close proximity to the penultimate node.');
+        % updated_node_vector(:, end, :) = [];
+        % disp('✅ Last node removed due to close proximity to the penultimate node.');
     else
         %% Case 2: Insert Perpendicular Node
         delta_x = distancia_entre_larguerillo_vertical * cos(alfa_larguero_posterior_radianes) / sqrt(1 + perpendicular_slope^2);
