@@ -110,11 +110,11 @@ inserted_table = standardize_inserted_nodes_v2(inserted_nodes);
 
 %% PARAMETROS NUEVOS
 threshold_distance = distancia_entre_costillas * 0.07;
-[max_rib, max_stringer] = get_max_indices(nodos_larguerillos);
-num_stringers_last_rib = calculate_stringers_to_last_rib(combined_nodes);
 
+% Call the function
+[num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes);
 
-%% Cálculos previos
+% %% Cálculos previos
 
 %% TEMPORARY ID SYSTEM DOCUMENTATION 
 % The nodos_larguerillos vector integrates local node data with Local IDs in the 5th column.
@@ -301,6 +301,47 @@ for stringer_index = num_stringers_last_rib+1:max_stringer - 1
     tri_surfaces = [tri_surfaces; tri_surfaces_stringer];
     warnings = [warnings; warn(:)];
 end
+%% Construyendo nuevas costillas
+P1=combined_nodes(combined_nodes.rib_index==1 & combined_nodes.tag =='rear spars',:);
+P1.y=P1.y - (distancia_entre_larguerillo/cos(ala.geometria.alfa_larguero_posterior_radianes));
+point_1_x = P1.x;
+point_1_y = P1.y;
+point_1 = [point_1_x point_1_y];
+point_2 = find_point_on_front_spar(point_1_x, point_1_y, ala,avion);
+
+% Create the first new node
+new_nodes_1 = table(NaN, point_1(1), point_1(2), 0, -1, "rear spars", ...
+    'VariableNames', {'local_id', 'x', 'y', 'rib_index', 'stringer_index', 'tag'});
+
+% Create the second new node
+new_nodes_2 = table(NaN, point_2(1), point_2(2), 0, -2, "front spars", ...
+    'VariableNames', {'local_id', 'x', 'y', 'rib_index', 'stringer_index', 'tag'});
+
+combined_nodes = add_nodes_to_combined_nodes_v2(combined_nodes, new_nodes_1);
+combined_nodes = add_singular_rib(combined_nodes, point_1, point_2,0,"stringer");
+%% Superficies cercanas al encastre
+
+tri_root = [];
+quad_root = [];
+penta_root = [];
+
+% Guardar la primera superficie: stringer_index = 1, 
+[tri_surfaces_stringer, warnings] = create_first_surface_root(combined_nodes, 1, rib_ranges(1,2));
+tri_root =[tri_root; tri_surfaces_stringer];
+warnings = [warnings; warn(:)];
+
+for index_larguerillo = 1:max_stringer
+    index_larguerillo
+    [tri_surfaces_stringer, quad_surfaces_stringer, penta_surfaces_stringer, warnings] = create_surfaces_root_v1(combined_nodes, index_larguerillo,distancia_entre_costillas/2);
+    
+    tri_root = [tri_root; tri_surfaces_stringer];
+    quad_root = [quad_root; quad_surfaces_stringer];
+    penta_root = [penta_root; penta_surfaces_stringer];
+
+
+    warnings = [warnings; warn(:)];
+end
+
 %% Plot
 
 % Regular
@@ -324,4 +365,6 @@ plotfilename = strcat('../Results/Figures/plot_stringer_irregular_surfaces_v2_fo
 % plot_stringer_irregular_surfaces_v2(combined_nodes, inserted_table, [quad_surfaces_regular;quad_rectangular_regular;quad_irregular],plottitle, plotfilename,avion,datosEstructural);
 
 % Triangular
-plot_triangular_surfaces(tri_surfaces, combined_nodes)
+plottitle = strcat('Verification Plot for triangular Region with irregular surfaces');
+plotfilename = strcat('../Results/Figures/plot_stringer_irregular_surfaces_v3_for_all_generate_structure_v6_ala12_a350_1000_datos_estructual');
+% plot_stringer_irregular_surfaces_v3(combined_nodes, inserted_table, [quad_surfaces_regular;quad_rectangular_regular;quad_irregular], tri_surfaces,plottitle, plotfilename,avion,datosEstructural);
