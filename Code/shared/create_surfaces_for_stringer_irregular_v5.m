@@ -50,6 +50,19 @@ function [quad_surfaces,tri_surfaces, warnings] = create_surfaces_for_stringer_i
         additional_nodes = front_spar_nodes(front_spar_nodes.rib_index >= last_rib_index, :);
         next_stringer_nodes = [next_stringer_nodes; additional_nodes];
     end
+    
+    if isempty(current_stringer_nodes) || isempty(next_stringer_nodes) || isempty(end_point) || isempty(inserted_nodes)
+        stringer_index
+        if isempty(current_stringer_nodes)
+            disp('no hay current stringer')
+        elseif isempty(next_stringer_nodes)
+            disp('no hay next stringer')
+        elseif isempty(end_point)
+            disp('no hay end_point')
+        elseif isempty(inserted_nodes)
+            disp('no hay inserted_nodes')
+        end
+    end
 
     %% Create First Surface
     if ~isempty(current_stringer_nodes) && ~isempty(next_stringer_nodes) && ~isempty(end_point) && ~isempty(inserted_nodes)

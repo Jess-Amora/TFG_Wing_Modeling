@@ -107,6 +107,8 @@ combined_nodes = create_combined_node_table_v2(nodos_larguerillos_table, nodos_a
 
 % insert
 inserted_table = standardize_inserted_nodes_v2(inserted_nodes);
+inserted_table = fix_stringer_indices_line_based(combined_nodes, inserted_table, 1e-3);
+% disp(fixed_inserted_table);
 
 %% PARAMETROS NUEVOS
 threshold_distance = distancia_entre_costillas * 0.07;
@@ -293,7 +295,7 @@ for stringer_index = num_stringers_last_rib:max_stringer - 1
     end
     % end_rib
     %% ✅ Process Up to the Second-to-Last Rib (Regular-like Behavior)
-    [quad_irregular_stringer,tri_surfaces_stringer, warn] = create_surfaces_for_stringer_irregular_v5( ...
+    [quad_irregular_stringer,tri_surfaces_stringer, warn] = create_surfaces_for_stringer_irregular_v6( ...
         combined_nodes, inserted_table, stringer_index, end_rib);
 
     % Append the results
@@ -333,7 +335,7 @@ penta_root = [];
 tri_root =[tri_root; tri_surfaces_stringer];
 warnings = [warnings; warn(:)];
 
-if 
+
 
 for index_larguerillo = 1:max_stringer
     [tri_surfaces_stringer, quad_surfaces_stringer, penta_surfaces_stringer, warnings] = create_surfaces_root_v2(combined_nodes, index_larguerillo,distancia_entre_costillas/2);
@@ -348,15 +350,15 @@ end
 
 %% Plot
 % All quad regular/irregular, tri, penta
-plottitle = strcat('Verification Plot');
-plotfilename = strcat('../Results/Figures/plot_surfaces_v5_generate_structure_v9_ala13_a350_1000_datos_estructual');
+plottitle = strcat('Verification OnlyPlot');
+plotfilename = strcat('../Results/Figures/OnlyPlotSurface_generate_structure_v9_ala13_a350_1000_datos_estructual');
 
 OnlyTri = [tri_surfaces; tri_root];
 OnlyQuads = [quad_surfaces_regular;quad_rectangular_regular;quad_irregular;quad_root];
 OnlyPenta = [penta_root];
 OnlyRear = [superficie_horizontal_larguero_posterior];
 
-plot_surfaces_v5(combined_nodes, inserted_table, ...
+OnlyPlotSurface(combined_nodes, inserted_table, ...
     [OnlyQuads], [OnlyTri], [OnlyPenta],[OnlyRear], plottitle, plotfilename,avion,datosEstructural);
 
 
@@ -390,7 +392,7 @@ plottitle = strcat('Verification Plot for triangular Region with irregular surfa
 plotfilename = strcat('../Results/Figures/plot_stringer_irregular_surfaces_v3_for_all_generate_structure_v6_ala12_a350_1000_datos_estructual');
 % plot_stringer_irregular_surfaces_v3(combined_nodes, inserted_table, [quad_surfaces_regular;quad_rectangular_regular;quad_irregular], tri_surfaces,plottitle, plotfilename,avion,datosEstructural);
 
-%% Plot bien
+%%% Plot bien
 % All quad regular/irregular, tri, penta
 plottitle = strcat('Verification Plot');
 plotfilename = strcat('../Results/Figures/OnlyQuads_plot_surfaces_v1_generate_structure_v9_ala13_a350_1000_datos_estructual');

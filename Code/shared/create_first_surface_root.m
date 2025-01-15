@@ -19,12 +19,16 @@ function [tri_surfaces, warnings] = create_first_surface_root(combined_nodes, st
     warnings = {};
 
     %% 🔍 Extract Relevant Nodes
+    stringer_index =1;
     current_stringer_nodes = combined_nodes( ...
         combined_nodes.stringer_index == stringer_index, :);
 
     next_stringer_nodes = combined_nodes( ...
         combined_nodes.stringer_index == stringer_index + 1, :);
-    
+
+    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes);
+    start_rib = rib_ranges(1,2);
+
     %% Create First Surface
     if ~isempty(current_stringer_nodes) && ~isempty(next_stringer_nodes)
             % Triangulo
@@ -63,7 +67,7 @@ function [tri_surfaces, warnings] = create_first_surface_root(combined_nodes, st
                 stringer_index + 1, ...        % stringer_2
                  -1, ...                 % rib_1
                  start_rib, ...                        % rib_2
-                "tri root", ...    % tags
+                "tri corner root", ...    % tags
                 area, ...                      % area
                 aspect_ratio, ...              % aspect_ratio
                 'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', ...

@@ -271,10 +271,10 @@ end
 % plotfilename = strcat('../Results/Figures/plotAla2D_mesh_solo_nodos_v6_ala13_TFG_Amora_aviones_a350_1000_datos_estructual');
 % plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala13,plottitle,'' ,'',plotfilename);
 %% plot actual
-plottitle = strcat('plotAla2D_mesh_solo_nodos_v6__ala14_TFG_Amora.aviones.a350_1000_datos_estructual');
-plotfilename = strcat('../Results/Figures/plotAla2D_mesh_solo_nodos_v6_ala14_TFG_Amora_aviones_a350_1000_datos_estructual');
-plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala14,plottitle,'' ,'',plotfilename);
-
+% plottitle = strcat('plotAla2D_mesh_solo_nodos_v6__ala14_TFG_Amora.aviones.a350_1000_datos_estructual');
+% plotfilename = strcat('../Results/Figures/plotAla2D_mesh_solo_nodos_v6_ala14_TFG_Amora_aviones_a350_1000_datos_estructual');
+% plotAla2D_mesh_solo_nodos_v6(avion,datosEstructural,ala14,plottitle,'' ,'',plotfilename);
+% 
 
 % Mesh barras
 % [nodos elementos] = generar_barras(avion,datosEstructural,ala4,fuselaje2);

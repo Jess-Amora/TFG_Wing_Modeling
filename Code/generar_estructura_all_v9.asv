@@ -221,7 +221,7 @@ quad_irregular = [];
 quad_rectangular_regular=[];
 tri_surfaces = [];
 %% 🛡️ Loop Through Stringers in the Irregular Zones
-for stringer_index = num_stringers_last_rib:max_stringer - 1
+for stringer_index = num_stringers_last_rib+1:max_stringer - 1
     % Define start rib as usual
     start_rib = index_counter_quitar_nodos_larguerillos_menor_Lf(stringer_index) + 1;
 
@@ -238,20 +238,20 @@ for stringer_index = num_stringers_last_rib:max_stringer - 1
     next_rib_indices = unique(next_stringer_nodes.rib_index); % Extract unique rib indices
 
     % Handle irregular end rib logic
-    if any(next_rib_indices == -100) % Updated root rib index
-        % Remove -100 temporarily to find the second-to-last rib
-        valid_ribs = next_rib_indices(next_rib_indices ~= -100);
+    if any(next_rib_indices == -2)
+        % Remove -2 temporarily to find second-to-last rib
+        valid_ribs = next_rib_indices(next_rib_indices ~= -2);
 
         if ~isempty(valid_ribs)
             % Safely select the maximum valid rib
             second_to_last_rib = max(valid_ribs);
         else
             % Fallback if no valid ribs exist
-            warning('No valid ribs found besides -100. Using fallback rib index.');
-            second_to_last_rib = -99; % Updated default to front spar rib
+            warning('No valid ribs found besides -2. Using fallback rib index.');
+            second_to_last_rib = -1; % Default to root rib
         end
     else
-        % If -100 does not exist, use the maximum rib
+        % If -2 does not exist, use the maximum rib
         second_to_last_rib = max(next_rib_indices);
     end
 
@@ -301,14 +301,13 @@ for stringer_index = num_stringers_last_rib:max_stringer - 1
     tri_surfaces = [tri_surfaces; tri_surfaces_stringer];
     warnings = [warnings; warn(:)];
 end
-
 %% Construyendo nuevas costillas
 P1=combined_nodes(combined_nodes.rib_index==1 & combined_nodes.tag =='rear spars',:);
-P1.y=P1.y - (distancia_entre_costillas/2/sin(ala.geometria.alfa_larguero_posterior_radianes));
+P1.y=P1.y - (distancia_entre_larguerillo/cos(ala.geometria.alfa_larguero_posterior_radianes));
 point_1_x = P1.x;
 point_1_y = P1.y;
 point_1 = [point_1_x point_1_y];
-point_2 = find_point_on_front_spar(point_1_x, point_1_y, ala,avion,datosEstructural);
+point_2 = find_point_on_front_spar(point_1_x, point_1_y, ala,avion);
 
 % Create the first new node
 new_nodes_1 = table(NaN, point_1(1), point_1(2), 0, -1, "rear spars", ...
@@ -319,9 +318,7 @@ new_nodes_2 = table(NaN, point_2(1), point_2(2), 0, -2, "front spars", ...
     'VariableNames', {'local_id', 'x', 'y', 'rib_index', 'stringer_index', 'tag'});
 
 combined_nodes = add_nodes_to_combined_nodes_v2(combined_nodes, new_nodes_1);
-combined_nodes = add_nodes_to_combined_nodes_v2(combined_nodes, new_nodes_2);
 combined_nodes = add_singular_rib(combined_nodes, point_1, point_2,0,"stringer");
-
 %% Superficies cercanas al encastre
 
 tri_root = [];
@@ -329,14 +326,12 @@ quad_root = [];
 penta_root = [];
 
 % Guardar la primera superficie: stringer_index = 1, 
-[tri_surfaces_stringer, warnings] = create_first_surface_root(combined_nodes);
+[tri_surfaces_stringer, warnings] = create_first_surface_root(combined_nodes, 1, rib_ranges(1,2));
 tri_root =[tri_root; tri_surfaces_stringer];
 warnings = [warnings; warn(:)];
 
-if 
-
 for index_larguerillo = 1:max_stringer
-    [tri_surfaces_stringer, quad_surfaces_stringer, penta_surfaces_stringer, warnings] = create_surfaces_root_v2(combined_nodes, index_larguerillo,distancia_entre_costillas/2);
+    [tri_surfaces_stringer, quad_surfaces_stringer, penta_surfaces_stringer, warnings] = create_surfaces_root_v1(combined_nodes, index_larguerillo,distancia_entre_costillas/2);
     
     tri_root = [tri_root; tri_surfaces_stringer];
     quad_root = [quad_root; quad_surfaces_stringer];
@@ -349,15 +344,10 @@ end
 %% Plot
 % All quad regular/irregular, tri, penta
 plottitle = strcat('Verification Plot');
-plotfilename = strcat('../Results/Figures/plot_surfaces_v5_generate_structure_v9_ala13_a350_1000_datos_estructual');
-
-OnlyTri = [tri_surfaces; tri_root];
-OnlyQuads = [quad_surfaces_regular;quad_rectangular_regular;quad_irregular;quad_root];
-OnlyPenta = [penta_root];
-OnlyRear = [superficie_horizontal_larguero_posterior];
-
-plot_surfaces_v5(combined_nodes, inserted_table, ...
-    [OnlyQuads], [OnlyTri], [OnlyPenta],[OnlyRear], plottitle, plotfilename,avion,datosEstructural);
+plotfilename = strcat('../Results/Figures/OnlyQuads_plot_surfaces_v1_generate_structure_v9_ala13_a350_1000_datos_estructual');
+plot_surfaces_v1(combined_nodes, inserted_table, ...
+    [quad_surfaces_regular;quad_rectangular_regular;quad_irregular] ...
+    , [], [],superficie_horizontal_larguero_posterior, plottitle, plotfilename)
 
 
 % All quad regular/irregular, tri, penta
@@ -394,25 +384,11 @@ plotfilename = strcat('../Results/Figures/plot_stringer_irregular_surfaces_v3_fo
 % All quad regular/irregular, tri, penta
 plottitle = strcat('Verification Plot');
 plotfilename = strcat('../Results/Figures/OnlyQuads_plot_surfaces_v1_generate_structure_v9_ala13_a350_1000_datos_estructual');
-% plot_surfaces_v1(combined_nodes, inserted_table, ...
-%     [quad_surfaces_regular;quad_rectangular_regular;quad_irregular] ...
-%     , [], [],superficie_horizontal_larguero_posterior, plottitle, plotfilename)
+plot_surfaces_v1(combined_nodes, inserted_table, ...
+    [quad_surfaces_regular;quad_rectangular_regular;quad_irregular] ...
+    , [], [],superficie_horizontal_larguero_posterior, plottitle, plotfilename)
 
 % Regular + Irregular quad
 plottitle = strcat('Verification Plot for Irregular Region with irregular surfaces');
 plotfilename = strcat('../Results/Figures/ALLRegularandIrregular_generate_structure_v6_ala12_a350_1000_datos_estructual');
 % plot_stringer_irregular_surfaces(combined_nodes, inserted_table, [quad_surfaces_regular;quad_rectangular_regular;quad_irregular],plottitle, plotfilename,avion,datosEstructural);
-
-% All quad regular/irregular, tri, penta
-plottitle = strcat('Verification Plot');
-plotfilename = strcat('../Results/Figures/plot_surfaces_v1_generate_structure_v9_ala13_a350_1000_datos_estructual');
-OnlyQuads = [quad_surfaces_regular;quad_rectangular_regular;quad_irregular;quad_root];
-% plot_surfaces_v1(combined_nodes, inserted_table, ...
-%     [OnlyQuads], [tri_surfaces;tri_root], [penta_root],[superficie_horizontal_larguero_posterior], plottitle, plotfilename)
-
-% All quad regular/irregular, tri, penta
-plottitle = strcat('Verification Plot');
-plotfilename = strcat('../Results/Figures/plot_surfaces_v3_generate_structure_v9_ala13_a350_1000_datos_estructual');
-OnlyQuads = [quad_surfaces_regular;quad_rectangular_regular;quad_irregular;quad_root];
-% plot_surfaces_v3(combined_nodes, inserted_table, ...
-%     [OnlyQuads], [tri_surfaces;tri_root], [penta_root],[superficie_horizontal_larguero_posterior], plottitle, plotfilename)

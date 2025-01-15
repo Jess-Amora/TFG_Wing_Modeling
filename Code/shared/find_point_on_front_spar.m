@@ -1,4 +1,4 @@
-function intersection_point = find_point_on_front_spar(x, y, ala, avion)
+function intersection_point = find_point_on_front_spar(x, y, ala, avion,datosEstructural)
 % find_point_on_front_spar: Finds the intersection point on the front spar line.
 %
 % Inputs:
@@ -15,9 +15,11 @@ function intersection_point = find_point_on_front_spar(x, y, ala, avion)
     slope_perpendicular = ala.geometria.pendiente_perpendicular_larguero_posterior;
     slope_front_spar = ala.geometria.pendiente_larguero_anterior;
     Lf = avion.geometria.Lf;
+    c1 = avion.geometria.c1;
+    Distancia_larguero_anterior_cuerda_porcentaje = datosEstructural.distancia_larguero_anterior_cuerda_porcentaje;
 
     % Define the point on the front spar
-    front_spar_point = [Lf, 0];
+    front_spar_point = [Lf, Distancia_larguero_anterior_cuerda_porcentaje*c1];
 
     %% Use cortes_de_dos_funciones_lineales_v3
     % Line 1: Starts at (x, y) with slope_perpendicular

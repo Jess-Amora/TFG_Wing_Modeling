@@ -1,4 +1,4 @@
-function [tri_surfaces, quad_surfaces, penta_surfaces, warnings] = create_surfaces_root_v1(combined_nodes, stringer_index,distancia_entre_costillas_media)
+function [tri_surfaces, quad_surfaces, penta_surfaces, warnings] = create_surfaces_root_v2(combined_nodes, stringer_index,distancia_entre_costillas_media)
 % Iteratively creates quadrilateral surfaces for irregular zones until the endpoint or triangle.
 %
 % Inputs:
@@ -38,19 +38,30 @@ function [tri_surfaces, quad_surfaces, penta_surfaces, warnings] = create_surfac
     [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes);
     start_rib=rib_ranges(stringer_index,2);
 
-    Point_1 = next_stringer_nodes(next_stringer_nodes.rib_index==-1,:);
-    Point_2 = next_stringer_nodes(next_stringer_nodes.rib_index==start_rib,:);
-    distance = norm([Point_1.x, Point_1.y] - [Point_2.x, Point_2.y]);
+    Point_1_A = current_stringer_nodes(current_stringer_nodes.rib_index==-1,:);
+    Point_2_A = current_stringer_nodes(current_stringer_nodes.rib_index==start_rib,:);
+    distance_A = norm([Point_1_A.x, Point_1_A.y] - [Point_2_A.x, Point_2_A.y]);
+    
+    Point_1_B = next_stringer_nodes(next_stringer_nodes.rib_index==-1,:);
+    Point_2_B = next_stringer_nodes(next_stringer_nodes.rib_index==start_rib,:);
+    distance_B = norm([Point_1_B.x, Point_1_B.y] - [Point_2_B.x, Point_2_B.y]);
 
     % Check which case: quad or penta
-    if (distance<distancia_entre_costillas_media)
+    if (distance_A<distancia_entre_costillas_media && distance_B<distancia_entre_costillas_media)
         case_quad = true;
         case_penta = false;
-    else%if(distance<distancia_entre_costillas_media)
+        case_special = false;
+
+    elseif(distance_A<distancia_entre_costillas_media && distance_B>distancia_entre_costillas_media)
         case_quad = false;
         case_penta = true;
-
+        case_special = false;
+    elseif(distance_A>distancia_entre_costillas_media && distance_B>distancia_entre_costillas_media)
+        case_quad = false;
+        case_penta = false;
+        case_special = true; % 2 quads
     end
+    
 
     %% Create Surfaces
     if ~isempty(current_stringer_nodes) && ~isempty(next_stringer_nodes)
@@ -101,6 +112,7 @@ function [tri_surfaces, quad_surfaces, penta_surfaces, warnings] = create_surfac
                                   'area', 'aspect_ratio'})];
         elseif(case_penta)
             % penta
+            
             P_1 = current_stringer_nodes(current_stringer_nodes.rib_index == -1, :); % Bottom-left
             P_2 = combined_nodes(combined_nodes.tag =='rear spars' & combined_nodes.rib_index == start_rib-1,:);       % Bottom-right
             P_3 = next_stringer_nodes(next_stringer_nodes.rib_index == start_rib-1, :); % Top-right
@@ -195,6 +207,94 @@ function [tri_surfaces, quad_surfaces, penta_surfaces, warnings] = create_surfac
                 area, ...                      % area
                 aspect_ratio, ...              % aspect_ratio
                 'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', ...
+                                  'stringer_1', 'stringer_2', 'rib_1', 'rib_2', 'tags', ...
+                                  'area', 'aspect_ratio'})];
+        elseif(case_special)
+            % 1st quad
+            
+            P_1 = current_stringer_nodes(current_stringer_nodes.rib_index == start_rib-1, :); % Bottom-left
+            P_2 = next_stringer_nodes(next_stringer_nodes.rib_index == start_rib-1, :);
+            P_3 = next_stringer_nodes(next_stringer_nodes.rib_index == start_rib, :);     
+            P_4 = current_stringer_nodes(current_stringer_nodes.rib_index == start_rib, :); % Bottom-lef                                                  % Top-left
+            P_5 = current_stringer_nodes(current_stringer_nodes.rib_index == -1, :);  
+            P_6 = next_stringer_nodes(next_stringer_nodes.rib_index == -1, :);  
+            
+            node_1 = P_1;
+            node_2 = P_2;
+            node_3 = P_3;
+            node_4 = P_4;
+
+            % Extract coordinates for surface property calculation
+            surface_coords = [
+                node_1.x, node_1.y;
+                node_2.x, node_2.y;
+                node_3.x, node_3.y;
+                node_4.x, node_4.y
+            ];
+    
+            % Compute area and aspect ratio
+            [is_valid, aspect_ratio] = check_aspect_ratio(surface_coords, 'quad');
+            if ~is_valid
+                warnings{end+1} = sprintf('Skipped quadrilateral due to poor aspect ratio at rib pair %d-%d.', start_rib - 1, start_rib);
+                % continue;
+            end
+            area = polyarea(surface_coords(:, 1), surface_coords(:, 2));
+    
+            % Append surface to quad_surfaces
+            quad_surfaces = [quad_surfaces; table( ...
+                surface_counter, ...        % local_id
+                node_1.local_id, ...        % node_1
+                node_2.local_id, ...        % node_2
+                node_3.local_id, ...        % node_3
+                node_4.local_id, ...        % node_4
+                stringer_index, ...         % stringer_1
+                stringer_index + 1, ...     % stringer_2
+                start_rib-1, ...                % rib_1
+                start_rib, ...            % rib_2
+                "quad regular", ...       % tags
+                area, ...                   % area
+                aspect_ratio, ...           % aspect_ratio
+                'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', ...
+                                  'stringer_1', 'stringer_2', 'rib_1', 'rib_2', 'tags', ...
+                                  'area', 'aspect_ratio'})];
+
+            % Quad 2 closer to root
+            node_1 = P_5;
+            node_2 = P_6;
+            node_3 = P_2;
+            node_4 = P_1;
+
+            % Extract coordinates for surface property calculation
+            surface_coords = [
+                node_1.x, node_1.y;
+                node_2.x, node_2.y;
+                node_3.x, node_3.y;
+                node_4.x, node_4.y
+            ];
+    
+            % Compute area and aspect ratio
+            [is_valid, aspect_ratio] = check_aspect_ratio(surface_coords, 'quad');
+            if ~is_valid
+                warnings{end+1} = sprintf('Skipped quadrilateral due to poor aspect ratio at rib pair %d-%d.', -1, start_rib-1);
+                % continue;
+            end
+            area = polyarea(surface_coords(:, 1), surface_coords(:, 2));
+    
+            % Append surface to quad_surfaces
+            quad_surfaces = [quad_surfaces; table( ...
+                surface_counter, ...        % local_id
+                node_1.local_id, ...        % node_1
+                node_2.local_id, ...        % node_2
+                node_3.local_id, ...        % node_3
+                node_4.local_id, ...        % node_4
+                stringer_index, ...         % stringer_1
+                stringer_index + 1, ...     % stringer_2
+                -1, ...                % rib_1
+                start_rib-1, ...            % rib_2
+                "quad irregular root", ...       % tags
+                area, ...                   % area
+                aspect_ratio, ...           % aspect_ratio
+                'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', ...
                                   'stringer_1', 'stringer_2', 'rib_1', 'rib_2', 'tags', ...
                                   'area', 'aspect_ratio'})];
 

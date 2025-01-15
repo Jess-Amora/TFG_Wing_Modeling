@@ -69,10 +69,10 @@ function plot_stringer_irregular_surfaces(combined_nodes, inserted_table, quad_s
                 node_4 = combined_nodes(combined_nodes.local_id == quad_surfaces_irregular.node_4(i), :);
             elseif strcmp(surface_tag, "quad regular")
                 % P2 and P3 from front spar nodes
-                node_1 = combined_nodes(combined_nodes.local_id == quad_surfaces_irregular.node_1(i), :);
-                node_2 = combined_nodes(combined_nodes.local_id == quad_surfaces_irregular.node_2(i), :);
-                node_3 = combined_nodes(combined_nodes.local_id == quad_surfaces_irregular.node_3(i), :);
-                node_4 = combined_nodes(combined_nodes.local_id == quad_surfaces_irregular.node_4(i), :);
+                node_1 = combined_nodes(combined_nodes.local_id == quad_surfaces_irregular.node_1(i)& strcmp(combined_nodes.tag, 'stringer'), :);
+                node_2 = combined_nodes(combined_nodes.local_id == quad_surfaces_irregular.node_2(i)& strcmp(combined_nodes.tag, 'stringer'), :);
+                node_3 = combined_nodes(combined_nodes.local_id == quad_surfaces_irregular.node_3(i)& strcmp(combined_nodes.tag, 'stringer'), :);
+                node_4 = combined_nodes(combined_nodes.local_id == quad_surfaces_irregular.node_4(i)& strcmp(combined_nodes.tag, 'stringer'), :);
 
             else
                 % Unknown tag, skip this surface
