@@ -342,6 +342,13 @@ for index_larguerillo = 1:max_stringer
 end
 
 %% Plot
+% All quad regular/irregular, tri, penta
+plottitle = strcat('Verification Plot');
+plotfilename = strcat('../Results/Figures/plot_stringer_irregular_surfaces_v8_generate_structure_v9_ala12_a350_1000_datos_estructual');
+plot_stringer_irregular_surfaces_v9(combined_nodes, inserted_table, ...
+    [quad_surfaces_regular;quad_irregular;quad_root] ...
+    , [tri_surfaces; tri_root], penta_root,superficie_horizontal_larguero_posterior, plottitle, plotfilename)
+
 
 % Regular
 plottitle = strcat('Verification Plot for Irregular Region with regular rectangular surfaces');

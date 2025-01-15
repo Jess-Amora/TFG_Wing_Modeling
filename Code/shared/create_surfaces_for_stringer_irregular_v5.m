@@ -245,7 +245,7 @@ function [quad_surfaces,tri_surfaces, warnings] = create_surfaces_for_stringer_i
         stringer_index + 1, ...        % stringer_2
          max(current_stringer_nodes.rib_index), ...                 % rib_1
         -2, ...                        % rib_2
-        "triangular", ...    % tags
+        "tri front", ...    % tags
         area, ...                      % area
         aspect_ratio, ...              % aspect_ratio
         'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', ...

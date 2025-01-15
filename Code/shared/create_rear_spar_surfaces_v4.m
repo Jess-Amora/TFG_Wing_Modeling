@@ -102,7 +102,7 @@ function superficie_horizontal_larguero_posterior = create_rear_spar_surfaces_v4
             stringer_2, ...             % stringer_2 (first stringer)
             rib_1, ...                  % rib_1
             rib_2, ...                  % rib_2
-            "rear_spar_surface", ...    % tags
+            "quad rear", ...    % tags
             area, ...                   % area
             aspect_ratio, ...           % aspect_ratio
             'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', ...

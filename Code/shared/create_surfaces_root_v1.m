@@ -148,7 +148,7 @@ function [tri_surfaces, quad_surfaces, penta_surfaces, warnings] = create_surfac
                 stringer_index + 1, ...     % stringer_2
                 -1, ...              % rib_1
                 start_rib, ...                     % rib_2
-                "penta", ...      % tags
+                "penta root", ...      % tags
                 area, ...                   % area
                 aspect_ratio, ...           % aspect_ratio
                 'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', 'node_5', ...
@@ -190,7 +190,7 @@ function [tri_surfaces, quad_surfaces, penta_surfaces, warnings] = create_surfac
                 stringer_index + 1, ...        % stringer_2
                  -1, ...                 % rib_1
                  start_rib, ...                        % rib_2
-                "triangular root", ...    % tags
+                "tri root", ...    % tags
                 area, ...                      % area
                 aspect_ratio, ...              % aspect_ratio
                 'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', ...

@@ -63,7 +63,7 @@ function [tri_surfaces, warnings] = create_first_surface_root(combined_nodes, st
                 stringer_index + 1, ...        % stringer_2
                  -1, ...                 % rib_1
                  start_rib, ...                        % rib_2
-                "triangular root", ...    % tags
+                "tri root", ...    % tags
                 area, ...                      % area
                 aspect_ratio, ...              % aspect_ratio
                 'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', ...
