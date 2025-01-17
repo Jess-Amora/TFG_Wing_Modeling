@@ -1,4 +1,4 @@
-function [quad_surfaces,tri_surfaces, warnings] = create_surfaces_for_stringer_irregular_v6( ...
+function [quad_surfaces,tri_surfaces,penta_surfaces, warnings] = create_surfaces_for_stringer_irregular_v6( ...
     combined_nodes, inserted_table, stringer_index, start_rib)
 % Iteratively creates quadrilateral surfaces for irregular zones until the endpoint or triangle.
 %
@@ -15,6 +15,10 @@ function [quad_surfaces,tri_surfaces, warnings] = create_surfaces_for_stringer_i
     %% Initialization
     quad_surfaces = table([], [], [], [], [], [], [], [], [], [], [], [], ...
         'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', ...
+                          'stringer_1', 'stringer_2', 'rib_1', 'rib_2', 'tags', ...
+                          'area', 'aspect_ratio'});
+    penta_surfaces = table([], [], [], [], [], [], [], [], [], [], [], [], [], ...
+        'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', 'node_5', ...
                           'stringer_1', 'stringer_2', 'rib_1', 'rib_2', 'tags', ...
                           'area', 'aspect_ratio'});
     warnings = {};
@@ -51,117 +55,72 @@ function [quad_surfaces,tri_surfaces, warnings] = create_surfaces_for_stringer_i
         next_stringer_nodes = [next_stringer_nodes; additional_nodes];
     end
     
-    if isempty(current_stringer_nodes) || isempty(next_stringer_nodes) || isempty(end_point) || isempty(inserted_nodes)
-        start_rib
-        stringer_index
-        if isempty(current_stringer_nodes)
-            disp('no hay current stringer')
-        elseif isempty(next_stringer_nodes)
-            disp('no hay next stringer')
-        elseif isempty(end_point)
-            disp('no hay end_point')
-        elseif isempty(inserted_nodes)
-            disp('no hay inserted_nodes')
-        end
-    end
-
-    %% En el caso que no haya inserted_nodes
-    % if isempty(inserted_nodes)
-    %     node_1 = current_stringer_nodes(current_stringer_nodes.rib_index == start_rib, :); % Bottom-left
-    %     node_2 = next_stringer_nodes(next_stringer_nodes.rib_index == start_rib & next_stringer_nodes.tag=='stringer', :);       % Bottom-right
-    %     node_3 = end_point;                                                               % Top-right
-    %     node_4 = inserted_nodes;                                                          % Top-left
-    % 
-    %     % Validate nodes
-    %     if isempty(node_1) || isempty(node_2) || isempty(node_3) || isempty(node_4)
-    %         warnings{end+1} = sprintf('Skipping rib pair %d-%d due to missing nodes.', start_rib, start_rib + 1);
-    %         % continue;
+    % if isempty(current_stringer_nodes) || isempty(next_stringer_nodes) || isempty(end_point) || isempty(inserted_nodes)
+    %     start_rib
+    %     stringer_index
+    %     if isempty(current_stringer_nodes)
+    %         disp('no hay current stringer')
+    %     elseif isempty(next_stringer_nodes)
+    %         disp('no hay next stringer')
+    %     elseif isempty(end_point)
+    %         disp('no hay end_point')
+    %     elseif isempty(inserted_nodes)
+    %         disp('no hay inserted_nodes')
     %     end
-    % 
-    %     % Extract coordinates for surface property calculation
-    %     surface_coords = [
-    %         node_1.x, node_1.y;
-    %         node_2.x, node_2.y;
-    %         node_3.x, node_3.y;
-    %         node_4.x, node_4.y
-    %     ];
-    % 
-    %     % Compute area and aspect ratio
-    %     [is_valid, aspect_ratio] = check_aspect_ratio(surface_coords, 'quad');
-    %     if ~is_valid
-    %         warnings{end+1} = sprintf('Skipped quadrilateral due to poor aspect ratio at rib pair %d-%d.', start_rib, start_rib + 1);
-    %         % continue;
-    %     end
-    %     area = polyarea(surface_coords(:, 1), surface_coords(:, 2));
-    % 
-    %     % Append surface to quad_surfaces
-    %     quad_surfaces = [quad_surfaces; table( ...
-    %         surface_counter, ...        % local_id
-    %         node_1.local_id, ...        % node_1
-    %         node_2.local_id, ...        % node_2
-    %         node_3.local_id, ...        % node_3
-    %         node_4.local_id, ...        % node_4
-    %         stringer_index, ...         % stringer_1
-    %         stringer_index + 1, ...     % stringer_2
-    %         start_rib, ...                % rib_1
-    %         -2, ...            % rib_2
-    %         "quad irregular P4 inserted", ...       % tags
-    %         area, ...                   % area
-    %         aspect_ratio, ...           % aspect_ratio
-    %         'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', ...
-    %                           'stringer_1', 'stringer_2', 'rib_1', 'rib_2', 'tags', ...
-    %                           'area', 'aspect_ratio'})];
-    % 
-    %     surface_counter = surface_counter + 1;
     % end
-    % 
-    % %% Create second Surface
-    %     node_1 = inserted_nodes; % Bottom-left
-    %     node_2 = end_point;       % Bottom-right
-    %     node_3 = next_stringer_nodes(next_stringer_nodes.rib_index == start_rib+1 & next_stringer_nodes.tag=='front spars', :);                                                             % Top-right
-    %     node_4 = current_stringer_nodes(current_stringer_nodes.rib_index == start_rib+1, :);
-    % 
-    %     % Validate nodes
-    %     if isempty(node_1) || isempty(node_2) || isempty(node_3) || isempty(node_4)
-    %         warnings{end+1} = sprintf('Skipping rib pair %d-%d due to missing nodes.', start_rib, start_rib + 1);
-    %         % continue;
-    %     end
-    % 
-    %     % Extract coordinates for surface property calculation
-    %     surface_coords = [
-    %         node_1.x, node_1.y;
-    %         node_2.x, node_2.y;
-    %         node_3.x, node_3.y;
-    %         node_4.x, node_4.y
-    %     ];
-    % 
-    %     % Compute area and aspect ratio
-    %     [is_valid, aspect_ratio] = check_aspect_ratio(surface_coords, 'quad');
-    %     if ~is_valid
-    %         warnings{end+1} = sprintf('Skipped quadrilateral due to poor aspect ratio at rib pair %d-%d.', start_rib, start_rib + 1);
-    %         % continue;
-    %     end
-    %     area = polyarea(surface_coords(:, 1), surface_coords(:, 2));
-    % 
-    %     % Append surface to quad_surfaces
-    %     quad_surfaces = [quad_surfaces; table( ...
-    %         surface_counter, ...        % local_id
-    %         node_1.local_id, ...        % node_1
-    %         node_2.local_id, ...        % node_2
-    %         node_3.local_id, ...        % node_3
-    %         node_4.local_id, ...        % node_4
-    %         stringer_index , ...         % stringer_1
-    %         stringer_index + 1, ...     % stringer_2
-    %         -2, ...                % rib_1
-    %         start_rib+1, ...            % rib_2
-    %         "quad irregular P1 inserted", ...       % tags
-    %         area, ...                   % area
-    %         aspect_ratio, ...           % aspect_ratio
-    %         'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', ...
-    %                           'stringer_1', 'stringer_2', 'rib_1', 'rib_2', 'tags', ...
-    %                           'area', 'aspect_ratio'})];
-    % 
-    %     surface_counter = surface_counter + 1;
+    %% Caso no hay inserted nodes, pasamos a la construcción a las superficies pentagonal.
+    % En el caso que no haya inserted_nodes
+    if isempty(inserted_nodes)
+        node_1 = current_stringer_nodes(current_stringer_nodes.rib_index == start_rib , :); % Bottom-left
+        node_2 = next_stringer_nodes(next_stringer_nodes.rib_index == start_rib & next_stringer_nodes.tag =='stringer', :); % Top-right
+        node_3 = next_stringer_nodes(next_stringer_nodes.rib_index == -2  & next_stringer_nodes.tag =='stringer', :); % Top-right
+        node_4 = combined_nodes(combined_nodes.tag =='front spars' & combined_nodes.rib_index == start_rib+1,:);       % Bottom-right                                                      % Top-left
+        node_5 = current_stringer_nodes(current_stringer_nodes.rib_index == start_rib + 1, :); % Bottom-left
+        
+        % Validate nodes
+        if isempty(node_1) || isempty(node_2) || isempty(node_3) || isempty(node_4) || isempty(node_5)
+            warnings{end+1} = sprintf('Skipping rib pair %d-%d due to missing nodes.', start_rib, start_rib + 1);
+            % continue;
+        end
+        
+        % Extract coordinates for surface property calculation
+        surface_coords = [
+            node_1.x, node_1.y;
+            node_2.x, node_2.y;
+            node_3.x, node_3.y;
+            node_4.x, node_4.y;
+            node_5.x, node_5.y
+        ];
+        
+        % Compute area and aspect ratio
+        [is_valid, aspect_ratio] = check_aspect_ratio(surface_coords, 'penta');
+        if ~is_valid
+            warnings{end+1} = sprintf('Skipped pentagonal surface due to poor aspect ratio at rib pair %d-%d.', start_rib, start_rib + 1);
+            % continue;
+        end
+        area = polyarea(surface_coords(:, 1), surface_coords(:, 2));
+        
+        % Append surface to penta_surfaces
+        penta_surfaces = [penta_surfaces; table( ...
+            surface_counter, ...        % local_id
+            node_1.local_id, ...        % node_1
+            node_2.local_id, ...        % node_2
+            node_3.local_id, ...        % node_3
+            node_4.local_id, ...        % node_4
+            node_5.local_id, ...        % node_5
+            stringer_index, ...         % stringer_1
+            stringer_index + 1, ...     % stringer_2
+            start_rib, ...              % rib_1
+            start_rib + 1, ...                     % rib_2
+            "penta front", ...      % tags
+            area, ...                   % area
+            aspect_ratio, ...           % aspect_ratio
+            'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', 'node_5', ...
+                              'stringer_1', 'stringer_2', 'rib_1', 'rib_2', 'tags', ...
+                              'area', 'aspect_ratio'})];
+
+        surface_counter = surface_counter + 1;
+    end
 
     %% Create First Surface (inserted_nodes)
     if ~isempty(current_stringer_nodes) && ~isempty(next_stringer_nodes) && ~isempty(end_point) && ~isempty(inserted_nodes)
@@ -213,7 +172,7 @@ function [quad_surfaces,tri_surfaces, warnings] = create_surfaces_for_stringer_i
         surface_counter = surface_counter + 1;
     end
     
-    %% Create second Surface
+    %% Create second Surface (inserted node)
     if ~isempty(current_stringer_nodes) && ~isempty(next_stringer_nodes) && ~isempty(end_point) && ~isempty(inserted_nodes)
         node_1 = inserted_nodes; % Bottom-left
         node_2 = end_point;       % Bottom-right

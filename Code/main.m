@@ -16,6 +16,7 @@ FlagConstruirFuselaje = false;
 FlagConstruirFuselaje2 = false;
 FlagConstruirFuselaje3 = false;
 FlagConstruirFuselaje4 = false;
+FlagConstruirFuselaje5 = true;
 FlagConstruirAla2 = false;
 FlagConstruirAla3 = false;
 FlagConstruirAla4 = false;
@@ -28,7 +29,7 @@ FlagConstruirAla10 = false;
 FlagConstruirAla11 = false;
 FlagConstruirAla12 = false;
 FlagConstruirAla13 = false;
-FlagConstruirAla14 = true;
+FlagConstruirAla14 = false;
 output_command8 = false;
 mesh_generar6 = false;
 
@@ -53,6 +54,8 @@ ala13 = avion.ala13;
 % fuselaje = avion.fuselaje;
 % fuselaje2 = avion.fuselaje2;
 % fuselaje3 = avion.fuselaje3;
+% fuselaje4 = avion.fuselaje4;
+fuselaje5 = avion.fuselaje5;
 numero_de_puntos = datosEstructural.numero_de_puntos_en_las_lineas;
 x_local_ala = avion.coordenadas.x_local_ala;
 
@@ -207,6 +210,12 @@ if FlagConstruirFuselaje4
     save('../Data/TFG_amora.mat', 'TFG_Amora');
 end
 
+if FlagConstruirFuselaje5
+    results = construir_fuselaje_v5(avion,datosEstructural, ala13,true);
+    TFG_Amora.aviones.a350_1000.fuselaje5 = results;
+    fuselaje5 = results;
+    save('../Data/TFG_amora.mat', 'TFG_Amora');
+end
 % % Flag graficas
 % showAla = true;
 
