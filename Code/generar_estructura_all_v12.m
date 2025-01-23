@@ -404,8 +404,58 @@ OnlyQuads_Fuselaje = [quad_rear_root_fuselaje; quad_fuselaje; quad_front_root_fu
 
 % OnlyPlotFuselaje_v1(combined_nodes_fuselaje, plottitle, plotfilename,avion,datosEstructural);
 
-OnlyPlotSurface_v4(combined_nodes, combined_nodes_fuselaje, inserted_table, ...
-    [OnlyQuads; OnlyQuads_Fuselaje], [OnlyTri], [OnlyPenta],[OnlyRear], plottitle, plotfilename,avion,datosEstructural);
+% OnlyPlotSurface_v4(combined_nodes, combined_nodes_fuselaje, inserted_table, ...
+%     [OnlyQuads; OnlyQuads_Fuselaje], [OnlyTri], [OnlyPenta],[OnlyRear], plottitle, plotfilename,avion,datosEstructural);
+
+%% 3D 
+% Thickness
+H = 0.02;
+
+% Generate the 3D node table
+combined_nodes_3D = generate_3D_nodes(combined_nodes, combined_nodes_fuselaje, H);
+
+%% Vertical surfaces in the spar
+
+% Creación de los largueros
+[quad_rear, warnings] = create_surfaces_vertical_rear_spar_wing_v1(combined_nodes_3D);
+[quad_front, warnings] = create_surfaces_vertical_front_spar_wing_v1(combined_nodes_3D);
+[quad_rear_fuselaje, warnings] = create_surfaces_vertical_rear_spar_fuselaje_v1(combined_nodes_3D);
+[quad_front_fuselaje, warnings] = create_surfaces_vertical_front_spar_fuselaje_v1(combined_nodes_3D);
+
+% Creación de ribs
+[quad_ribs, warnings] = create_surfaces_vertical_ribs_wing_v1(combined_nodes_3D);
+[quad_ribs_fuselaje, warnings] = create_surfaces_vertical_ribs_fuselaje_v1(combined_nodes_3D);
+
+%% Creación de líneas para barras (cRod)
+% [horizontal_stringers,vertical_stringers] = create_stringers(combined_nodes_3D);
+% [horizontal_stringers,vertical_stringers] = create_stringers_v2(combined_nodes_3D);
+%% Guardar a .csv
+OnlyQuadRegular = [quad_surfaces_regular;quad_rectangular_regular];
+
+combined_nodes_3D_processed = process_nodes(combined_nodes_3D);
+save_nodes_to_csv(combined_nodes_3D_processed);
+
+% Step 2: Map lines to global IDs from combined_nodes_3D
+lines_updated = process_lines(combined_nodes_3D_processed, horizontal_stringers(1:5,:));
+save_lines_to_csv(lines_updated);
+
+surface_updated = 
+% %
+% nodos = combined_nodes_3D{:, 2:4};
+% points_table = array2table(nodos, 'VariableNames', {'x', 'y', 'z'});
+%     writetable(points_table, '.\output\points.csv', 'WriteVariableNames', true, ...
+%         'FileType', 'text');
+% 
+%     elements = [1, 2; % Element 1 connects Point 1 to Point 2
+%             2, 3; % Element 2 connects Point 2 to Point 3
+%             3, 4; % Element 3 connects Point 3 to Point 4
+%             4, 1]; % Element 4 connects Point 4 to Point 1
+%     % Convert elements to floating-point format
+%     elements_table = array2table(elements, 'VariableNames', {'Point1', 'Point2'});
+% 
+%     % Write elements to a .csv file with custom formatting
+%     writetable(elements_table, '.\output\elements.csv', 'WriteVariableNames', true, ...
+%     'FileType', 'text');
 
 %% Plot
 % All quad regular/irregular, tri, penta

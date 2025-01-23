@@ -1,0 +1,24 @@
+**ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz**************************
+**PARASOLID !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~0123456789**************************
+**PART1;
+MC=DESKTOP-FVDIIM1;
+MC_MODEL=unknown;
+MC_ID=unknown;
+OS=Windows NT;
+OS_RELEASE=6.2;
+FRU=Unigraphics Solutions;
+APPL=SolidEdge;
+SITE=Huntsville, AL;
+USER=jessa
+FORMAT=text;
+GUISE=transmit;
+KEY=C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root\Freecad\output_model2;
+FILE=C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root\Freecad\output_model2.x_t;
+DATE=ju., ene. 23 25;
+**PART2;
+SCH=SCH_3600142_36001;
+USFLD_SIZE=0;
+**PART3;
+**END_OF_HEADER*****************************************************************
+T51 : TRANSMIT FILE created by modeller version 360014217 SCH_2401000_200000 10
+ 1 0 0 0 0 0 0 0 0 1e3 1e-8 0 0 0 1 0 1 0 1 0 
