@@ -1,0 +1,3 @@
+"C:\Program Files\FreeCAD 1.0\bin\python.exe" test3.py
+
+https://escritorio.upm.es/uds/page/services

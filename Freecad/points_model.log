@@ -1,6 +1,6 @@
 STEP translation to Solid Edge
-Date: viernes,enero 24,2025 07:23
-Source File: C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root\Freecad\output_model.step
+Date: viernes,enero 24,2025 08:10
+Source File: C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root\Freecad\points_model.step
 Author: FreeCAD
 Organization: FreeCAD
 Source System: FreeCAD
@@ -38,7 +38,7 @@ Import As Internal Components: On
 Import Path: 
 
 Translating to Parasolid data types...
-Internal Components Time : 00 : 00 : 00
-Foreign to XT BRep Time : 00 : 00 : 04
+Internal Components Time : 00 : 00 : 02
+Foreign to XT BRep Time : 00 : 00 : 06
 Translation process completed
-Total time required to translate and post process:00 : 00 : 04
+Total time required to translate and post process:00 : 00 : 06

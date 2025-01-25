@@ -1,8 +1,3 @@
-import sys
-sys.path.append(r"C:\Program Files\FreeCAD 1.0\bin")  # Path to FreeCAD bin
-sys.path.append(r"C:\Program Files\FreeCAD 1.0\lib")  # Path to FreeCAD lib
-import FreeCAD as App
-
 import FreeCAD as App
 import Part
 import csv
@@ -39,13 +34,8 @@ def create_geometry(points, elements, doc):
         obj.Shape = edge
     doc.recompute()
 
-# Export geometry as STEP file with custom tolerance
+# Export geometry as STEP file
 def export_to_step(doc, output_path):
-    # Set export tolerance (global setting)
-    App.ParamGet("User parameter:BaseApp/Preferences/Mod/Part").SetInt("STEPExportSchema", 214)  # AP214 for extended data
-    App.ParamGet("User parameter:BaseApp/Preferences/Mod/Part").SetFloat("STEPExportPrecision", 1e-6)  # Set precision to 1e-6
-
-    # Collect objects to export
     objects = [obj for obj in doc.Objects if obj.TypeId.startswith("Part::")]
     Part.export(objects, output_path)
     print(f"Model exported as STEP to: {output_path}")
@@ -53,11 +43,11 @@ def export_to_step(doc, output_path):
 # Main script
 def main():
     # Paths to input CSV files
-    points_csv = r"output\points.csv"  # Replace with actual path
-    elements_csv = r"output\lines.csv"  # Replace with actual path
-    # Path to output STEP file
-    step_output = r"..\Freecad\output.step"  # Replace with actual path
+    points_csv = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\points.csv"  # Replace with actual path
+    elements_csv = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\elements.csv"  # Replace with actual path
 
+    # Path to output STEP file
+    step_output = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\output_model.step"  # Replace with actual path
 
     # Read data
     points = read_points(points_csv)

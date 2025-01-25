@@ -29,15 +29,19 @@ def read_elements(file_path):
             elements.append((int(row['Point1']) - 1, int(row['Point2']) - 1))  # Zero-based index
     return elements
 
-# Create geometry in FreeCAD
 def create_geometry(points, elements, doc):
     for i, (p1_index, p2_index) in enumerate(elements):
+        if p1_index < 0 or p1_index >= len(points) or p2_index < 0 or p2_index >= len(points):
+            print(f"Skipping element {i}: Invalid indices ({p1_index}, {p2_index})")
+            continue
+        
         # Create line between points
         line = Part.LineSegment(points[p1_index], points[p2_index])
         edge = line.toShape()
         obj = doc.addObject("Part::Feature", f"Edge_{i}")
         obj.Shape = edge
     doc.recompute()
+
 
 # Export geometry as STEP file with custom tolerance
 def export_to_step(doc, output_path):
@@ -53,11 +57,11 @@ def export_to_step(doc, output_path):
 # Main script
 def main():
     # Paths to input CSV files
-    points_csv = r"output\points.csv"  # Replace with actual path
-    elements_csv = r"output\lines.csv"  # Replace with actual path
-    # Path to output STEP file
-    step_output = r"..\Freecad\output.step"  # Replace with actual path
+    points_csv = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\mesh\v6_points.csv"  # Replace with actual path
+    elements_csv = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\mesh\v6_elements.csv"  # Replace with actual path
 
+    # Path to output STEP file
+    step_output = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\mesh\output_model_v6.step"  # Replace with actual path
 
     # Read data
     points = read_points(points_csv)

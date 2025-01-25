@@ -47,7 +47,7 @@ start_rib = rib_ranges(1,2);
 % cordon_anterior = [cordon_fuselage(1:end-1,:); combined_nodes_3D(combined_nodes_3D.tag=='OnlyNode' & combined_nodes_3D.h == 'intrados',:); cordon_wing];
 % 
 % [cordon_anterior_intrados, line_counter] = create_lines_from_stringer_horizontal(cordon_anterior, -1, "front spar", "intrados", 1);
-% 
+%   
 
 %% Creación de larguerillos/barras
 

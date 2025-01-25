@@ -1,0 +1,15 @@
+$REJECT (SEMTRN)  IGNORE INPUT CARD(S) BEFORE BEGIN BULK 
+SOL 101
+SOL 101
+$REJECT (SEMTRN)  CASE CONTROL CARD(S) AFTER  CEND 
+$ Direct Text Input for Global Case Control Data
+$>TITLE = MSC.Nastran job created on 29-Nov-24 at 00:26:41
+$ Subcase name : Default
+$>   SUBTITLE=Default
+$REJECT (SEMTRN)  IGNORE INPUT CARD(S) AFTER  BEGIN BULK 
+$ Direct Text Input for Bulk Data
+$>HDF5OUT PRCISION 32     CMPRMTHD LZ4     LEVEL   5
+$ Loads for Load Case : Default
+$ Referenced Coordinate Frames
+$>ENDDATA 09ad9476
+

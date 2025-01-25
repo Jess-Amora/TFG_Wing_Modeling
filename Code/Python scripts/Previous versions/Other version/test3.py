@@ -53,11 +53,11 @@ def export_to_step(doc, output_path):
 # Main script
 def main():
     # Paths to input CSV files
-    points_csv = r"output\points.csv"  # Replace with actual path
-    elements_csv = r"output\lines.csv"  # Replace with actual path
-    # Path to output STEP file
-    step_output = r"..\Freecad\output.step"  # Replace with actual path
+    points_csv = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\points.csv"  # Replace with actual path
+    elements_csv = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\elements.csv"  # Replace with actual path
 
+    # Path to output STEP file
+    step_output = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\output_model.step"  # Replace with actual path
 
     # Read data
     points = read_points(points_csv)

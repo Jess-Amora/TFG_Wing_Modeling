@@ -1,0 +1,1019 @@
+$# Creating journal file C:\Users\jessa\OneDrive - Universidad Politécnica de 
+$# Madrid\0. TFG 23-24\Project_Root\Patran\test1.db.jou at 25-Jan-25 13:02:17
+uil_file_rebuild.start("C:\Program Files\MSC.Software\NaPa_SE\20231\Patran" // @
+"/template.db","C:\Users\jessa\OneDrive - Universidad Politécnica de Madri" // @
+"d\0. TFG 23-24\Project_Root\Patran\test1.db")
+$# Synchronizing the User Data Manager
+set_current_dir( "C:\Users\jessa\OneDrive - Universidad Politécnica de Mad" // @
+"rid\0. TFG 23-24\Project_Root\Patran" )
+$# The current working directory has been changed to the database location 
+$# shown.                                                                     
+$#                                                                            
+$#                                   
+nastran_input_import( "C:\Users\jessa\OneDrive - Universidad Politécnica d" // @
+"e Madrid\0. TFG 23-24\Project_Root\model.bdf", "default_group", 11, [TRUE,  @
+TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, TRUE], [0, 0, 0, 0, 0,  @
+0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [-2000000000,  @
+-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000,  @
+-2000000000, 0, 0, 1000] )
+$# Loading dynamic library C:\Program 
+$# Files\MSC.Software\NaPa_SE\20231\Patran\bin\exe\nifimp2.dll
+$# Question from application FILE
+$#     Problem detected while importing the MSC.Nastran input file using 
+$# IFPStar SCA Services
+$# Check the .log file for the problem detected.
+$# Do you wish to continue?
+$# Selecting "Yes" will continue and attempt to import the file.
+$# Selecting "No" will halt the import.
+$# 
+$? YES 36002006 
+$# Acknowledgement requested from application FILE
+$#     
+$# Creating Nastran Database using IFPStar SCA Service: Failed
+$# 
+$? NO 36002006 
+$# Reading of MSC.Nastran input file completed.
+nastran_input_import( "C:\Users\jessa\OneDrive - Universidad Politécnica d" // @
+"e Madrid\0. TFG 23-24\Project_Root\Nastran\model1.bdf", "default_group", 11,  @
+[TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, TRUE], [0, 0, 0, @
+ 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [-2000000000,  @
+-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000,  @
+-2000000000, 0, 0, 1000] )
+$# Question from application FILE
+$#     Problem detected while importing the MSC.Nastran input file using 
+$# IFPStar SCA Services
+$# Check the .log file for the problem detected.
+$# Do you wish to continue?
+$# Selecting "Yes" will continue and attempt to import the file.
+$# Selecting "No" will halt the import.
+$# 
+$? YES 36002006 
+$# Acknowledgement requested from application FILE
+$#     
+$# Creating Nastran Database using IFPStar SCA Service: Failed
+$# 
+$? NO 36002006 
+$# Reading of MSC.Nastran input file completed.
+nastran_input_import( "C:\Users\jessa\OneDrive - Universidad Politécnica d" // @
+"e Madrid\0. TFG 23-24\Project_Root\Patran\model.bdf", "default_group", 11, [ @
+TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, TRUE], [0, 0, 0,  @
+0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [-2000000000,  @
+-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000,  @
+-2000000000, 0, 0, 1000] )
+$# Question from application FILE
+$#     Problem detected while importing the MSC.Nastran input file using 
+$# IFPStar SCA Services
+$# Check the .log file for the problem detected.
+$# Do you wish to continue?
+$# Selecting "Yes" will continue and attempt to import the file.
+$# Selecting "No" will halt the import.
+$# 
+$? YES 36002006 
+$# Acknowledgement requested from application FILE
+$#     
+$# Creating Nastran Database using IFPStar SCA Service: Failed
+$# 
+$? NO 36002006 
+$# Reading of MSC.Nastran input file completed.
+nastran_input_import( "C:\Users\jessa\OneDrive - Universidad Politécnica d" // @
+"e Madrid\0. TFG 23-24\Project_Root\Patran\test1.bdf", "default_group", 11, [ @
+TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, TRUE], [0, 0, 0,  @
+0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [-2000000000,  @
+-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000,  @
+-2000000000, 0, 0, 1000] )
+$# Question from application FILE
+$#     Problem detected while importing the MSC.Nastran input file using 
+$# IFPStar SCA Services
+$# Check the .log file for the problem detected.
+$# Do you wish to continue?
+$# Selecting "Yes" will continue and attempt to import the file.
+$# Selecting "No" will halt the import.
+$# 
+$? YES 36002006 
+$# Acknowledgement requested from application FILE
+$#     
+$# Creating Nastran Database using IFPStar SCA Service: Failed
+$# 
+$? NO 36002006 
+$# Reading of MSC.Nastran input file completed.
+nastran_input_import( "C:\Users\jessa\OneDrive - Universidad Politécnica d" // @
+"e Madrid\0. TFG 23-24\Project_Root\Patran\test1_222513328.bdf",  @
+"default_group", 11, [TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,  @
+FALSE, TRUE, FALSE], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0,  @
+0, 0, 0, 0], [-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, @
+ -2000000000, -2000000000, -2000000000, 0, 0, 1000] )
+$# Question from application FILE
+$#     Problem detected while importing the MSC.Nastran input file using 
+$# IFPStar SCA Services
+$# Check the .log file for the problem detected.
+$# Do you wish to continue?
+$# Selecting "Yes" will continue and attempt to import the file.
+$# Selecting "No" will halt the import.
+$# 
+$? YES 36002006 
+$# Acknowledgement requested from application FILE
+$#     
+$# Creating Nastran Database using IFPStar SCA Service: Failed
+$# 
+$? NO 36002006 
+$# Reading of MSC.Nastran input file completed.
+nastran_input_import( "C:\Users\jessa\OneDrive - Universidad Politécnica d" // @
+"e Madrid\0. TFG 23-24\Project_Root\Patran\test1.bdf", "default_group", 11, [ @
+TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE], [ @
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [ @
+-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000,  @
+-2000000000, -2000000000, 0, 0, 1000] )
+$# Question from application FILE
+$#     Problem detected while importing the MSC.Nastran input file using 
+$# IFPStar SCA Services
+$# Check the .log file for the problem detected.
+$# Do you wish to continue?
+$# Selecting "Yes" will continue and attempt to import the file.
+$# Selecting "No" will halt the import.
+$# 
+$? YES 36002006 
+$# Acknowledgement requested from application FILE
+$#     
+$# Creating Nastran Database using IFPStar SCA Service: Failed
+$# 
+$? NO 36002006 
+$# Reading of MSC.Nastran input file completed.
+nastran_input_import( "C:\Users\jessa\OneDrive - Universidad Politécnica d" // @
+"e Madrid\0. TFG 23-24\Project_Root\Patran\master.bdf", "default_group", 11, [ @
+TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE], [ @
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [ @
+-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000,  @
+-2000000000, -2000000000, 0, 0, 1000] )
+$# Question from application FILE
+$#     Problem detected while importing the MSC.Nastran input file using 
+$# IFPStar SCA Services
+$# Check the .log file for the problem detected.
+$# Do you wish to continue?
+$# Selecting "Yes" will continue and attempt to import the file.
+$# Selecting "No" will halt the import.
+$# 
+$? YES 36002006 
+$# Acknowledgement requested from application FILE
+$#     
+$# Creating Nastran Database using IFPStar SCA Service: Failed
+$# 
+$? NO 36002006 
+$# Reading of MSC.Nastran input file completed.
+nastran_input_import( "C:\Users\jessa\OneDrive - Universidad Politécnica d" // @
+"e Madrid\0. TFG 23-24\Project_Root\Patran\trabajo_voluntario_9_ejec_1.bdf",  @
+"default_group", 11, [TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,  @
+FALSE, TRUE, FALSE], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0,  @
+0, 0, 0, 0], [-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, @
+ -2000000000, -2000000000, -2000000000, 0, 0, 1000] )
+$# Question from application FILE
+$#     Problem detected while importing the MSC.Nastran input file using 
+$# IFPStar SCA Services
+$# Check the .log file for the problem detected.
+$# Do you wish to continue?
+$# Selecting "Yes" will continue and attempt to import the file.
+$# Selecting "No" will halt the import.
+$# 
+$? YES 36002006 
+$# Acknowledgement requested from application FILE
+$#     
+$# Creating Nastran Database using IFPStar SCA Service: Failed
+$# 
+$? NO 36002006 
+$# Reading of MSC.Nastran input file completed.
+nastran_input_import( "C:\Nastran\TFG_test1.bdf", "default_group", 11, [TRUE,  @
+FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE], [0, 0,  @
+0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [-2000000000,  @
+-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000,  @
+-2000000000, 0, 0, 1000] )
+$# 
+$# Creating Nastran Database using IFPStar SCA Service: Success
+$# 
+$# Warning reported from application FILE
+$#     The maximum number of Comment/Unrecognized Line import has been set to 
+$# 1000.
+$# Importing data...
+$# Reading of MSC.Nastran input file completed.
+nastran_input_import( "C:\Nastran\test\trabajo_voluntario_9_ejec_1.bdf",  @
+"default_group", 11, [TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,  @
+FALSE, TRUE, FALSE], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0,  @
+0, 0, 0, 0], [-2000000000, -2000000000, -2000000000, -2000000000, -2000000000, @
+ -2000000000, -2000000000, -2000000000, 0, 0, 1000] )
+$# 
+$# Creating Nastran Database using IFPStar SCA Service: Success
+$# 
+$# Warning reported from application FILE
+$#     The maximum number of Comment/Unrecognized Line import has been set to 
+$# 1000.
+$# Importing data...
+$# 714 Nodes written to database.
+$# 0 Materials written to database.
+$# 0 Elements written to database.
+$# 0 Property Sets written to database.
+$# Reading of MSC.Nastran input file completed.
+nastran_input_import( "C:\Nastran\test\test1.bdf", "default_group", 11, [TRUE, @
+ FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE], [1, 0,  @
+0, 0, 0, 0, 0, 0, 0, 0, 0], [797, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [-2000000000, @
+ -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, -2000000000, @
+ -2000000000, 0, 0, 1000] )
+$# 
+$# Creating Nastran Database using IFPStar SCA Service: Success
+$# 
+$# Question from application FILE
+$#     Problem detected while importing the MSC.Nastran input file using 
+$# IFPStar SCA Services
+$# Check the .log file for the problem detected.
+$# Do you wish to continue?
+$# Selecting "Yes" will continue and attempt to import the file.
+$# Selecting "No" will halt the import.
+$# 
+$? YES 36002006 
+$# Warning reported from application FILE
+$#     The ID offset for Nodes import has been set to 797.
+$# Warning reported from application FILE
+$#     The maximum number of Comment/Unrecognized Line import has been set to 
+$# 1000.
+$# Importing data...
+$# Question from application FILE
+$#     The node ID offset has been set to 797 and the element ID offset has 
+$# been set to 0, but no nodes or elements were found in the input file.  
+$# References to node IDs and element IDs by LBCs will be offset by these 
+$# amounts.  Do you want to reset the node and element ID offsets to 0 before 
+$# importing the LBCs?
+$? YES 36002120 
+$# The node ID offset value has been reset to 0.
+$# Warning reported from application FILE
+$#     Node 1 references coordinate frame (RCID) ID = 31 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Question from application FILE
+$#     Node 1 already exists in the database. Do you want to offset the ID 
+$# that is being read?
+$? YESFORALL 36002115 
+$# Warning reported from application FILE
+$#     Node 2 references coordinate frame (RCID) ID = 30 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 3 references coordinate frame (RCID) ID = 29 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 4 references coordinate frame (RCID) ID = 29 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 5 references coordinate frame (RCID) ID = 28 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 6 references coordinate frame (RCID) ID = 27 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 7 references coordinate frame (RCID) ID = 26 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 8 references coordinate frame (RCID) ID = 25 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 9 references coordinate frame (RCID) ID = 24 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 10 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 11 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 12 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 13 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 14 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 15 references coordinate frame (RCID) ID = 1 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 16 references coordinate frame (RCID) ID = 1 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 17 references coordinate frame (RCID) ID = 1 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 18 references coordinate frame (RCID) ID = 1 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 19 references coordinate frame (RCID) ID = 1 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 20 references coordinate frame (RCID) ID = 1 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 21 references coordinate frame (RCID) ID = 1 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 22 references coordinate frame (RCID) ID = 1 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 23 references coordinate frame (RCID) ID = 1 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 24 references coordinate frame (RCID) ID = 1 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 25 references coordinate frame (RCID) ID = 1 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 26 references coordinate frame (RCID) ID = 9 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 27 references coordinate frame (RCID) ID = 8 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 28 references coordinate frame (RCID) ID = 7 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 29 references coordinate frame (RCID) ID = 7 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 30 references coordinate frame (RCID) ID = 6 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 31 references coordinate frame (RCID) ID = 5 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 32 references coordinate frame (RCID) ID = 4 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 33 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 34 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 35 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 36 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 37 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 38 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 39 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 40 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 41 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 42 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 43 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 44 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 45 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 46 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 47 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 48 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 49 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 50 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 51 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 52 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 53 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 54 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 55 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 56 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 57 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 58 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 59 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 60 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 61 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 62 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 63 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 64 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 65 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 66 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 67 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 68 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 69 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 70 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 71 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 72 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 73 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 74 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 75 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 76 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 77 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 78 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 79 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 80 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 81 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 82 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 83 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 84 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 85 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 86 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 87 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 88 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 89 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 90 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 91 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 92 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 93 references coordinate frame (RCID) ID = 2 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 94 references coordinate frame (RCID) ID = 4 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 95 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 96 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 97 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 98 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# Warning reported from application FILE
+$#     Node 99 references coordinate frame (RCID) ID = 3 that doesn't exist 
+$# in the input deck. Transforming XYZ for the node failed.
+$# 5604 Nodes written to database.
+$# 0 Materials written to database.
+$# 0 Elements written to database.
+$# 0 Property Sets written to database.
+$# Reading of MSC.Nastran input file completed.
+ga_view_center_set( -35552.000000, -10140.187500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -67153.625000, -19153.718750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -95244.062500, -27165.781250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -120213.312500, -34287.593750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -142408.062500, -40618.062500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -162136.875000, -46245.187500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -179673.500000, -51247.046875 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -195261.687500, -55693.156250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -209117.843750, -59645.250000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -221434.437500, -63158.234375 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -214789.343750, -52365.328125 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -207408.906250, -39747.203125 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -199105.968750, -25230.375000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -189765.093750, -8657.906250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -179256.656250, 10664.093750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -167434.781250, 32401.328125 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -154134.968750, 56855.750000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -139172.718750, 84366.937500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -122340.218750, 115317.031250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -103403.593750, 150135.875000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -82099.968750, 189307.125000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -58133.468750, 233374.687500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -31170.843750, 282950.781250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( -838.093750, 338723.875000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 33286.156250, 401468.562500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 71676.156250, 472056.406250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 114864.406250, 551467.625000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 163451.906250, 640805.312500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 218112.656250, 741310.312500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 279605.156250, 854378.312500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 348785.156250, 981579.812500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 426612.156250, 1124681.500000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 328700.656250, 1012710.750000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 241668.156250, 913181.125000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 164306.156250, 824710.500000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 95539.406250, 746069.750000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 34413.406250, 676166.875000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+uil_primary_file.db_save(  )
+$# UNDO: Analysis -- Analyze
+$#  Beginning analysis of  test1
+jobfile.open( "test1", "ANALYZE NO JOBFILE" )
+msc_delete_old_files( "test1", ".bdf", ".h5" )
+jobfile.write_spl( "/* Jobfile for PATNAS created %A% at %A% */", ["25-Jan-25" @
+, "13:14:48"] )
+jobfile.writec( "", "TRANSLATOR = pat3nas" )
+jobfile.writec( "DATABASE", "C:\Users\jessa\OneDrive - Universidad Politéc" // @
+"nica de Madrid\0. TFG 23-24\Project_Root\Patran\test1.db" )
+jobfile.writec( "JOBNAME", "test1" )
+jobfile.writec( "ANALYSIS TITLE", "MSC.Nastran job created on 25-Jan-25 at" // @
+" 13:02:19" )
+jobfile.writec( "ANALYSIS SUBTITLE", "" )
+jobfile.writec( "ANALYSIS LABEL", "" )
+jobfile.writec( "", "" )
+jobfile.writec( "OBJECT", "Entire Model" )
+jobfile.writec( "METHOD", "Full Run" )
+jobfile.writec( "", "" )
+jobfile.writec( "MODEL SUFFIX", ".bdf" )
+jobfile.writec( "RESULTS SUFFIX", ".h5" )
+jobfile.writec( "", "" )
+jobfile.writec( "", "/*" )
+jobfile.writec( "", " * File Search Path Declaration" )
+jobfile.writec( "", " */" )
+jobfile.writec( "", "" )
+jobfile.writec( "File Search Path", "C:\Users\jessa" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\helpfiles" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\alters" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\icons" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\icons\RibbonIcons" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\bin" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\bin\exe" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\mscexplore_files\" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\mscprocor_files\dmap" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\mscprocor_files\plb" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\mscprocor_files\lib" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\mscprocor_files\icons" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\shareware\msc\unsupported\utilities\icons" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\shareware\msc\unsupported\utilities\plb" )
+jobfile.writec( "File Search Path", "C:\Program Files\MSC.Software\NaPa_SE" // @
+"\20231\Patran\shareware\msc\unsupported\utilities\extra_files" )
+jobfile.writec( "", "" )
+jobfile.writec( "", "/*" )
+jobfile.writec( "", " * Translation Parameters" )
+jobfile.writec( "", " */" )
+jobfile.writec( "", "" )
+jobfile.writec( "DATA OUTPUT", "HDF5C+PRINT" )
+jobfile.writec( "OUTPUT2 REQUESTS", "P3 Built In" )
+jobfile.writec( "OUTPUT2 FORMAT", "Binary" )
+jobfile.writec( "HDF5OUT PRECISION", "HDF5P 32-BIT" )
+jobfile.writec( "DIVISION TOLERANCE", "1.0e-08" )
+jobfile.writec( "NUMERICAL TOLERANCE", "1.0e-04" )
+jobfile.writec( "WRITING TOLERANCE", "1.0e-21" )
+jobfile.writec( "GEOM CHECK", "INFORM" )
+jobfile.writec( "SORTED BULK", "NO" )
+jobfile.writec( "CARD FORMAT", "either" )
+jobfile.writec( "NODE COORDINATES", "reference frame" )
+jobfile.writec( "COORD COORDINATES", "global" )
+jobfile.writec( "MSC.Nastran VERSION", "2023.1" )
+jobfile.writec( "WRITE STORED PRECISION", "TRUE" )
+jobfile.writec( "WRITE IN FREE FORMAT", "FALSE" )
+jobfile.writec( "PROPS ON ELEM ENTRY", "FALSE" )
+jobfile.writec( "CONTINUATION ENTRY", "FALSE" )
+jobfile.writec( "PCOMPG ENTRY", "TRUE" )
+jobfile.writec( "CONVERT CBAR CBEAM", "FALSE" )
+jobfile.writec( "ITERATIVE SOLVER", "FALSE" )
+jobfile.writei( "SUPER ELEMENT 0", 0 )
+jobfile.writec( "SEALL WRITE", "FALSE" )
+jobfile.writec( "PART SUPERELEMENT CREATE", "TRUE" )
+jobfile.writec( "AUTOQSET", "FALSE" )
+jobfile.writec( "FIXEDB", "FALSE" )
+jobfile.writei( "SUPER TREE COUNT", 0 )
+jobfile.writec( "MODEL TOLERANCE", "0.0049999999" )
+jobfile.writec( "ELEMENT PROPERTY OFFSET", "0" )
+jobfile.writec( "MATERIAL PROPERTY OFFSET", "0" )
+jobfile.writec( "TABLE OFFSET", "0" )
+jobfile.writec( "LOAD SET OFFSET", "0" )
+jobfile.writec( "LOAD CASE OFFSET", "0" )
+jobfile.writec( "CONTROL SET OFFSET", "0" )
+jobfile.writec( "RIGID ELEMENT OFFSET", "0" )
+jobfile.writec( "SCALAR POINT OFFSET", "0" )
+jobfile.writec( "BEGINNING CONTINUATION MARKER", "+      A" )
+jobfile.writec( "NUMBER ONLY", "ON" )
+jobfile.writec( "BEGINNING NUMBER", "OFF" )
+jobfile.writec( "TRAILING NUMBER", "OFF" )
+jobfile.writec( "SYNTAX NUMBER", "ON" )
+jobfile.writec( "SYNTAX MARKER", "." )
+jobfile.writec( "EXTERNAL SUPERELEMENT METHOD", "NONE" )
+jobfile.writec( "GRID COORDINATES ROUNDING", "15" )
+jobfile.writec( "COORD DATA PRECISION ROUNDING", "15" )
+jobfile.writec( "MPC DATA PRECISION ROUNDING", "15" )
+jobfile.writec( "LBC DATA PRECISION ROUNDING", "7" )
+jobfile.writec( "MAT DATA PRECISION ROUNDING", "15" )
+jobfile.writec( "PROP DATA PRECISION ROUNDING", "7" )
+jobfile.writec( "USE LEGACY PRECISION", "FALSE" )
+jobfile.writec( "EXPONENTIAL WRITE", "As Needed" )
+jobfile.writec( "EXPONENTIAL FORM", "Condensed" )
+jobfile.writec( "", "" )
+jobfile.writec( "", "/*" )
+jobfile.writec( "", " * Solution Parameters" )
+jobfile.writec( "", " */" )
+jobfile.writec( "", "" )
+jobfile.writec( "SOLUTION TYPE", "LINEAR STATIC" )
+jobfile.writei( "SOLUTION SEQUENCE", 101 )
+jobfile.writec( "DATABASE RUN", "ON" )
+jobfile.writec( "CYCLIC SYMMETRY", "OFF" )
+jobfile.writec( "AUTOMATIC CONSTRAINTS", "ON" )
+jobfile.writec( "INERTIA RELIEF", "OFF" )
+jobfile.writec( "ALTERNATE REDUCTION", "OFF" )
+jobfile.writec( "SHELL NORMAL TOLERANCE", "" )
+jobfile.writec( "MASS CALCULATION", "Lumped" )
+jobfile.writec( "DATA DECK ECHO", "None" )
+jobfile.writec( "PLATE RZ STIFFNESS FACTOR", "100.0" )
+jobfile.writec( "MAXIMUM PRINTED LINES", "" )
+jobfile.writec( "MAXIMUM RUN TIME", "" )
+jobfile.writec( "WT-MASS CONVERSION", "1.0" )
+jobfile.writec( "NODE ID FOR WT-GENER", "" )
+jobfile.writec( "RIGID ELEMENT TYPE", "LINEAR" )
+jobfile.writec( "USE SOL600", "OFF" )
+jobfile.writei( "CONTACT-SEGMENT-CONTROL METHOD", 0 )
+jobfile.writei( "CONTACT-DEFORMABLE-DEFORMABLE METHOD", 0 )
+jobfile.writei( "CONTACT-CRITERION", 0 )
+jobfile.writei( "CONTACT-DERIVATION", 0 )
+jobfile.writei( "CONTACT-REL_ABS", 0 )
+jobfile.writei( "CONTACT-LINCNT METHOD", 0 )
+jobfile.writec( "USE SOL700", "OFF" )
+jobfile.writec( "SN MEAN STRESS CORRECTION", "NONE" )
+jobfile.writec( "NEF FATIGUE STRESS OUTPUT", "NONE" )
+jobfile.writec( "NEF STRESS UNITS", "MPA" )
+jobfile.writec( "NEF STRESS COMBINATION", "ABSMAXPR" )
+jobfile.writec( "NEF RESULT LOCATION", "NODA" )
+jobfile.writec( "NEF RECOVERY LOCATION", "CORNER" )
+jobfile.writec( "NEF LAYER LOCATION", "WORST" )
+jobfile.writec( "NEF INTERPOLATION LIMIT", "0" )
+jobfile.writec( "NEF LEVEL OF MESSAGE", "0" )
+jobfile.writec( "NEF NUMBER OF THREADS", "1" )
+jobfile.writer( "NEF CERTAINTY OF SURVIVAL", 50. )
+jobfile.writer( "NEF OVERALL SCALE FACTOR", 1. )
+jobfile.writer( "NEF TOP STRESS PERCENTAGE FILTER", 100. )
+jobfile.writer( "NEF TOP DAMAGE PERCENTAGE FILTER", 100. )
+jobfile.writec( "NEF TIME HISTORY DIRECTORY", "./" )
+jobfile.writei( "NEF MAX LOAD PER EVENT", 1 )
+jobfile.writec( "NEF EVENT DATA", "0" )
+jobfile.writec( "NEF LOAD SEQUENCE DATA", "0" )
+jobfile.writec( "USE CONTACT TABLE", "OFF" )
+jobfile.writec( "INITIAL CONTACTPAIR LOADCASE NAME", "" )
+jobfile.writei( "MDOF DATA", 0 )
+jobfile.writec( "CELL WRITE", "ON" )
+jobfile.writei( "CELL INPUT 0", 0 )
+jobfile.writec( "FMS WRITE", "ON" )
+jobfile.writei( "FMS INPUT 0", 0 )
+jobfile.writec( "EXEC WRITE", "ON" )
+jobfile.writei( "EXEC INPUT 0", 0 )
+jobfile.writec( "CASE WRITE", "ON" )
+jobfile.writei( "CASE INPUT 0", 0 )
+jobfile.writec( "BULK WRITE", "ON" )
+jobfile.writei( "BULK INPUT 0", 0 )
+jobfile.writec( "", "ON" )
+jobfile.writei( " 0", 0 )
+jobfile.writec( "CELL DTI POSITION", "START" )
+jobfile.writec( "FMS DTI POSITION", "START" )
+jobfile.writec( "EXEC DTI POSITION", "START" )
+jobfile.writec( "CASE DTI POSITION", "START" )
+jobfile.writec( "BULK DTI POSITION", "START" )
+jobfile.writec( "", "END" )
+jobfile.close(  )
+mscnastran_job.associate_subcases( "101", "test1", 1, ["Default"] )
+analysis_submit_2( "MSC.Nastran", "test1" )
+$# Question from application APP INTERFACES
+$#     No elements have been defined for this model. Do you wish to continue 
+$# with the translation?
+$? YES 6018003 
+$# Patran 2023.1  (Student Edition) has obtained 0 concurrent license(s) from 
+$# FLEXlm per a request to execute on Windows node DESKTOP-FVDIIM1 (Windows 
+$# 6.2 (Build 9200: Service Pack 0)) at 25-Jan-25 13:14:49.
+$# 
+$# Reading model information from the specified database, 
+$# C:\Users\jessa\OneDrive\ -\ Universidad\ Politécnica\ de\ Madrid\0.\ TFG\ 
+$# 23-24\Project_Root\Patran\test1.db.
+$# Messages output from the Patran 2023.1  (Student Edition) input deck 
+$# translator on January   25, 2025 at 13:14:49.
+$# 
+$# The NASTRAN input file, test1.bdf, has been successfully opened.
+$# 
+$# Translating 6318 nodes from the entire model.
+$# 
+$# Writing loads for Load Case : Default.
+$# Writing interface element lbcs.
+$# Total execution time in real seconds: 0.01
+$# Total execution time in CPU seconds: 0.0939941
+$# 
+$# End of NASTRAN input file translation.
+$# Student Edition Patran Nastran Preference Patran 2023.1  (Student Edition) 
+$# has released 0 license(s) to FLEXlm at 25-Jan-25 13:14:49.
+$# The translation has completed successfully.
+$# Executing /bin/sh -c C:\Program 
+$# Files\MSC.Software\NaPa_SE\20231\Patran\bin\MscN
+$# astranExecute.exe -j test1 -m bdf -x 20231 -c %%prog=edu%auth=edu%arch=64% -v
+STRING asm_line_2point_created_ids[VIRTUAL]
+asm_const_line_2point( "1", "1", "5", 0, "", 50., 1,  @
+asm_line_2point_created_ids )
+$# Error reported from application APP
+$#     Unable to process list: "1"
+$? NO 16000101 
+asm_const_line_2point( "1", "2", "5", 0, "", 50., 1,  @
+asm_line_2point_created_ids )
+$# Error reported from application APP
+$#     Unable to process list: "2"
+$? NO 16000101 
+ga_view_center_set( 207446.656250, 650253.750000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 361253.656250, 627219.750000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 497971.156250, 606745.250000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 619497.500000, 588545.625000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 727521.000000, 572368.125000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 823542.125000, 557988.125000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 908894.250000, 545206.000000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 984762.625000, 533844.000000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1052201.375000, 523744.531250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1112146.625000, 514767.156250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1165431.500000, 506787.312500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1212796.000000, 499694.125000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1254761.875000, 493389.031250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1207455.000000, 473200.718750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1165404.500000, 455255.562500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1128026.250000, 439304.343750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1094801.000000, 425125.468750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1065267.625000, 412522.031250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1039015.625000, 401318.968750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 1015680.500000, 391360.687500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 994938.250000, 382508.875000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 976500.687500, 374640.625000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 960111.687500, 367646.593750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 945543.750000, 361429.687500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 932594.562500, 355903.562500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 921084.062500, 350991.406250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 910852.562500, 346625.125000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 901757.812500, 342743.937500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 893673.625000, 339294.000000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 886487.687500, 336227.375000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 880100.187500, 333501.500000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 874422.375000, 331078.468750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 869375.437500, 328924.687500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 864889.312500, 327010.218750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 860901.625000, 325308.500000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 857357.062500, 323795.843750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 854206.250000, 322451.218750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 851405.562500, 321256.031250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 848916.125000, 320193.625000 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 846703.187500, 319249.281250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 844736.187500, 318409.843750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 842987.750000, 317663.718750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 841433.562500, 317000.437500 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 840052.062500, 316410.906250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 838824.062500, 315886.843750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 837732.500000, 315421.031250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 836762.250000, 315006.968750 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_center_set( 835899.812500, 314638.906250 )
+ga_view_aa_set( 0.000000, 0.000000, 0.000000 )
+ga_view_aa_set( 180., -90., 180. )
+ga_view_aa_set( 23., -34., 0. )
+ga_view_aa_set( 0., 0., 0. )
+ga_view_aa_set( 0., 180., 0. )
+ga_view_aa_set( 23., 56., 0. )
+point_label( TRUE )
+node_label( TRUE )
+curve_label( TRUE )
+node_label( TRUE )
+bar_elem_label( TRUE )
+tri_elem_label( TRUE )
+quad_elem_label( TRUE )
+tet_elem_label( TRUE )
+wedge_elem_label( TRUE )
+hex_elem_label( TRUE )
+mpc_label( TRUE )
+point_label( TRUE )
+curve_label( TRUE )
+surface_label( TRUE )
+trim_surface_label( TRUE )
+solid_label( TRUE )
+volume_label( TRUE )
+body_label( TRUE )
+ga_view_center_set( 835230.937500, 314630.093750 )
+ga_view_aa_set( 22.999998, 55.999996, 0.000002 )
+ga_view_center_set( 834702.375000, 314608.468750 )
+ga_view_aa_set( 22.999998, 56.000004, 0.000002 )
+ga_view_center_set( 834252.625000, 314587.562500 )
+ga_view_aa_set( 22.999998, 55.999996, 0.000002 )
+ga_view_center_set( 833854.250000, 314569.062500 )
+ga_view_aa_set( 22.999998, 56.000004, 0.000002 )
+ga_view_center_set( 833500.125000, 314552.593750 )
+ga_view_aa_set( 22.999998, 55.999996, 0.000002 )
+ga_view_center_set( 833185.375000, 314537.968750 )
+ga_view_aa_set( 22.999998, 56.000004, 0.000002 )
+ga_view_center_set( 832905.625000, 314524.968750 )
+ga_view_aa_set( 22.999998, 55.999996, 0.000002 )
+ga_view_center_set( 832656.937500, 314513.406250 )
+ga_view_aa_set( 22.999998, 56.000004, 0.000002 )
+ga_view_center_set( 832436.000000, 314503.125000 )
+ga_view_aa_set( 22.999998, 55.999996, 0.000002 )
+ga_view_center_set( 832239.625000, 314493.968750 )
+ga_view_aa_set( 22.999998, 56.000004, 0.000002 )
+ga_view_center_set( 832065.000000, 314485.843750 )
+ga_view_aa_set( 22.999998, 55.999996, 0.000002 )
+ga_view_center_set( 831909.875000, 314478.656250 )
+ga_view_aa_set( 22.999998, 56.000004, 0.000002 )
+ga_view_center_set( 831771.875000, 314472.218750 )
+ga_view_aa_set( 22.999998, 55.999996, 0.000002 )
+ga_view_center_set( 831649.312500, 314466.531250 )
+ga_view_aa_set( 22.999998, 56.000004, 0.000002 )
+ga_view_center_set( 831540.375000, 314461.468750 )
+ga_view_aa_set( 22.999998, 55.999996, 0.000002 )
+ga_view_center_set( 831443.562500, 314456.937500 )
+ga_view_aa_set( 22.999998, 56.000004, 0.000002 )
+ga_view_center_set( 831357.437500, 314452.937500 )
+ga_view_aa_set( 22.999998, 55.999996, 0.000002 )
+ga_view_center_set( 831280.937500, 314449.406250 )
+ga_view_aa_set( 22.999998, 56.000004, 0.000002 )
+ga_view_center_set( 831213.000000, 314446.218750 )
+ga_view_aa_set( 22.999998, 55.999996, 0.000002 )
+ga_view_center_set( 831152.625000, 314443.468750 )
+ga_view_aa_set( 22.999998, 56.000004, 0.000002 )
+ga_view_center_set( 831443.500000, 313017.125000 )
+ga_view_center_set( 831048.312500, 312394.812500 )
+ga_display_lines_set( "general", 2 )
+$# Model tree: Not supported operation...
+uil_file_new.go( "C:\Program Files\MSC.Software\NaPa_SE\20231\Patran/templ" // @
+"ate.db", "C:\Nastran\Model1\model1.db" )
+$# Question from application FILE
+$#     A database is already open.
+$# Do you want to create a new database C:\Nastran\Model1\model1.db anyway ?
+$? YES 36000037 
+$# Flushing the User Data Manager
+$# Journal file stopped recording at 25-Jan-25 13:18:33

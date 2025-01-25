@@ -1,0 +1,11 @@
+Initialise IFPStarServices - success
+Messages are being generated while reading the input file: C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root\Patran\test1_222513328.bdf
+
+FATAL:  *** USER FATAL MESSAGE 108 (SCA.MDSolver.Obj.InputFile:InputFile::read)
+
+ERROR: The input stream data file C:\Users\jessa\OneDrive - Universidad Politï¿½cnica de Madrid\0. TFG 23-24\Project_Root\Patran\test1_222513328.bdf does not exist.
+
+@ Problem with read of input file.
+
+Creating Nastran Database using IFPStar SCA Service: Failed
+

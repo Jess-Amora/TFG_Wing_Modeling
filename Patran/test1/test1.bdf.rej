@@ -1,0 +1,32 @@
+$REJECT (SEMTRN)  IGNORE INPUT CARD(S) BEFORE BEGIN BULK 
+SOL 101
+SOL 101
+$REJECT (SEMTRN)  CASE CONTROL CARD(S) AFTER  CEND 
+$ Direct Text Input for Global Case Control Data
+$>TITLE = MSC.Nastran job created on 04-Jan-24 at 16:22:35
+$ Subcase name : Default
+$>   SUBTITLE=Default
+$REJECT (SEMTRN)  IGNORE INPUT CARD(S) AFTER  BEGIN BULK 
+$ Direct Text Input for Bulk Data
+$>HDF5OUT PRCISION 32     CMPRMTHD LZ4     LEVEL   5
+$ Elements and Element Properties for region : shell_1
+$>PSHELL*  1               1               2.0999999       1
+$ Pset: "shell_1" will be imported as: "pshell.1"
+$>CQUAD4   1       1       1       2       13      12
+$ Referenced Material Records
+$ Material Record : Aluminium
+$ Description of Material : Date: 20-Dec-23           Time: 22:31:15
+$>MAT1     1       10000.          .33
+$ Nodes of the Entire Model
+$>GRID*   1                             31.635718       18.132305
+$ Loads for Load Case : Default
+$>SPCADD   2       1
+$ Displacement Constraints of Load Set : empotramiento
+$>SPC1     1       123456  1       THRU    11
+$ Pressure Loads of Load Set : Pression1
+$>PLOAD4*  1               1               -.025           -.025
+$ Pressure Loads of Load Set : Pression2
+$>PLOAD4   3       401     .0125   .0125  .0124688.0124688 THRU    410
+$ Referenced Coordinate Frames
+$>ENDDATA 8d3b6e9a
+

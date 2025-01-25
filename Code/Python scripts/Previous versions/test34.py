@@ -17,7 +17,7 @@ def read_points(file_path):
             x = float(row['x'])
             y = float(row['y'])
             z = float(row['z'])
-            points.append(App.Vector(x, y, z))
+            points.append(App.Vector(x, y, z))
     return points
 
 # Function to read elements from a .csv file
@@ -53,11 +53,11 @@ def export_to_step(doc, output_path):
 # Main script
 def main():
     # Paths to input CSV files
-    points_csv = r"output\points.csv"  # Replace with actual path
-    elements_csv = r"output\lines.csv"  # Replace with actual path
-    # Path to output STEP file
-    step_output = r"..\Freecad\output.step"  # Replace with actual path
+    points_csv = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\nodes_3D.csv"  # Replace with actual path
+    elements_csv = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\elements_3D.csv"  # Replace with actual path
 
+    # Path to output STEP file
+    step_output = r"C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Matlab\main\output_model.step"  # Replace with actual path
 
     # Read data
     points = read_points(points_csv)

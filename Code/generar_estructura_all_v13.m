@@ -409,39 +409,10 @@ OnlyQuads_Fuselaje = [quad_rear_root_fuselaje; quad_fuselaje; quad_front_root_fu
 
 %% 3D 
 % Thickness
-H = 0.02;
+H = 1;
 
 % Generate the 3D node table
 combined_nodes_3D = generate_3D_nodes(combined_nodes, combined_nodes_fuselaje, H);
-
-%% Preparar .pdf
-% OnlyQuadRegular = [quad_surfaces_regular;quad_rectangular_regular];
-% 
-% combined_nodes_3D_processed = process_nodes(combined_nodes_3D);
-% save_nodes_to_csv(combined_nodes_3D_processed);
-% 
-% % Step 2: Map lines to global IDs from combined_nodes_3D
-% lines_updated = process_lines(combined_nodes_3D_processed, horizontal_stringers(1:5,:));
-% save_lines_to_csv(lines_updated);
-% 
-% surface_updated = 
-% %
-% nodos = combined_nodes_3D{:, 2:4};
-% points_table = array2table(nodos, 'VariableNames', {'x', 'y', 'z'});
-%     writetable(points_table, '.\output\points.csv', 'WriteVariableNames', true, ...
-%         'FileType', 'text');
-% 
-%     elements = [1, 2; % Element 1 connects Point 1 to Point 2
-%             2, 3; % Element 2 connects Point 2 to Point 3
-%             3, 4; % Element 3 connects Point 3 to Point 4
-%             4, 1]; % Element 4 connects Point 4 to Point 1
-%     % Convert elements to floating-point format
-%     elements_table = array2table(elements, 'VariableNames', {'Point1', 'Point2'});
-% 
-%     % Write elements to a .csv file with custom formatting
-%     writetable(elements_table, '.\output\elements.csv', 'WriteVariableNames', true, ...
-%     'FileType', 'text');
-
 
 %% Vertical surfaces in the spar
 
@@ -451,52 +422,48 @@ combined_nodes_3D = generate_3D_nodes(combined_nodes, combined_nodes_fuselaje, H
 [quad_rear_fuselaje, warnings] = create_surfaces_vertical_rear_spar_fuselaje_v1(combined_nodes_3D);
 [quad_front_fuselaje, warnings] = create_surfaces_vertical_front_spar_fuselaje_v1(combined_nodes_3D);
 
-% Creación de ribs
+%% Creación de ribs
 [quad_ribs, warnings] = create_surfaces_vertical_ribs_wing_v1(combined_nodes_3D);
 [quad_ribs_fuselaje, warnings] = create_surfaces_vertical_ribs_fuselaje_v1(combined_nodes_3D);
 
 %% Creación de líneas para barras (cRod)
 % [horizontal_stringers,vertical_stringers] = create_stringers(combined_nodes_3D);
-% [horizontal_stringers,vertical_stringers] = create_stringers_v2(combined_nodes_3D);
-% %% Guardar a .csv
-% OnlyQuadRegular = [quad_surfaces_regular;quad_rectangular_regular];
-% 
-% combined_nodes_3D_processed = process_nodes(combined_nodes_3D);
-% save_nodes_to_csv(combined_nodes_3D_processed);
-% 
-% Step 2: Map lines to global IDs from combined_nodes_3D
-lines_updated = process_lines(combined_nodes_3D_processed, horizontal_stringers(1:5,:));
-% save_lines_to_csv(lines_updated);
-% 
-% surface_updated = 
-% %
-% nodos = combined_nodes_3D{:, 2:4};
-% points_table = array2table(nodos, 'VariableNames', {'x', 'y', 'z'});
-%     writetable(points_table, '.\output\points.csv', 'WriteVariableNames', true, ...
-%         'FileType', 'text');
-% 
-%     elements = [1, 2; % Element 1 connects Point 1 to Point 2
-%             2, 3; % Element 2 connects Point 2 to Point 3
-%             3, 4; % Element 3 connects Point 3 to Point 4
-%             4, 1]; % Element 4 connects Point 4 to Point 1
-%     % Convert elements to floating-point format
-%     elements_table = array2table(elements, 'VariableNames', {'Point1', 'Point2'});
-% 
-%     % Write elements to a .csv file with custom formatting
-%     writetable(elements_table, '.\output\elements.csv', 'WriteVariableNames', true, ...
-%     'FileType', 'text');
+[horizontal_stringers,vertical_stringers] = create_stringers_v3(combined_nodes_3D);
 
-%% Plot
-% % All quad regular/irregular, tri, penta
-% plottitle = strcat('Verification OnlyPlot');
-% plotfilename = strcat('../Results/Figures/OnlyPlotSurface_v3_generate_structure_v11_ala13_a350_1000_datos_estructual');
-% 
-% OnlyTri = [tri_surfaces; tri_root; tri_root_stringer];
-% OnlyQuads = [quad_surfaces_regular;quad_rectangular_regular;quad_irregular;quad_root;quad_root_stringer];
-% OnlyPenta = [penta_root; penta_surfaces];
-% OnlyRear = [superficie_horizontal_larguero_posterior];
+%% Organizando los elementos
+% OnlyQuad = []
 
-% OnlyPlotSurface_v3(combined_nodes, inserted_table, ...
-%     [OnlyQuads], [OnlyTri], [OnlyPenta],[OnlyRear], plottitle, plotfilename,avion,datosEstructural);
+%% Saving all of the results
+
+model_data = struct();
+model_data.Nodes = combined_nodes_3D; % Node coordinates
+model_data.Elements.Lines = [horizontal_stringers;vertical_stringers]; % Line connectivity
+lines = [horizontal_stringers;vertical_stringers];
+% model_data.Elements.Quads = Quads_matrix; % Quad connectivity
+% model_data.Elements.Triangles = Triangles_matrix; % Triangle connectivity
+% model_data.Elements.Pentas = Pentas_matrix; % Pentahedral connectivity
+% model_data.Metadata.Materials = Material_properties;
+% model_data.Metadata.BoundaryConditions = BCs;
+
+save('output\model_data.mat', 'model_data');
+
+%% Preparar .bdf
+OnlyQuadRegular = [quad_surfaces_regular;quad_rectangular_regular];
+
+% nodes
+nodes = process_nodes(combined_nodes_3D)
+write_bdf_points_v2('..\Nastran\nodes.bdf', nodes);
+
+% lines
+lines_updated = process_lines_v6(combined_nodes_3D_processed, horizontal_stringers(1:100,:));
+write_bdf_lines('..\Nastran\lines.bdf', lines_updated);
+
+
+% elements = [];
+% materials = [];
+% constraints = [];
+% loads = [];
+
+% write_bdf_v1('..\output\model.bdf', nodes, elements, materials, constraints, loads);
 
 
