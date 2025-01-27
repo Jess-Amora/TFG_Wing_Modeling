@@ -1,4 +1,4 @@
-function nodes = process_nodes(node_table)
+function [nodes, node_table] = process_nodes(node_table)
     % PROCESS_NODES: Add a global ID column and save the node data and organization info.
     % Input:
     %   node_table - Input table containing node coordinates (x, y, z).

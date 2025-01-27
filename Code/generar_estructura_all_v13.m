@@ -434,30 +434,46 @@ combined_nodes_3D = generate_3D_nodes(combined_nodes, combined_nodes_fuselaje, H
 % OnlyQuad = []
 
 %% Saving all of the results
-
-model_data = struct();
-model_data.Nodes = combined_nodes_3D; % Node coordinates
-model_data.Elements.Lines = [horizontal_stringers;vertical_stringers]; % Line connectivity
+% 
+% model_data = struct();
+% model_data.Nodes = combined_nodes_3D; % Node coordinates
+% model_data.Elements.Lines = [horizontal_stringers;vertical_stringers]; % Line connectivity
 lines = [horizontal_stringers;vertical_stringers];
-% model_data.Elements.Quads = Quads_matrix; % Quad connectivity
-% model_data.Elements.Triangles = Triangles_matrix; % Triangle connectivity
-% model_data.Elements.Pentas = Pentas_matrix; % Pentahedral connectivity
-% model_data.Metadata.Materials = Material_properties;
-% model_data.Metadata.BoundaryConditions = BCs;
+% % model_data.Elements.Quads = Quads_matrix; % Quad connectivity
+% % model_data.Elements.Triangles = Triangles_matrix; % Triangle connectivity
+% % model_data.Elements.Pentas = Pentas_matrix; % Pentahedral connectivity
+% % model_data.Metadata.Materials = Material_properties;
+% % model_data.Metadata.BoundaryConditions = BCs;
+% 
+% save('output\model_data.mat', 'model_data');
 
-save('output\model_data.mat', 'model_data');
+%% Materiales
+% Example: Material Information
+material_info = struct();
+material_info.material_id = 1; % Material ID (MID)
+material_info.E = 69000;      % Young's modulus in MPa
+material_info.nu = 0.33;      % Poisson's ratio
+material_info.rho = 2.7e-9;   % Density in tonne/mm³ (optional)
+
+% Example: Property Information
+property_info = struct();
+property_info.property_id = 1;   % Property ID (PID)
+property_info.material_id = 1;   % Associated Material ID (MID)
+property_info.A = 0.01;          % Cross-sectional area in m²
 
 %% Preparar .bdf
 OnlyQuadRegular = [quad_surfaces_regular;quad_rectangular_regular];
 
 % nodes
-nodes = process_nodes(combined_nodes_3D)
-write_bdf_points_v2('..\Nastran\nodes.bdf', nodes);
+combined_nodes_3D = sort_combined_nodes(combined_nodes_3D);
+[nodes,combined_nodes_3D_processed] = process_nodes(combined_nodes_3D);
+write_bdf_points_v2('..\Results\Nastran\nodes.bdf', nodes);
 
 % lines
-lines_updated = process_lines_v6(combined_nodes_3D_processed, horizontal_stringers(1:100,:));
-write_bdf_lines('..\Nastran\lines.bdf', lines_updated);
 
+lines_updated = process_lines_v7(combined_nodes_3D_processed, lines);
+% write_bdf_lines_v3('..\Results\Nastran\lines_v3.bdf', lines_updated);
+write_bdf_lines_v3('..\Results\Nastran\lines_v3.bdf', lines_updated, material_info, property_info)
 
 % elements = [];
 % materials = [];
@@ -467,3 +483,9 @@ write_bdf_lines('..\Nastran\lines.bdf', lines_updated);
 % write_bdf_v1('..\output\model.bdf', nodes, elements, materials, constraints, loads);
 
 
+%% TEST TEST MIKE TEST HELLO HELLO
+P1 = [1 0 0 0 0  0];
+P2 = [2 0 1 0 0  0];
+write_bdf_points_v2('..\Results\Nastran\test_2points.bdf', [P1;P2]);
+line1=[1 1 1 2];
+write_bdf_lines_v3('..\Results\Nastran\lines_2points.bdf', line1, material_info, property_info);
