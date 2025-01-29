@@ -10,7 +10,7 @@ TFG_Amora = loadedData.TFG_Amora;
 avion = TFG_Amora.aviones.a350_1000;
 datosEstructural = TFG_Amora.datosEstructural;
 cargas = TFG_Amora.aviones.a350_1000.cargas;
-ala = TFG_Amora.aviones.a350_1000.ala13;
+ala = TFG_Amora.aviones.a350_1000.ala14;
 fuselaje = TFG_Amora.aviones.a350_1000.fuselaje5;
 H = 1;
 % generar_estructura_v1(avion,datosEstructural,ala,fuselaje,H)
@@ -66,13 +66,7 @@ inserted_nodes = ala.mesh.inserted_nodes;
 index_larguerillos_anterior_ala = ala.mesh.index_larguerillos_anterior; % Número de intersección que hace el larguerillo con la costillas y su punto medio (Punto medio entre costillas).
 nodos_posterior_ala = ala.mesh.nodos_posterior'; % Los nodos en el larguero posterior.
 nodos_anterior_ala = ala.mesh.nodos_anterior'; % Los nodos en el larguero posterior.
-% nodos_ala_global = ala.mesh.nodos_ala_global; % Los nodos en el larguero posterior.
-% barras
 
-barras_ala_larguero_anterior = ala.mesh.barras_ala_larguero_anterior;
-barras_ala_larguero_posterior = ala.mesh.barras_ala_larguero_posterior;
-barras_ala_larguerillos = ala.mesh.barras_ala_larguerillos;
-% barras_ala_global = ala.mesh.barras_ala_global ;
 
 %% Mesh FUSELAJE
 larguerillos_fuselaje = fuselaje.larguerillos_fuselaje;
@@ -84,13 +78,6 @@ numero_costillas_fuselaje = fuselaje.numero_costillas_fuselaje;
 nodos_larguerillos_fuselaje = fuselaje.mesh.nodos_larguerillos_fuselaje; % larguerillos
 nodos_posterior_fuselaje = fuselaje.mesh.nodos_posterior_fuselaje; % Los nodos en el larguero posterior.
 nodos_anterior_fuselaje = fuselaje.mesh.nodos_anterior_fuselaje; % Los nodos en el larguero posterior.
-
-% barras
-
-barras_fuselaje_larguero_posterior = fuselaje.mesh.barras_fuselaje_larguero_posterior;
-barras_fuselaje_larguero_anterior = fuselaje.mesh.barras_fuselaje_larguero_anterior;
-barras_fuselaje_larguerillos  = fuselaje.mesh.barras_fuselaje_larguerillos;
-
 
 
 %% Standardization
@@ -105,10 +92,10 @@ nodos_posterior_ala_table = convert_nodes_rear_spars_to_table_v2(nodos_posterior
 % Create the Combined Node Table
 combined_nodes = create_combined_node_table_v2(nodos_larguerillos_table, nodos_anterior_ala_table, nodos_posterior_ala_table);
 
-% insert
-inserted_table = standardize_inserted_nodes_v2(inserted_nodes);
-inserted_table = fix_stringer_indices_line_based(combined_nodes, inserted_table, 1e-3);
-% disp(fixed_inserted_table);
+% % insert
+% inserted_table = standardize_inserted_nodes_v2(inserted_nodes);
+% inserted_table = fix_stringer_indices_line_based(combined_nodes, inserted_table, 1e-3);
+% % disp(fixed_inserted_table);
 
 nodos_larguerillos_fuselaje = squeeze(nodos_larguerillos_fuselaje);
 % nodos_larguerillos_fuselaje(:, [3, 4]) = nodos_larguerillos_fuselaje(:, [4, 3]); % Swap rib/stringer if needed
@@ -142,42 +129,6 @@ TEMP_ID_BASE_larguero_anterior = -2 * 10e5; % Temporary ID for Front Spar
 barras_costillas_ala = [];                % Transverse Bar Elements
 superficie_horizontal_larguero_posterior = []; % Rear Spar Horizontal Panels
 superficie_horizontal_larguerillo = [];   % Stringer Horizontal Panels
-
-%% 📊 Sort and Group Nodes by Rib Index
-% % Ensure nodos_larguerillos includes Local IDs in column 5
-% if size(nodos_larguerillos, 2) < 5
-%     nodos_larguerillos(:, 5) = (1:size(nodos_larguerillos, 1))';
-% end
-% 
-% % Sort by Rib (3rd col) and Stringer (4th col) while preserving Local IDs
-% nodos_transversales = sortrows(nodos_larguerillos, [3, 4]);
-% rib_indices = unique(nodos_transversales(:, 3)); % Unique Rib Indices
-
-% %% 📐 Create Transverse Line Elements
-% % Empezando desde el encastre hasta la punta y desde el larguero posterior
-% % al larguero anterior.
-% for i = 1:length(rib_indices)
-%     current_rib = rib_indices(i);
-%     rib_nodes = nodos_transversales(nodos_transversales(:, 3) == current_rib, :);
-% 
-%     % Ensure sufficient nodes in the rib
-%     if size(rib_nodes, 1) < 2
-%         continue;
-%     end
-% 
-%     % Rear Spar Connection (Using Local ID)
-%     barras_costillas_ala = [barras_costillas_ala; TEMP_ID_BASE_larguero_posterior + current_rib, rib_nodes(1, 5)];
-% 
-%     % Transverse Connections Between Consecutive Nodes (Using Local ID)
-%     for j = 1:size(rib_nodes, 1) - 1
-%         nodo_inicio = rib_nodes(j, 5); % Local ID of start node
-%         nodo_fin = rib_nodes(j + 1, 5); % Local ID of end node
-%         barras_costillas_ala = [barras_costillas_ala; nodo_inicio, nodo_fin];
-%     end
-% 
-%     % Front Spar Connection (Using Local ID)
-%     barras_costillas_ala = [barras_costillas_ala; nodo_fin, TEMP_ID_BASE_larguero_anterior + current_rib];
-% end
 
 %% 📐 Create Horizontal Stiffening Panels (Rear Spar Surfaces)
 % Purpose: Create stiffening surfaces adjacent to the rear spar within a specific rib range.
@@ -307,8 +258,8 @@ for stringer_index = num_stringers_last_rib:max_stringer - 1
     end
     % end_rib
     %% ✅ Process Up to the Second-to-Last Rib (Regular-like Behavior)
-    [quad_irregular_stringer,tri_surfaces_stringer,penta_surfaces_stringer, warn] = create_surfaces_for_stringer_irregular_v6( ...
-        combined_nodes, inserted_table, stringer_index, end_rib);
+    [quad_irregular_stringer,tri_surfaces_stringer,penta_surfaces_stringer, warn] = create_surfaces_for_stringer_irregular_v7( ...
+        combined_nodes, stringer_index, end_rib);
 
     % Append the results
     quad_irregular = [quad_irregular; quad_irregular_stringer];

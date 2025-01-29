@@ -85,7 +85,8 @@ end
 % Extract nodes for the quadrilateral
 node_1 = current_stringer_nodes(num_ribs, :);
 node_2 = combined_nodes_fuselaje(combined_nodes_fuselaje.rib_index == num_ribs & combined_nodes_fuselaje.tag == 'front spars fuselaje', :);
-node_3 = combined_nodes(combined_nodes.local_id == 1 & combined_nodes.tag == 'OnlyNode', :); 
+% node_3 = combined_nodes(combined_nodes.local_id == 1 & combined_nodes.tag == 'OnlyNode', :); 
+node_3 = combined_nodes(combined_nodes.rib_index == 1e5 & combined_nodes.tag == 'front spars', :); 
 node_4 = combined_nodes(combined_nodes.rib_index == -1 & combined_nodes.stringer_index == max_stringer, :);
 
 % Ensure nodes are not empty

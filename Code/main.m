@@ -16,7 +16,7 @@ FlagConstruirFuselaje = false;
 FlagConstruirFuselaje2 = false;
 FlagConstruirFuselaje3 = false;
 FlagConstruirFuselaje4 = false;
-FlagConstruirFuselaje5 = true;
+FlagConstruirFuselaje5 = false;
 FlagConstruirAla2 = false;
 FlagConstruirAla3 = false;
 FlagConstruirAla4 = false;
@@ -29,7 +29,7 @@ FlagConstruirAla10 = false;
 FlagConstruirAla11 = false;
 FlagConstruirAla12 = false;
 FlagConstruirAla13 = false;
-FlagConstruirAla14 = false;
+FlagConstruirAla14 = true;
 output_command8 = false;
 mesh_generar6 = false;
 

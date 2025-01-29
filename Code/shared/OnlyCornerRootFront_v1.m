@@ -57,7 +57,8 @@ current_stringer_nodes = combined_nodes( ...
 %% First Surface
 
 node_1 = current_stringer_nodes(current_stringer_nodes.rib_index == -1, :); % Bottom-left
-node_2 = combined_nodes(combined_nodes.local_id == 1 & combined_nodes.tag == 'OnlyNode', :);       % Bottom-right
+% node_2 = combined_nodes(combined_nodes.local_id == 1 & combined_nodes.tag == 'OnlyNode', :);       % Bottom-right
+node_2 = combined_nodes(combined_nodes.tag == 'front spars' & combined_nodes.rib_index == 1e5, :);       % Bottom-right
 node_3 = combined_nodes(combined_nodes.local_id == max_rib_index +1 & combined_nodes.tag == 'front spars', :); % Top-right
 node_4 = current_stringer_nodes(current_stringer_nodes.rib_index == 0, :); % Bottom-left
 
