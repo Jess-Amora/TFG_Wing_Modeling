@@ -1,4 +1,4 @@
-function OnlyPlotSurface_v4(combined_nodes,combined_nodes_fuselaje, quad_surfaces, tri_surfaces, penta_surfaces, rear_surfaces, plottitle, plotfilename,avion,datosEstructural)
+function OnlyPlotSurface_v6(combined_nodes,combined_nodes_fuselaje, quad_surfaces, tri_surfaces, rear_surfaces, plottitle, plotfilename,avion,datosEstructural)
 % plot_stringer_irregular_surfaces_v9: Visualizes stringer surfaces with logic for irregular, triangular, pentagonal, and rear spar surfaces.
 %
 % Inputs:
@@ -87,10 +87,12 @@ eje = plot(x_local_ala,linea_eje_estructural,'g', 'DisplayName', 'El eje de refe
 front_spar_idx = strcmp(combined_nodes.tag, 'front spars');
 rear_spar_idx = strcmp(combined_nodes.tag, 'rear spars');
 stringer_idx = strcmp(combined_nodes.tag, 'stringer');
+inserted_idx = strcmp(combined_nodes.tag, 'inserted');
 
 front_spar_dots = combined_nodes(strcmp(combined_nodes.tag, 'front spars'),:);
 rear_spar_dots = combined_nodes(strcmp(combined_nodes.tag, 'rear spars'),:);
 stringer_dots = combined_nodes(strcmp(combined_nodes.tag, 'stringer'),:);
+inserted_dots = combined_nodes(strcmp(combined_nodes.tag, 'inserted'),:);
 
 % Plot nodes with unique markers and colors
 front_spar_points = plot(combined_nodes.x(front_spar_idx), combined_nodes.y(front_spar_idx), ...
@@ -99,8 +101,8 @@ rear_spar_points = plot(combined_nodes.x(rear_spar_idx), combined_nodes.y(rear_s
      'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'b', 'DisplayName', 'Rear Spar Nodes');
 stringer_points = plot(combined_nodes.x(stringer_idx), combined_nodes.y(stringer_idx), ...
      'ko', 'MarkerSize', 4, 'MarkerFaceColor', 'k', 'DisplayName', 'Stringer Nodes');
-inserted_table_points = plot(inserted_table.x, inserted_table.y, ...
-     'ks', 'MarkerSize', 4, 'MarkerFaceColor', 'k', 'DisplayName', 'Inserted Nodes');
+inserted_table_points = plot(combined_nodes.x(inserted_idx), combined_nodes.y(inserted_idx), ...
+     'ko', 'MarkerSize', 4, 'MarkerFaceColor', 'k', 'DisplayName', 'Inserted Nodes');
 
 % Add Node Labels (Optional for Debugging)
 for i = 1:height(front_spar_dots)
@@ -118,8 +120,8 @@ for i = 1:height(stringer_dots)
          'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'black');
 end
 % Add Node Labels (Optional for Debugging)
-for i = 1:height(inserted_table)
-    text(inserted_table.x(i), inserted_table.y(i), sprintf('%d,%d', inserted_table.stringer_index(i), inserted_table.rib_index(i)), ...
+for i = 1:height(inserted_dots)
+    text(inserted_dots.x(i), inserted_dots.y(i), sprintf('%d', inserted_dots.stringer_index(i)), ...
          'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'black');
 end
 
@@ -132,6 +134,7 @@ stringer_idx_fuselaje = strcmp(combined_nodes_fuselaje.tag, 'stringer fuselaje')
 front_spar_dots_fuselaje = combined_nodes_fuselaje(strcmp(combined_nodes_fuselaje.tag, 'front spars fuselaje'),:);
 rear_spar_dots_fuselaje = combined_nodes_fuselaje(strcmp(combined_nodes_fuselaje.tag, 'rear spars fuselaje'),:);
 stringer_dots_fuselaje = combined_nodes_fuselaje(strcmp(combined_nodes_fuselaje.tag, 'stringer fuselaje'),:);
+
 
 % Plot nodes with unique markers and colors
 front_spar_points_fuselaje = plot(combined_nodes_fuselaje.x(front_spar_idx_fuselaje), combined_nodes_fuselaje.y(front_spar_idx_fuselaje), ...
@@ -166,7 +169,7 @@ if ~isempty(quad_surfaces)
 
         if strcmp(surface_tag, "quad irregular P1 inserted")
             % P1 from inserted_table, other nodes from combined_nodes
-            node_1 = inserted_table(inserted_table.local_id == quad_surfaces.node_1(i), :);
+            node_1 = combined_nodes(combined_nodes.stringer_index == quad_surfaces.stringer_1(i) & combined_nodes.rib_index ==2e5 & strcmp(combined_nodes.tag, 'inserted'), :);
             node_2 = combined_nodes(combined_nodes.stringer_index == quad_surfaces.stringer_2(i) & combined_nodes.rib_index ==-2, :);
             node_3 = combined_nodes(combined_nodes.local_id == quad_surfaces.node_3(i) & strcmp(combined_nodes.tag, 'front spars'), :);
             node_4 = combined_nodes(combined_nodes.local_id == quad_surfaces.node_4(i), :);
@@ -176,7 +179,7 @@ if ~isempty(quad_surfaces)
             node_1 = combined_nodes(combined_nodes.local_id == quad_surfaces.node_1(i), :);
             node_2 = combined_nodes(combined_nodes.local_id == quad_surfaces.node_2(i), :);
             node_3 = combined_nodes(combined_nodes.stringer_index == quad_surfaces.stringer_2(i) & combined_nodes.rib_index ==-2, :);
-            node_4 = inserted_table(inserted_table.local_id == quad_surfaces.node_4(i), :);
+            node_4 = combined_nodes(combined_nodes.stringer_index == quad_surfaces.stringer_1(i) & combined_nodes.rib_index ==2e5 & strcmp(combined_nodes.tag, 'inserted'), :);
 
         elseif strcmp(surface_tag, "quad irregular")
             % P2 and P3 from front spar nodesquad irr root
@@ -190,6 +193,7 @@ if ~isempty(quad_surfaces)
             node_2 = combined_nodes(combined_nodes.local_id == quad_surfaces.node_2(i)& strcmp(combined_nodes.tag, 'stringer'), :);
             node_3 = combined_nodes(combined_nodes.local_id == quad_surfaces.node_3(i)& strcmp(combined_nodes.tag, 'stringer'), :);
             node_4 = combined_nodes(combined_nodes.local_id == quad_surfaces.node_4(i)& strcmp(combined_nodes.tag, 'stringer'), :);
+            
         elseif strcmp(surface_tag, "quad irregular root")
             % Extract nodes
             node_1 = combined_nodes( ...
@@ -207,6 +211,7 @@ if ~isempty(quad_surfaces)
             node_4 = combined_nodes( ...
                 combined_nodes.rib_index == quad_surfaces.rib_2(i) & ...
                 combined_nodes.stringer_index == quad_surfaces.stringer_1(i), :); % Top-left
+
         elseif strcmp(surface_tag, "quad irregular root corner")
 
             % Extract nodes
@@ -225,6 +230,50 @@ if ~isempty(quad_surfaces)
             node_4 = combined_nodes( ...
                 combined_nodes.rib_index == quad_surfaces.rib_2(i) & ...
                 combined_nodes.stringer_index == quad_surfaces.stringer_1(i), :); % Top-left
+
+        elseif strcmp(surface_tag, "quad irregular root P2 inserted")
+
+            % Extract nodes
+            node_1 = combined_nodes( ...
+                combined_nodes.rib_index == -1 & ...
+                combined_nodes.stringer_index == quad_surfaces.stringer_1(i) ...
+                , :); % Bottom-left
+            
+            node_2 = combined_nodes( ...
+                combined_nodes.rib_index == 3e5 & ...
+                combined_nodes.stringer_index == quad_surfaces.stringer_1(i) & ...
+                combined_nodes.tag == 'inserted', :); % Bottom-right
+            
+            node_3 = combined_nodes( ...
+                combined_nodes.rib_index == quad_surfaces.rib_2(i) & ...
+                combined_nodes.stringer_index == quad_surfaces.stringer_2(i), :); % Top-right
+            
+            node_4 = combined_nodes( ...
+                combined_nodes.rib_index == quad_surfaces.rib_2(i) & ...
+                combined_nodes.stringer_index == quad_surfaces.stringer_1(i), :); % Top-left
+
+        elseif strcmp(surface_tag, "quad irregular root P3 inserted")
+
+            % Extract nodes
+            node_1 = combined_nodes( ...
+                combined_nodes.rib_index == quad_surfaces.rib_1(i) & ...
+                combined_nodes.stringer_index == -2 &...
+                combined_nodes.tag == 'rear spars', :); % Bottom-left        
+                        
+            node_2 = combined_nodes( ...
+                combined_nodes.rib_index == quad_surfaces.rib_1(i) & ...
+                combined_nodes.stringer_index == quad_surfaces.stringer_2(i) & ...
+                combined_nodes.tag == 'stringer', :); % Top-right
+
+            node_3 = combined_nodes( ...
+                combined_nodes.rib_index == 3e5 & ...
+                combined_nodes.stringer_index == quad_surfaces.stringer_1(i) & ...
+                combined_nodes.tag == 'inserted', :); % Bottom-right
+            
+            node_4 = combined_nodes( ...
+                combined_nodes.rib_index == -1 & ...
+                combined_nodes.stringer_index == quad_surfaces.stringer_1(i), :); % Top-left
+
         elseif strcmp(surface_tag, "quad OnlyNode1")
 
             % Extract nodes
@@ -233,8 +282,8 @@ if ~isempty(quad_surfaces)
                 combined_nodes.stringer_index == quad_surfaces.stringer_1(i), :); % Bottom-left
             
             node_2 = combined_nodes( ...
-                combined_nodes.local_id == 1 & ...
-                combined_nodes.tag == 'OnlyNode', :); % Bottom-right
+                combined_nodes.rib_index == 1e5 & ...
+                combined_nodes.tag == 'front spars', :); % Bottom-right
             
             node_3 = combined_nodes( ...
                 combined_nodes.rib_index == quad_surfaces.rib_2(i) & ...
@@ -255,7 +304,7 @@ if ~isempty(quad_surfaces)
                 combined_nodes_fuselaje.rib_index == quad_surfaces.rib_1(i) & ...
                 combined_nodes_fuselaje.stringer_index == quad_surfaces.stringer_2(i), :); % Bottom-right
             
-            node_3 = combined_nodes(combined_nodes.local_id == 1 & combined_nodes.tag == 'OnlyNode', :); % Top-right
+            node_3 = combined_nodes(combined_nodes.rib_index == 1e5 & combined_nodes.tag == 'front spars', :); % Top-right
             
             node_4 = combined_nodes(combined_nodes.rib_index == -1 & combined_nodes.stringer_index == max_stringer_index, :); % Top-left
             
@@ -353,7 +402,6 @@ if ~isempty(quad_surfaces)
                 combined_nodes_fuselaje.rib_index == quad_surfaces.rib_2(i) & ...
                 combined_nodes_fuselaje.stringer_index == quad_surfaces.stringer_1(i), :); % Bottom-right
 
-           
         else
             % Unknown tag, skip this surface
             warning('Unknown surface tag: %s. Skipping surface %d.', surface_tag, i);
@@ -364,6 +412,11 @@ if ~isempty(quad_surfaces)
         if isempty(node_1) || isempty(node_2) || isempty(node_3) || isempty(node_4)
             % Extract relevant information for the missing nodes
             % Construct a detailed warning message
+            quad_surfaces(i,:)
+            node_1
+            node_2
+            node_3
+            node_4
             warning('Skipping surface %d due to missing nodes. Missing nodes have tags: %s and local_ids: %s.', ...
                 i, strjoin(string(surface_tag), ', '), strjoin(string(i), ', '));
             continue;
@@ -406,7 +459,7 @@ if ~isempty(tri_surfaces)
                     combined_nodes.rib_index == -2 & ...
                     combined_nodes.stringer_index == tri_surfaces.stringer_1(i), :); % Bottom-left
 
-                node_2 = find_max_rib_node(combined_nodes, tri_surfaces.stringer_1(i)); % Bottom-right
+                node_2 = find_max_rib_node_v2(combined_nodes, tri_surfaces.stringer_1(i)); % Bottom-right
 
                 node_3 = combined_nodes( ...
                     combined_nodes.rib_index == node_2.rib_index & ...
@@ -437,11 +490,11 @@ if ~isempty(tri_surfaces)
             case "tri root"
                 % Extract nodes for "tri root"
                 node_1 = combined_nodes( ...
-                    combined_nodes.rib_index == tri_surfaces.rib_2(i) - 1 & ...
+                    combined_nodes.rib_index == tri_surfaces.rib_2(i)  & ...
                     combined_nodes.stringer_index == tri_surfaces.stringer_2(i), :); % Bottom-left
 
                 node_2 = combined_nodes( ...
-                    combined_nodes.rib_index == tri_surfaces.rib_2(i) - 1 & ...
+                    combined_nodes.rib_index == tri_surfaces.rib_2(i)  & ...
                     strcmp(combined_nodes.tag, 'rear spars'), :); % Bottom-right
 
                 node_3 = combined_nodes( ...
@@ -536,101 +589,21 @@ if ~isempty(rear_surfaces)
     end
 end
 
-%% 🔶 Plot Pentagonal Surfaces
-if ~isempty(penta_surfaces)
-    for i = 1:height(penta_surfaces)
-        % Determine nodes based on the surface tag
-        surface_tag = penta_surfaces.tags(i);
-
-        if strcmp(surface_tag, "penta root")
-            node_1 = combined_nodes( ...
-            combined_nodes.rib_index == -1 & ...
-            combined_nodes.stringer_index == penta_surfaces.stringer_1(i), :); % Bottom-left
-        
-            node_2 = combined_nodes( ...
-                        combined_nodes.rib_index == penta_surfaces.rib_2(i) - 1 & ...
-                        strcmp(combined_nodes.tag, 'rear spars'), :); % Bottom-right
-            
-            node_3 = combined_nodes( ...
-                        combined_nodes.rib_index == penta_surfaces.rib_2(i) - 1 & ...
-                        combined_nodes.stringer_index == penta_surfaces.stringer_2(i), :); % Top-right
-            
-            node_4 = combined_nodes( ...
-                combined_nodes.rib_index == penta_surfaces.rib_2(i) & ...
-                combined_nodes.stringer_index == penta_surfaces.stringer_2(i), :); % Top-left
-            
-            node_5 = combined_nodes( ...
-                combined_nodes.rib_index == penta_surfaces.rib_2(i) & ...
-                combined_nodes.stringer_index == penta_surfaces.stringer_1(i), :); % Top
-            
-        elseif strcmp(surface_tag, "penta front")
-            % P4 from inserted_table, other nodes from combined_nodes
-            node_1 = combined_nodes( ...
-                    combined_nodes.rib_index == penta_surfaces.rib_1(i) & ...
-                    combined_nodes.stringer_index == penta_surfaces.stringer_1(i), :); % Bottom-left
-
-            node_2 = combined_nodes( ...
-                    combined_nodes.rib_index == penta_surfaces.rib_1(i) & ...
-                    combined_nodes.stringer_index == penta_surfaces.stringer_2(i), :); % Bottom-left
-
-            node_3 = combined_nodes( ...
-                    combined_nodes.rib_index == -2 & ...
-                    combined_nodes.stringer_index == penta_surfaces.stringer_2(i), :); % Bottom-left
-
-            node_4 = combined_nodes( ...
-                    combined_nodes.rib_index == penta_surfaces.rib_2(i)  & ...
-                    strcmp(combined_nodes.tag, 'front spars'), :); % Bottom-right
-            
-            node_5 = combined_nodes( ...
-                    combined_nodes.rib_index == penta_surfaces.rib_2(i) & ...
-                    combined_nodes.stringer_index == penta_surfaces.stringer_1(i), :); % Bottom-left
-            
-        
-        else
-            % Unknown tag, skip this surface
-            warning('Unknown surface tag: %s. Skipping surface %d.', surface_tag, i);
-            continue;
-        end
-
-        % Validate nodes
-        if isempty(node_1) || isempty(node_2) || isempty(node_3) || isempty(node_4) || isempty(node_5)
-            warning('Skipping pentagonal surface %d due to missing nodes.', i);
-            continue;
-        end
-
-        % Extract coordinates
-        surface_coords = [
-            node_1.x, node_1.y;
-            node_2.x, node_2.y;
-            node_3.x, node_3.y;
-            node_4.x, node_4.y;
-            node_5.x, node_5.y
-        ];
-
-        % Plot the pentagonal surface
-        fill(surface_coords(:, 1), surface_coords(:, 2), 'yellow', 'FaceAlpha', 0.3, ...
-             'EdgeColor', 'k', 'LineWidth', 1.2);
-
-    end
-    
-end
 %% 📌 Add Legend Using Placeholder Plots
 % Add a legend entry for each surface type manually
 % plot(NaN, NaN, 'ro', 'MarkerFaceColor', 'r', 'DisplayName', 'Front Spar Nodes');
 % plot(NaN, NaN, 'bo', 'MarkerFaceColor', 'b', 'DisplayName', 'Rear Spar Nodes');
 % plot(NaN, NaN, 'ko', 'MarkerFaceColor', 'k', 'DisplayName', 'Stringer Nodes');
 % plot(NaN, NaN, 'magenta', 'LineWidth', 1.2, 'DisplayName', 'Quadrilateral Surfaces');
-% plot(NaN, NaN, 'cyan', 'LineWidth', 1.2, 'DisplayName', 'Triangular Surfaces');
-% plot(NaN, NaN, 'yellow', 'LineWidth', 1.2, 'DisplayName', 'Pentagonal Surfaces');
+% plot(NaN, NaN, 'cyan', 'LineWidth', 1.2, 'DisplayName', 'Triangular Surfaces')
 
 % Add a legend entry for each surface type manually
 h_quad = plot(NaN, NaN, 's', 'Color', 'magenta', 'MarkerFaceColor', 'magenta', 'DisplayName', 'Quadrilateral Surfaces');
 h_tri = plot(NaN, NaN, '^', 'Color', 'cyan', 'MarkerFaceColor', 'cyan', 'DisplayName', 'Triangular Surfaces');
-h_penta = plot(NaN, NaN, 'p', 'Color', 'yellow', 'MarkerFaceColor', 'yellow', 'DisplayName', 'Pentagonal Surfaces');
 h_rear = plot(NaN, NaN, 's', 'Color', 'green', 'MarkerFaceColor', 'green', 'DisplayName', 'rear spar Surfaces');
 
 % Show legend with placeholders
-legend([traza_del_ala, caja_de_torsion, aero, eje, front_spar_points, rear_spar_points, stringer_points, inserted_table_points, h_rear, h_quad, h_tri, h_penta], 'Location', 'best');
+legend([traza_del_ala, caja_de_torsion, aero, eje, front_spar_points, rear_spar_points, stringer_points, h_rear, h_quad, h_tri], 'Location', 'best');
 
 
 %% 💾 Save Plot

@@ -48,5 +48,5 @@ function combined_nodes_modified = add_nodes_to_combined_nodes_v2(combined_nodes
     % Append new nodes to combined_nodes
     combined_nodes_modified = [combined_nodes_modified; new_nodes];
 
-    disp('Nodes added successfully to combined_nodes.');
+    % disp('Nodes added successfully to combined_nodes.');
 end

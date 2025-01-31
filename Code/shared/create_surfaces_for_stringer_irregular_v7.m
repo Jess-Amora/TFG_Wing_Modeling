@@ -1,5 +1,5 @@
-function [quad_surfaces,tri_surfaces,penta_surfaces, warnings] = create_surfaces_for_stringer_irregular_v7( ...
-    combined_nodes, stringer_index, start_rib)
+function [quad_surfaces,tri_surfaces, warnings, combined_nodes] = create_surfaces_for_stringer_irregular_v7( ...
+    combined_nodes, stringer_index, start_rib, geometria,datosEstructural)
 % Iteratively creates quadrilateral surfaces for irregular zones until the endpoint or triangle.
 %
 % Inputs:
@@ -19,6 +19,9 @@ function [quad_surfaces,tri_surfaces,penta_surfaces, warnings] = create_surfaces
                           'area', 'aspect_ratio'});
     warnings = {};
     surface_counter = 1;
+
+    %% Analysis
+    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes);
 
     %% 🔍 Extract Relevant Nodes
     current_stringer_nodes = combined_nodes( ...
@@ -48,12 +51,14 @@ function [quad_surfaces,tri_surfaces,penta_surfaces, warnings] = create_surfaces
         next_stringer_nodes = [next_stringer_nodes; additional_nodes];
     end
 
+    [combined_nodes, Inserted_node] = add_perpendicular_node_to_front_spar(combined_nodes, stringer_index, geometria,datosEstructural);
+    
     %% Create First Surface (inserted_nodes)
-    if ~isempty(current_stringer_nodes) && ~isempty(next_stringer_nodes) && ~isempty(end_point) && ~isempty(inserted_nodes)
+    if ~isempty(current_stringer_nodes) && ~isempty(next_stringer_nodes) && ~isempty(end_point) && ~isempty(Inserted_node)
         node_1 = current_stringer_nodes(current_stringer_nodes.rib_index == start_rib, :); % Bottom-left
         node_2 = next_stringer_nodes(next_stringer_nodes.rib_index == start_rib & next_stringer_nodes.tag=='stringer', :);       % Bottom-right
         node_3 = end_point;                                                               % Top-right
-        node_4 = inserted_nodes;                                                          % Top-left
+        node_4 = Inserted_node;                                                          % Top-left
 
         % Validate nodes
         if isempty(node_1) || isempty(node_2) || isempty(node_3) || isempty(node_4)
@@ -99,8 +104,8 @@ function [quad_surfaces,tri_surfaces,penta_surfaces, warnings] = create_surfaces
     end
     
     %% Create second Surface (inserted node)
-    if ~isempty(current_stringer_nodes) && ~isempty(next_stringer_nodes) && ~isempty(end_point) && ~isempty(inserted_nodes)
-        node_1 = inserted_nodes; % Bottom-left
+    if ~isempty(current_stringer_nodes) && ~isempty(next_stringer_nodes) && ~isempty(end_point) && ~isempty(Inserted_node)
+        node_1 = Inserted_node; % Bottom-left
         node_2 = end_point;       % Bottom-right
         node_3 = next_stringer_nodes(next_stringer_nodes.rib_index == start_rib+1 & next_stringer_nodes.tag=='front spars', :);                                                             % Top-right
         node_4 = current_stringer_nodes(current_stringer_nodes.rib_index == start_rib+1, :);
@@ -200,53 +205,58 @@ function [quad_surfaces,tri_surfaces,penta_surfaces, warnings] = create_surfaces
         surface_counter = surface_counter + 1;
         
     end
+    
 
     %% Construir la superficie final en los larguerillos que es una triangular
     tri_surfaces = table([], [], [], [], [], [], [], [], [], [], [], ...
         'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', ...
                           'stringer_1', 'stringer_2', 'rib_1', 'rib_2', 'tags', ...
                           'area', 'aspect_ratio'});
-
-    node_1 = combined_nodes(combined_nodes.rib_index == -2 & combined_nodes.stringer_index==stringer_index, :); % Bottom-left
-    node_2 = find_max_rib_node(combined_nodes, stringer_index);       % Bottom-right
-    node_3 = combined_nodes(node_2.rib_index == combined_nodes.rib_index  & combined_nodes.tag=='front spars' , :);     
     
-    % Validate Nodes
-    if isempty(node_1) || isempty(node_2) || isempty(node_3)
-        warnings{end+1} = sprintf('Skipping final triangular surface due to missing nodes at stringer %d.', stringer_index);
-        % return;
+    % No se guarda el triangulo que sobre sale. See documentation R1.
+    if num_stringers_last_rib ~= stringer_index
+
+        node_1 = combined_nodes(combined_nodes.rib_index == -2 & combined_nodes.stringer_index==stringer_index, :); % Bottom-left
+        node_2 = find_max_rib_node_v2(combined_nodes, stringer_index);       % Bottom-right
+        node_3 = combined_nodes(node_2.rib_index == combined_nodes.rib_index  & combined_nodes.tag=='front spars' , :);     
+
+        % Validate Nodes
+        if isempty(node_1) || isempty(node_2) || isempty(node_3)
+            warnings{end+1} = sprintf('Skipping final triangular surface due to missing nodes at stringer %d.', stringer_index);
+            % return;
+        end
+    
+        % Extract Coordinates for Surface Property Calculation
+        surface_coords = [
+            node_1.x, node_1.y;
+            node_2.x, node_2.y;
+            node_3.x, node_3.y
+        ];
+    
+        % Compute area and aspect ratio
+        area = polyarea(surface_coords(:, 1), surface_coords(:, 2));
+        [is_valid, aspect_ratio] = check_aspect_ratio(surface_coords, 'triangle');
+        if ~is_valid
+            warnings{end+1} = sprintf('Skipped triangular surface due to poor aspect ratio at stringer %d.', stringer_index);
+            % return;
+        end
+        
+        
+        % Append Surface to tri_surfaces
+        tri_surfaces = [tri_surfaces; table( ...
+            1, ...       % local_id
+            node_1.local_id, ...           % node_1
+            node_2.local_id, ...           % node_2
+            node_3.local_id, ...           % node_3
+            stringer_index, ...            % stringer_1
+            stringer_index + 1, ...        % stringer_2
+             max(current_stringer_nodes.rib_index), ...                 % rib_1
+            -2, ...                        % rib_2
+            "tri front", ...    % tags
+            area, ...                      % area
+            aspect_ratio, ...              % aspect_ratio
+            'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', ...
+                              'stringer_1', 'stringer_2', 'rib_1', 'rib_2', 'tags', ...
+                              'area', 'aspect_ratio'})];
     end
-
-    % Extract Coordinates for Surface Property Calculation
-    surface_coords = [
-        node_1.x, node_1.y;
-        node_2.x, node_2.y;
-        node_3.x, node_3.y
-    ];
-
-    % Compute area and aspect ratio
-    area = polyarea(surface_coords(:, 1), surface_coords(:, 2));
-    [is_valid, aspect_ratio] = check_aspect_ratio(surface_coords, 'triangle');
-    if ~is_valid
-        warnings{end+1} = sprintf('Skipped triangular surface due to poor aspect ratio at stringer %d.', stringer_index);
-        % return;
-    end
-
-    % Append Surface to tri_surfaces
-    tri_surfaces = [tri_surfaces; table( ...
-        1, ...       % local_id
-        node_1.local_id, ...           % node_1
-        node_2.local_id, ...           % node_2
-        node_3.local_id, ...           % node_3
-        stringer_index, ...            % stringer_1
-        stringer_index + 1, ...        % stringer_2
-         max(current_stringer_nodes.rib_index), ...                 % rib_1
-        -2, ...                        % rib_2
-        "tri front", ...    % tags
-        area, ...                      % area
-        aspect_ratio, ...              % aspect_ratio
-        'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', ...
-                          'stringer_1', 'stringer_2', 'rib_1', 'rib_2', 'tags', ...
-                          'area', 'aspect_ratio'})];
-
 end
