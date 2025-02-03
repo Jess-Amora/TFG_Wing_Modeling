@@ -87,12 +87,12 @@ eje = plot(x_local_ala,linea_eje_estructural,'g', 'DisplayName', 'El eje de refe
 front_spar_idx = strcmp(combined_nodes.tag, 'front spars');
 rear_spar_idx = strcmp(combined_nodes.tag, 'rear spars');
 stringer_idx = strcmp(combined_nodes.tag, 'stringer');
-inserted_idx = strcmp(combined_nodes.tag, 'inserted');
+% inserted_idx = strcmp(combined_nodes.tag, 'inserted');
 
 front_spar_dots = combined_nodes(strcmp(combined_nodes.tag, 'front spars'),:);
 rear_spar_dots = combined_nodes(strcmp(combined_nodes.tag, 'rear spars'),:);
 stringer_dots = combined_nodes(strcmp(combined_nodes.tag, 'stringer'),:);
-inserted_dots = combined_nodes(strcmp(combined_nodes.tag, 'inserted'),:);
+% inserted_dots = combined_nodes(strcmp(combined_nodes.tag, 'inserted'),:);
 
 % Plot nodes with unique markers and colors
 front_spar_points = plot(combined_nodes.x(front_spar_idx), combined_nodes.y(front_spar_idx), ...
@@ -101,8 +101,8 @@ rear_spar_points = plot(combined_nodes.x(rear_spar_idx), combined_nodes.y(rear_s
      'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'b', 'DisplayName', 'Rear Spar Nodes');
 stringer_points = plot(combined_nodes.x(stringer_idx), combined_nodes.y(stringer_idx), ...
      'ko', 'MarkerSize', 4, 'MarkerFaceColor', 'k', 'DisplayName', 'Stringer Nodes');
-inserted_table_points = plot(combined_nodes.x(inserted_idx), combined_nodes.y(inserted_idx), ...
-     'ko', 'MarkerSize', 4, 'MarkerFaceColor', 'k', 'DisplayName', 'Inserted Nodes');
+% inserted_table_points = plot(combined_nodes.x(inserted_idx), combined_nodes.y(inserted_idx), ...
+%      'ko', 'MarkerSize', 4, 'MarkerFaceColor', 'k', 'DisplayName', 'Inserted Nodes');
 
 % Add Node Labels (Optional for Debugging)
 for i = 1:height(front_spar_dots)
@@ -119,11 +119,11 @@ for i = 1:height(stringer_dots)
     text(stringer_dots.x(i), stringer_dots.y(i), sprintf('%d', stringer_dots.local_id(i)), ...
          'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'black');
 end
-% Add Node Labels (Optional for Debugging)
-for i = 1:height(inserted_dots)
-    text(inserted_dots.x(i), inserted_dots.y(i), sprintf('%d', inserted_dots.stringer_index(i)), ...
-         'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'black');
-end
+% % Add Node Labels (Optional for Debugging)
+% for i = 1:height(inserted_dots)
+%     text(inserted_dots.x(i), inserted_dots.y(i), sprintf('%d', inserted_dots.stringer_index(i)), ...
+%          'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'black');
+% end
 
 %% 🟢 Plot Nodes Fuselaje
 % Identify node tags
@@ -169,7 +169,7 @@ if ~isempty(quad_surfaces)
 
         if strcmp(surface_tag, "quad irregular P1 inserted")
             % P1 from inserted_table, other nodes from combined_nodes
-            node_1 = combined_nodes(combined_nodes.stringer_index == quad_surfaces.stringer_1(i) & combined_nodes.rib_index ==2e5 & strcmp(combined_nodes.tag, 'inserted'), :);
+            node_1 = combined_nodes(combined_nodes.stringer_index == quad_surfaces.stringer_1(i) & combined_nodes.rib_index ==2e5 & strcmp(combined_nodes.tag, 'stringer'), :);
             node_2 = combined_nodes(combined_nodes.stringer_index == quad_surfaces.stringer_2(i) & combined_nodes.rib_index ==-2, :);
             node_3 = combined_nodes(combined_nodes.local_id == quad_surfaces.node_3(i) & strcmp(combined_nodes.tag, 'front spars'), :);
             node_4 = combined_nodes(combined_nodes.local_id == quad_surfaces.node_4(i), :);
@@ -179,7 +179,7 @@ if ~isempty(quad_surfaces)
             node_1 = combined_nodes(combined_nodes.local_id == quad_surfaces.node_1(i), :);
             node_2 = combined_nodes(combined_nodes.local_id == quad_surfaces.node_2(i), :);
             node_3 = combined_nodes(combined_nodes.stringer_index == quad_surfaces.stringer_2(i) & combined_nodes.rib_index ==-2, :);
-            node_4 = combined_nodes(combined_nodes.stringer_index == quad_surfaces.stringer_1(i) & combined_nodes.rib_index ==2e5 & strcmp(combined_nodes.tag, 'inserted'), :);
+            node_4 = combined_nodes(combined_nodes.stringer_index == quad_surfaces.stringer_1(i) & combined_nodes.rib_index ==2e5 & strcmp(combined_nodes.tag, 'stringer'), :);
 
         elseif strcmp(surface_tag, "quad irregular")
             % P2 and P3 from front spar nodesquad irr root
@@ -241,17 +241,19 @@ if ~isempty(quad_surfaces)
             
             node_2 = combined_nodes( ...
                 combined_nodes.rib_index == 3e5 & ...
-                combined_nodes.stringer_index == quad_surfaces.stringer_1(i) & ...
-                combined_nodes.tag == 'inserted', :); % Bottom-right
+                combined_nodes.stringer_index == quad_surfaces.stringer_2(i) & ...
+                combined_nodes.tag == 'stringer', :); % Bottom-right
             
             node_3 = combined_nodes( ...
                 combined_nodes.rib_index == quad_surfaces.rib_2(i) & ...
-                combined_nodes.stringer_index == quad_surfaces.stringer_2(i), :); % Top-right
+                combined_nodes.stringer_index == quad_surfaces.stringer_2(i) & ...
+                combined_nodes.tag == 'stringer' , :); % Top-right
             
             node_4 = combined_nodes( ...
                 combined_nodes.rib_index == quad_surfaces.rib_2(i) & ...
-                combined_nodes.stringer_index == quad_surfaces.stringer_1(i), :); % Top-left
-
+                combined_nodes.stringer_index == quad_surfaces.stringer_1(i) & ...
+                combined_nodes.tag == 'stringer' , :); % Top-right
+            
         elseif strcmp(surface_tag, "quad irregular root P3 inserted")
 
             % Extract nodes
@@ -268,7 +270,7 @@ if ~isempty(quad_surfaces)
             node_3 = combined_nodes( ...
                 combined_nodes.rib_index == 3e5 & ...
                 combined_nodes.stringer_index == quad_surfaces.stringer_1(i) & ...
-                combined_nodes.tag == 'inserted', :); % Bottom-right
+                combined_nodes.tag == 'stringer', :); % Bottom-right
             
             node_4 = combined_nodes( ...
                 combined_nodes.rib_index == -1 & ...

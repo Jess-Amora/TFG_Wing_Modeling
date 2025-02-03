@@ -8,23 +8,23 @@ function [quad_surfaces, warnings] = create_surfaces_vertical_front_spar_fuselaj
     warnings = {};
     surface_counter = 1;
     
-    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes_3D);
+    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data_v5  (combined_nodes_3D);
     start_rib = rib_ranges(1,2);
     %% 🔍 Filter Nodes by Stringer and Rib
-    rear_spar_extrados = combined_nodes_3D(combined_nodes_3D.tag == 'front spars fuselaje' & ...
+    front_spar_extrados = combined_nodes_3D(combined_nodes_3D.tag == 'front spars fuselaje' & ...
                                              combined_nodes_3D.h == 'extrados', :);
 
-    rear_spar_intrados = combined_nodes_3D(combined_nodes_3D.tag == 'front spars fuselaje' & ...
+    front_spar_intrados = combined_nodes_3D(combined_nodes_3D.tag == 'front spars fuselaje' & ...
                                              combined_nodes_3D.h == 'intrados', :);
 
     % Debug: Check filtered nodes
-    if isempty(rear_spar_extrados) || isempty(rear_spar_intrados)
+    if isempty(front_spar_extrados) || isempty(front_spar_intrados)
         warnings{end+1} = sprintf('No valid nodes found for rib_index %d and its neighbor.', rib_index);
         return;
     end
     
     %% 🔄 Loop Through Nodes to Create Surfaces
-    num_ribs = min(height(rear_spar_extrados), height(rear_spar_intrados)) - 1;
+    num_ribs = min(height(front_spar_extrados), height(front_spar_intrados)) - 1;
     if num_ribs < 1
         warnings{end+1} = sprintf('Insufficient nodes for rib_index %d in the rib range.', rib_index);
         return;
@@ -32,10 +32,10 @@ function [quad_surfaces, warnings] = create_surfaces_vertical_front_spar_fuselaj
     
     for i = 1:num_ribs - 1
         % Extract nodes for the quadrilateral
-        node_1 = rear_spar_extrados(i, :);          % Bottom-left
-        node_2 = rear_spar_intrados(i, :)   ;          % Top-left
-        node_3 = rear_spar_intrados(i + 1, :);         % Top-right
-        node_4 = rear_spar_extrados(i + 1, :);      % Bottom-right
+        node_1 = front_spar_extrados(i, :);          % Bottom-left
+        node_2 = front_spar_intrados(i, :)   ;          % Top-left
+        node_3 = front_spar_intrados(i + 1, :);         % Top-right
+        node_4 = front_spar_extrados(i + 1, :);      % Bottom-right
 
         % Ensure nodes are not empty
         if isempty(node_1) || isempty(node_2) || isempty(node_3) || isempty(node_4)
@@ -66,11 +66,11 @@ function [quad_surfaces, warnings] = create_surfaces_vertical_front_spar_fuselaj
             node_2.local_id, ...        % node_2
             node_3.local_id, ...        % node_3
             node_4.local_id, ...        % node_4
-            -2, ...         % stringer_1
-            -2, ...     % stringer_2
+            node_1.stringer_index, ...         % stringer_1
+            node_3.stringer_index, ...     % stringer_2
             node_1.rib_index, ...       % rib_1
             node_3.rib_index, ...       % rib_2
-            "quad rear fuselaje", ...         % tags
+            "quad vertical front fuselaje", ...         % tags
             area, ...                   % area
             aspect_ratio, ...           % aspect_ratio
             'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', ...
@@ -85,8 +85,8 @@ function [quad_surfaces, warnings] = create_surfaces_vertical_front_spar_fuselaj
 
 i = num_ribs;
 % Extract nodes for the quadrilateral
-node_1 = rear_spar_extrados(i, :);          % Bottom-left
-node_2 = rear_spar_intrados(i, :)   ;          % Top-left
+node_1 = front_spar_extrados(i, :);          % Bottom-left
+node_2 = front_spar_intrados(i, :)   ;          % Top-left
 % node_3 = combined_nodes_3D(combined_nodes_3D.tag == 'OnlyNode' & ...
 %          combined_nodes_3D.h == 'extrados', :);         
 % node_4 = combined_nodes_3D(combined_nodes_3D.tag == 'OnlyNode' & ...
@@ -124,11 +124,11 @@ new_surface = table( ...
     node_2.local_id, ...        % node_2
     node_3.local_id, ...        % node_3
     node_4.local_id, ...        % node_4
-    -2, ...         % stringer_1
-    -2, ...     % stringer_2
+    node_1.stringer_index, ...         % stringer_1
+    node_3.stringer_index, ...     % stringer_2
     node_1.rib_index, ...       % rib_1
     node_3.rib_index, ...       % rib_2
-    "quad rear root fuselaje", ...         % tags
+    "quad vertical front fuselaje root", ...         % tags
     area, ...                   % area
     aspect_ratio, ...           % aspect_ratio
     'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', ...

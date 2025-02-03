@@ -73,10 +73,10 @@ function superficie_horizontal_larguero_posterior = create_rear_spar_surfaces_v4
         node_4 = rear_spar_rib2.local_id(1); % Rear spar at rib 2
 
         % Extract Rib and Stringer Indices
-        rib_1 = rear_spar_rib1.rib_index(1);
-        rib_2 = rear_spar_rib2.rib_index(1);
         stringer_1 = -2; % Fixed for rear spar
         stringer_2 = 1;  % Fixed for first stringer
+        rib_1 = rear_spar_rib1.rib_index(1);
+        rib_2 = rear_spar_rib2.rib_index(1);
 
         % Calculate Area and Aspect Ratio
         surface_coords = [rear_spar_rib1.x(1), rear_spar_rib1.y(1); ...
@@ -117,5 +117,5 @@ function superficie_horizontal_larguero_posterior = create_rear_spar_surfaces_v4
     end
 
     %% ✅ Display Success Message
-    disp('✅ Rear spar surfaces with metadata successfully created.');
+    % disp('✅ Rear spar surfaces with metadata successfully created.');
 end

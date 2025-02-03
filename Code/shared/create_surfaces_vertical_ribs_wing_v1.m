@@ -8,7 +8,7 @@ function [quad_surfaces, warnings] = create_surfaces_vertical_ribs_wing_v1(combi
     warnings = {};
     surface_counter = 1;
     
-    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes_3D);
+    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data_v5(combined_nodes_3D);
     start_rib = rib_ranges(1,2);
 
     %% 🔍 Filter Nodes by Stringer and Rib

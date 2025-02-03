@@ -34,7 +34,7 @@ function [tri_surfaces, quad_surfaces, warnings, combined_nodes] = create_surfac
         combined_nodes.stringer_index == stringer_index + 1, :);
     
     
-    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes);
+    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data_v5(combined_nodes);
     start_rib=rib_ranges(stringer_index,2);
 
     Point_1_A = current_stringer_nodes(current_stringer_nodes.rib_index==-1,:);

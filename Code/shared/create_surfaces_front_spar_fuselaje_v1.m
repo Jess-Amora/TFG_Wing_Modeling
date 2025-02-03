@@ -1,7 +1,7 @@
 function [quad_surfaces, warnings] = create_surfaces_front_spar_fuselaje_v1(combined_nodes_fuselaje, combined_nodes)
     
 
-[num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes);
+[num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data_v5(combined_nodes);
 
 %% 📝 Initialization    
 quad_surfaces = table([], [], [], [], [], [], [], [], [], [], [], [], ...

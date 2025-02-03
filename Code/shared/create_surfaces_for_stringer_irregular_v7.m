@@ -21,7 +21,7 @@ function [quad_surfaces,tri_surfaces, warnings, combined_nodes] = create_surface
     surface_counter = 1;
 
     %% Analysis
-    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes);
+    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data_v5(combined_nodes);
 
     %% 🔍 Extract Relevant Nodes
     current_stringer_nodes = combined_nodes( ...

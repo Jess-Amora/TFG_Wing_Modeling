@@ -8,14 +8,14 @@ function [quad_surfaces, warnings] = create_surfaces_vertical_front_spar_wing_v1
     warnings = {};
     surface_counter = 1;
     
-    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes_3D);
+    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data_v5(combined_nodes_3D);
     start_rib = rib_ranges(1,2);
     %% 🔍 Filter Nodes by Stringer and Rib
-    front_spar_extrados = [combined_nodes_3D(combined_nodes_3D.tag == 'OnlyNode' & combined_nodes_3D.h == 'extrados', :); 
+    front_spar_extrados = [combined_nodes_3D(combined_nodes_3D.rib_index == 1e5 & combined_nodes_3D.h == 'extrados', :); 
                             sortrows(combined_nodes_3D(combined_nodes_3D.tag == 'front spars' & ...
                                              combined_nodes_3D.h == 'extrados', :), 5)];
 
-    front_spar_intrados = [combined_nodes_3D(combined_nodes_3D.tag == 'OnlyNode' & combined_nodes_3D.h == 'intrados', :); 
+    front_spar_intrados = [combined_nodes_3D(combined_nodes_3D.rib_index == 1e5 & combined_nodes_3D.h == 'intrados', :); 
                             sortrows(combined_nodes_3D(combined_nodes_3D.tag == 'front spars' & ...
                                              combined_nodes_3D.h == 'intrados', :), 5)];
 

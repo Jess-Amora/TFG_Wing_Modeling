@@ -48,7 +48,7 @@ surface_counter = 1;
 
 %% 🔍 Extract Relevant Nodes
 
-[num_stringers_last_rib, max_rib_index, max_stringer_index, rib_ranges, special_rib_indices] = analyze_stringer_rib_data_v2(combined_nodes);
+[num_stringers_last_rib, max_rib_index, max_stringer_index, rib_ranges, special_rib_indices] = analyze_stringer_rib_data_v5(combined_nodes);
 stringer_index = max_stringer_index;
 
 current_stringer_nodes = combined_nodes( ...
@@ -104,11 +104,13 @@ quad_surfaces = [quad_surfaces; table( ...
 surface_counter = surface_counter + 1;
 
 %% EL bucle que recorre hasta la superficie triangular
-if special_rib_indices.exists_rib_zero
-    start_rib = 0;
-else
-    start_rib = 1;
-end
+% if any(special_rib_indices.special_ribs == 0)
+%     start_rib = 0; % If rib_index = 0 exists, start from 0
+% else
+%     start_rib = 1; % Otherwise, start from 1
+% end
+
+start_rib = 0;
 
 for index_rib = start_rib:rib_ranges(max_stringer_index,3)-1
     node_1 = current_stringer_nodes(current_stringer_nodes.rib_index == index_rib, :); % Bottom-left

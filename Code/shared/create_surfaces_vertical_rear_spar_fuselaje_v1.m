@@ -8,7 +8,7 @@ function [quad_surfaces, warnings] = create_surfaces_vertical_rear_spar_fuselaje
     warnings = {};
     surface_counter = 1;
     
-    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes_3D);
+    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data_v5(combined_nodes_3D);
     start_rib = rib_ranges(1,2);
     %% 🔍 Filter Nodes by Stringer and Rib
     rear_spar_extrados = combined_nodes_3D(combined_nodes_3D.tag == 'rear spars fuselaje' & ...
@@ -70,7 +70,7 @@ function [quad_surfaces, warnings] = create_surfaces_vertical_rear_spar_fuselaje
             -2, ...     % stringer_2
             node_1.rib_index, ...       % rib_1
             node_3.rib_index, ...       % rib_2
-            "quad rear fuselaje", ...         % tags
+            "quad vertical rear fuselaje", ...         % tags
             area, ...                   % area
             aspect_ratio, ...           % aspect_ratio
             'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', ...
@@ -122,11 +122,11 @@ new_surface = table( ...
     node_2.local_id, ...        % node_2
     node_3.local_id, ...        % node_3
     node_4.local_id, ...        % node_4
-    -2, ...         % stringer_1
-    -2, ...     % stringer_2
+    node_1.stringer_index, ...         % stringer_1
+    node_3.stringer_index, ...     % stringer_2
     node_1.rib_index, ...       % rib_1
     node_3.rib_index, ...       % rib_2
-    "quad rear root fuselaje", ...         % tags
+    "quad vertical rear fuselaje root", ...         % tags
     area, ...                   % area
     aspect_ratio, ...           % aspect_ratio
     'VariableNames', {'local_id', 'node_1', 'node_2', 'node_3', 'node_4', ...

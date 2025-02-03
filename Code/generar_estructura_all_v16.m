@@ -1,5 +1,5 @@
 clear all
-
+clc
 % close all
     
 addpath('./shared');
@@ -112,7 +112,7 @@ combined_nodes_fuselaje = create_combined_node_table_v2(nodos_larguerillos_fusel
 threshold_distance = distancia_entre_costillas * 0.07;
 
 % Call the function
-[num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes);
+[num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data_v5(combined_nodes);
 
 superficie_horizontal_larguero_posterior = []; % Rear Spar Horizontal Panels
 
@@ -174,7 +174,7 @@ tri_surfaces = [];
 penta_surfaces = [];
 
 for stringer_index = num_stringers_last_rib:max_stringer - 1
-    stringer_index
+
     % Define start rib as usual
     start_rib = index_counter_quitar_nodos_larguerillos_menor_Lf(stringer_index) + 1;
 
@@ -361,31 +361,6 @@ plotfilename = strcat('../Results/Figures/OnlyPlotSurface_v4_test1_generate_stru
 H = 1;
 combined_nodes_3D = generate_3D_nodes(combined_nodes, combined_nodes_fuselaje, H);
 
-%% Trinagulo test test
-
-
-%  quad_irregular tri_surfaces
-
-%% Vertical surfaces in the spar
-
-% Creación de los largueros
-[quad_rear, warnings] = create_surfaces_vertical_rear_spar_wing_v1(combined_nodes_3D);
-[quad_front, warnings] = create_surfaces_vertical_front_spar_wing_v1(combined_nodes_3D);
-[quad_rear_fuselaje, warnings] = create_surfaces_vertical_rear_spar_fuselaje_v1(combined_nodes_3D);
-[quad_front_fuselaje, warnings] = create_surfaces_vertical_front_spar_fuselaje_v1(combined_nodes_3D);
-
-%% Creación de ribs
-[quad_ribs, warnings] = create_surfaces_vertical_ribs_wing_v1(combined_nodes_3D);
-[quad_ribs_fuselaje, warnings] = create_surfaces_vertical_ribs_fuselaje_v1(combined_nodes_3D);
-
-%% Creación de líneas para barras (cRod)
-% [horizontal_stringers,vertical_stringers] = create_stringers(combined_nodes_3D);
-% [horizontal_stringers,vertical_stringers] = create_stringers_v4(combined_nodes_3D);
-[horizontal_stringers,vertical_stringers] = create_stringers_v5(combined_nodes_3D);
-lines = [horizontal_stringers;vertical_stringers];
-%% Organizando los elementos
-% OnlyQuad = []
-
 %% Saving all of the results
 % 
 % model_data = struct();
@@ -425,48 +400,101 @@ pshell_info = struct( ...
     'tension_mid3', 0, ...     % Tension-only material (usually not used)
     'material_mid4', 0);       % Fourth material property (for advanced applications)
 
-%% Preparar .bdf
-OnlyQuadRegular = [quad_surfaces_regular;quad_rectangular_regular];
 
+%% Trinagulo test test
+
+
+%  quad_irregular tri_surfaces
+
+%% Vertical surfaces in the spar
+
+% Creación de los largueros
+[quad_rear, warnings] = create_surfaces_vertical_rear_spar_wing_v1(combined_nodes_3D);
+[quad_front, warnings] = create_surfaces_vertical_front_spar_wing_v1(combined_nodes_3D);
+[quad_rear_fuselaje, warnings] = create_surfaces_vertical_rear_spar_fuselaje_v1(combined_nodes_3D);
+[quad_front_fuselaje, warnings] = create_surfaces_vertical_front_spar_fuselaje_v1(combined_nodes_3D);
+
+quad_spars = [quad_rear; quad_front; quad_rear_fuselaje; quad_front_fuselaje];
+
+% % Quad spar
+% quad_spars_3D = preprocess_3D_quads(quad_spars);
+quad_spars_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_spars);
+
+
+write_bdf_quads_v1('..\Results\Nastran\quads_vertical_front_rear_spars_v1.bdf', quad_spars_3D_processed, [], pshell_info, material_info);
+%% Creación de ribs
+[quad_ribs, warnings] = create_surfaces_vertical_ribs_wing_v1(combined_nodes_3D);
+[quad_ribs_fuselaje, warnings] = create_surfaces_vertical_ribs_fuselaje_v1(combined_nodes_3D);
+
+%% Creación de líneas para barras (cRod)
+% [horizontal_stringers,vertical_stringers] = create_stringers(combined_nodes_3D);
+% [horizontal_stringers,vertical_stringers] = create_stringers_v4(combined_nodes_3D);
+
+
+[horizontal_stringers, vertical_stringers, line_spars] = create_stringers_v6(combined_nodes_3D);
+lines = [horizontal_stringers; vertical_stringers; line_spars];
+
+%% Organizando los elementos
+% OnlyQuad = []
+
+
+%% Preparar .bdf
 % 
+%% Nodes
 % combined_nodes_3D = model_data.Nodes;
 % combined_nodes_3D = sort_combined_nodes(combined_nodes_3D);
 [nodes,combined_nodes_3D_processed] = process_nodes(combined_nodes_3D);
-write_bdf_points_v2('..\Results\Nastran\nodes.bdf', nodes);
+% write_bdf_points_v2('..\Results\Nastran\nodes.bdf', nodes);
 
+%% Lines
 % lines
 % lines = model_data.Elements.Lines;
-lines_updated = process_lines_v8(combined_nodes_3D_processed, lines);
-write_bdf_lines_v3('..\Results\Nastran\lines_v5.bdf', lines_updated, material_info, property_info);
-
-%% Quads
-
-% quad spar posterior
-superficie_horizontal_larguero_posterior_3D = preprocess_3D_quads(superficie_horizontal_larguero_posterior);
-superficie_horizontal_larguero_posterior_3D_updated = process_quads_v1(combined_nodes_3D_processed,superficie_horizontal_larguero_posterior_3D);
-write_bdf_quads_v1('..\Results\Nastran\quads_spar_v1.bdf', superficie_horizontal_larguero_posterior_3D_updated, [], pshell_info, material_info);
-
-% quad_irregular tri_surfaces
-quad_normales_3D = preprocess_3D_quads(quad_irregular);
-quads_updated_irregular = process_quads_v1(combined_nodes_3D_processed,quad_normales_3D);
-write_bdf_quads_v1('..\Results\Nastran\quads_irregular_v1.bdf', quads_updated_irregular, [], pshell_info, material_info);
-
-
+% [longest_lines, stats, top_10_longest] = analyze_line_lengths_v2(lines_table, threshold_factor)
+% 
+% lines_updated = process_lines_v8(combined_nodes_3D_processed, lines);
+% write_bdf_lines_v3('..\Results\Nastran\lines_v5.bdf', lines_updated, material_info, property_info);
+% 
+% %% Quads
+% 
+% OnlyQuadRegular = [quad_surfaces_regular;quad_rectangular_regular];
+% 
+% 
+% % quad spar posterior
+% superficie_horizontal_larguero_posterior_3D = preprocess_3D_quads(superficie_horizontal_larguero_posterior);
+% superficie_horizontal_larguero_posterior_3D_updated = process_quads_v1(combined_nodes_3D_processed,superficie_horizontal_larguero_posterior_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_spar_v1.bdf', superficie_horizontal_larguero_posterior_3D_updated, [], pshell_info, material_info);
+% 
+% % quad_irregular tri_surfaces
+% quad_normales_3D = preprocess_3D_quads(quad_irregular);
+% quads_updated_irregular = process_quads_v1(combined_nodes_3D_processed,quad_normales_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_irregular_v1.bdf', quads_updated_irregular, [], pshell_info, material_info);
+% 
+% 
 % % Quad normal
 % quad_normales = [quad_surfaces_regular; quad_rectangular_regular  ];
 % quad_normales_3D = preprocess_3D_quads(quad_normales);
 % quads_updated = process_quads_v1(combined_nodes_3D_processed,quad_normales_3D);
 % write_bdf_quads_v1('..\Results\Nastran\quads_v1.bdf', quads_updated, [], pshell_info, material_info);
+% 
+% % quad fuselaje
+% OnlyQuads_Fuselaje_3D = preprocess_3D_quads(OnlyQuads_Fuselaje);
+% OnlyQuads_Fuselaje_3D_processed = process_quads_v1(combined_nodes_3D_processed,OnlyQuads_Fuselaje_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_fuselaje_v1.bdf', OnlyQuads_Fuselaje_3D_processed, [], pshell_info, material_info);
+% 
+% % Quad root
+% quad_root_3D = preprocess_3D_quads(quad_root);
+% quad_root_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_root_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_root_v1.bdf', quad_root_3D_processed, [], pshell_info, material_info);
+% 
+% % Quad root corner stringer front spar
+% quad_root_stringer_3D = preprocess_3D_quads(quad_root_stringer);
+% quad_root_stringer_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_root_stringer_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_root_frontspars_v1.bdf', quad_root_stringer_3D_processed, [], pshell_info, material_info);
 
-% quad fuselaje
-OnlyQuads_Fuselaje_3D = preprocess_3D_quads(OnlyQuads_Fuselaje);
-OnlyQuads_Fuselaje_3D_processed = process_quads_v1(combined_nodes_3D_processed,OnlyQuads_Fuselaje_3D);
-write_bdf_quads_v1('..\Results\Nastran\quads_fuselaje_v1.bdf', OnlyQuads_Fuselaje_3D_processed, [], pshell_info, material_info);
-
-% Quad root
-quad_root_3D = preprocess_3D_quads(quad_root);
-quad_root_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_root_3D);
-write_bdf_quads_v1('..\Results\Nastran\quads_root_v1.bdf', quad_root_3D_processed, [], pshell_info, material_info);
+% % Quad spar
+% quad_spars_3D = preprocess_3D_quads(quad_spars);
+quad_spars_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_spars_3D);
+write_bdf_quads_v1('..\Results\Nastran\quads_spars_v1.bdf', quad_spars_3D_processed, [], pshell_info, material_info);
 
 
 %% TEST TEST MIKE TEST HELLO HELLO
@@ -500,10 +528,8 @@ write_bdf_quads_v1('..\Results\Nastran\quads_root_v1.bdf', quad_root_3D_processe
 % write_bdf_lines_v3('..\Results\Nastran\structure_test_2_lines.bdf', L_test1, material_info, property_info);
 
 
-
-%%
 %% Superficies cercanas al encastre
-% 
+
 % tri_root = [];
 % quad_root = [];
 % penta_root = [];
@@ -533,13 +559,14 @@ write_bdf_quads_v1('..\Results\Nastran\quads_root_v1.bdf', quad_root_3D_processe
 % 
 % OnlyPlotSurface_v6(combined_nodes, combined_nodes_fuselaje, ...
 %     [quad_root ], [],[], plottitle, plotfilename,avion,datosEstructural);
-
 % 
+% % 
 % % nodes
 % H = 1;
+% combined_nodes_3D = [];
 % combined_nodes_3D = generate_3D_nodes(combined_nodes, combined_nodes_fuselaje, H);
 % [nodes,combined_nodes_3D_processed] = process_nodes(combined_nodes_3D);
-% 
+% % 
 % % write_bdf_points_v2('..\Results\Nastran\nodes.bdf', nodes);
 % % Quad root
 % quad_root_3D = preprocess_3D_quads(quad_root);

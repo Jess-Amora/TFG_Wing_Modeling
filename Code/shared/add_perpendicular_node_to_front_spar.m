@@ -56,7 +56,7 @@ function [combined_nodes, Inserted_node] = add_perpendicular_node_to_front_spar(
     y_new = end_point.y - delta_y;
     
     % 🟢 Step 3: Insert New Node into Combined Nodes
-    Inserted_node = table(1, x_new, y_new, 2e5, stringer_index, "inserted", ...
+    Inserted_node = table(1, x_new, y_new, 2e5, stringer_index, "stringer", ...
         'VariableNames', {'local_id', 'x', 'y', 'rib_index', 'stringer_index', 'tag'});
 
     combined_nodes = add_nodes_to_combined_nodes_v2(combined_nodes, Inserted_node);

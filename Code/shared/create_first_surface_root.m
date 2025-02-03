@@ -26,7 +26,7 @@ function [tri_surfaces, warnings] = create_first_surface_root(combined_nodes, st
     next_stringer_nodes = combined_nodes( ...
         combined_nodes.stringer_index == stringer_index + 1, :);
 
-    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data(combined_nodes);
+    [num_stringers_last_rib, max_rib, max_stringer, rib_ranges] = analyze_stringer_rib_data_v5(combined_nodes);
     start_rib = rib_ranges(1,2);
 
     %% Create First Surface
