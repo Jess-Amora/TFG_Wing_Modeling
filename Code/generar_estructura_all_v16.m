@@ -409,22 +409,32 @@ pshell_info = struct( ...
 %% Vertical surfaces in the spar
 
 % Creación de los largueros
-[quad_rear, warnings] = create_surfaces_vertical_rear_spar_wing_v1(combined_nodes_3D);
-[quad_front, warnings] = create_surfaces_vertical_front_spar_wing_v1(combined_nodes_3D);
-[quad_rear_fuselaje, warnings] = create_surfaces_vertical_rear_spar_fuselaje_v1(combined_nodes_3D);
-[quad_front_fuselaje, warnings] = create_surfaces_vertical_front_spar_fuselaje_v1(combined_nodes_3D);
+[quad_rear, warnings_i] = create_surfaces_vertical_rear_spar_wing_v1(combined_nodes_3D);
+warnings = [warnings; warnings_i];
+
+[quad_front, warnings_i] = create_surfaces_vertical_front_spar_wing_v1(combined_nodes_3D);
+warnings = [warnings; warnings_i];
+
+[quad_rear_fuselaje, warnings_i] = create_surfaces_vertical_rear_spar_fuselaje_v1(combined_nodes_3D);
+warnings = [warnings; warnings_i];
+
+[quad_front_fuselaje, warnings_i] = create_surfaces_vertical_front_spar_fuselaje_v1(combined_nodes_3D);
+warnings = [warnings; warnings_i];
+
 
 quad_spars = [quad_rear; quad_front; quad_rear_fuselaje; quad_front_fuselaje];
 
-% % Quad spar
-% quad_spars_3D = preprocess_3D_quads(quad_spars);
-quad_spars_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_spars);
-
-
-write_bdf_quads_v1('..\Results\Nastran\quads_vertical_front_rear_spars_v1.bdf', quad_spars_3D_processed, [], pshell_info, material_info);
 %% Creación de ribs
-[quad_ribs, warnings] = create_surfaces_vertical_ribs_wing_v1(combined_nodes_3D);
-[quad_ribs_fuselaje, warnings] = create_surfaces_vertical_ribs_fuselaje_v1(combined_nodes_3D);
+[quad_ribs, warnings_i] = create_surfaces_vertical_ribs_wing_v1(combined_nodes_3D);
+warnings = [warnings; warnings_i];
+
+[quad_ribs_fuselaje, warnings_i] = create_surfaces_vertical_ribs_fuselaje_v1(combined_nodes_3D);
+warnings = [warnings; warnings_i];
+
+
+[quad_surfaces_vertical_rib_ala, quad_surfaces_vertical_rib_fuselaje, warnings_i] = create_surfaces_ribs_vertical(combined_nodes_3D);
+quad_surfaces_vertical_rib = [quad_surfaces_vertical_rib_ala; quad_surfaces_vertical_rib_fuselaje];
+warnings = [warnings; warnings_i];
 
 %% Creación de líneas para barras (cRod)
 % [horizontal_stringers,vertical_stringers] = create_stringers(combined_nodes_3D);
@@ -434,68 +444,94 @@ write_bdf_quads_v1('..\Results\Nastran\quads_vertical_front_rear_spars_v1.bdf', 
 [horizontal_stringers, vertical_stringers, line_spars] = create_stringers_v6(combined_nodes_3D);
 lines = [horizontal_stringers; vertical_stringers; line_spars];
 
+
+
 %% Organizando los elementos
 % OnlyQuad = []
 
 
 %% Preparar .bdf
 % 
-%% Nodes
+% Nodes
 % combined_nodes_3D = model_data.Nodes;
 % combined_nodes_3D = sort_combined_nodes(combined_nodes_3D);
+
 [nodes,combined_nodes_3D_processed] = process_nodes(combined_nodes_3D);
-% write_bdf_points_v2('..\Results\Nastran\nodes.bdf', nodes);
+% combined_nodes_3D_processed = combined_nodes_3D_processed(~(combined_nodes_3D_processed.tag == "stringer fuselaje" & ...
+%                                                             combined_nodes_3D_processed.rib_index == 9), :);
+write_bdf_points_v2('..\Results\Nastran\nodes.bdf', nodes);
 
 %% Lines
 % lines
 % lines = model_data.Elements.Lines;
 % [longest_lines, stats, top_10_longest] = analyze_line_lengths_v2(lines_table, threshold_factor)
-% 
-% lines_updated = process_lines_v8(combined_nodes_3D_processed, lines);
-% write_bdf_lines_v3('..\Results\Nastran\lines_v5.bdf', lines_updated, material_info, property_info);
-% 
-% %% Quads
-% 
-% OnlyQuadRegular = [quad_surfaces_regular;quad_rectangular_regular];
-% 
-% 
-% % quad spar posterior
-% superficie_horizontal_larguero_posterior_3D = preprocess_3D_quads(superficie_horizontal_larguero_posterior);
-% superficie_horizontal_larguero_posterior_3D_updated = process_quads_v1(combined_nodes_3D_processed,superficie_horizontal_larguero_posterior_3D);
-% write_bdf_quads_v1('..\Results\Nastran\quads_spar_v1.bdf', superficie_horizontal_larguero_posterior_3D_updated, [], pshell_info, material_info);
-% 
-% % quad_irregular tri_surfaces
-% quad_normales_3D = preprocess_3D_quads(quad_irregular);
-% quads_updated_irregular = process_quads_v1(combined_nodes_3D_processed,quad_normales_3D);
-% write_bdf_quads_v1('..\Results\Nastran\quads_irregular_v1.bdf', quads_updated_irregular, [], pshell_info, material_info);
-% 
-% 
-% % Quad normal
-% quad_normales = [quad_surfaces_regular; quad_rectangular_regular  ];
-% quad_normales_3D = preprocess_3D_quads(quad_normales);
-% quads_updated = process_quads_v1(combined_nodes_3D_processed,quad_normales_3D);
-% write_bdf_quads_v1('..\Results\Nastran\quads_v1.bdf', quads_updated, [], pshell_info, material_info);
-% 
-% % quad fuselaje
-% OnlyQuads_Fuselaje_3D = preprocess_3D_quads(OnlyQuads_Fuselaje);
-% OnlyQuads_Fuselaje_3D_processed = process_quads_v1(combined_nodes_3D_processed,OnlyQuads_Fuselaje_3D);
-% write_bdf_quads_v1('..\Results\Nastran\quads_fuselaje_v1.bdf', OnlyQuads_Fuselaje_3D_processed, [], pshell_info, material_info);
-% 
-% % Quad root
-% quad_root_3D = preprocess_3D_quads(quad_root);
-% quad_root_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_root_3D);
-% write_bdf_quads_v1('..\Results\Nastran\quads_root_v1.bdf', quad_root_3D_processed, [], pshell_info, material_info);
-% 
-% % Quad root corner stringer front spar
-% quad_root_stringer_3D = preprocess_3D_quads(quad_root_stringer);
-% quad_root_stringer_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_root_stringer_3D);
-% write_bdf_quads_v1('..\Results\Nastran\quads_root_frontspars_v1.bdf', quad_root_stringer_3D_processed, [], pshell_info, material_info);
 
-% % Quad spar
-% quad_spars_3D = preprocess_3D_quads(quad_spars);
-quad_spars_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_spars_3D);
-write_bdf_quads_v1('..\Results\Nastran\quads_spars_v1.bdf', quad_spars_3D_processed, [], pshell_info, material_info);
+lines_updated = process_lines_v8(combined_nodes_3D_processed, lines);
+write_bdf_lines_v3('..\Results\Nastran\lines_v5.bdf', lines_updated, material_info, property_info);
 
+%% Quad 
+
+quads_all = [superficie_horizontal_larguero_posterior; quad_irregular; quad_surfaces_regular; quad_rectangular_regular; OnlyQuads_Fuselaje; quad_root; quad_root_stringer; quad_spars];
+quads_all_3D = preprocess_3D_quads(quads_all);
+quads_all_3D_processed = process_quads_v1(combined_nodes_3D_processed,[quads_all_3D; quad_surfaces_vertical_rib]);
+write_bdf_quads_v1('..\Results\Nastran\quads_all_v1.bdf', quads_all_3D_processed, [], pshell_info, material_info);
+
+
+%% Tri
+
+tri_all = [tri_surfaces; tri_root; tri_root_stringer];
+tri_all_3D = preprocess_3D_tris(tri_all);
+tri_all_3D_processed = process_tri(combined_nodes_3D_processed, tri_all_3D);
+write_bdf_tris_v1('..\Results\Nastran\tri_v1.bdf', tri_all_3D_processed, pshell_info, material_info);
+
+%% Post proceso de los nodos
+% 
+% size(quads_all_3D_processed)
+% size(tri_all_3D_processed)
+% size(lines_updated)
+% nodes_processed = remove_unused_nodes(combined_nodes_3D_processed, quads_all_3D_processed, tri_all_3D_processed, lines_updated)
+% [nodes,combined_nodes_3D_processed] = process_nodes(nodes_processed);
+% write_bdf_points_v3('..\Results\Nastran\nodes_processed.bdf', nodes);
+
+%% BC / condición de contorno
+
+% root_nodes = filter_root_nodes_v2(combined_nodes_3D_processed, Lf, rib_ranges);
+root_nodes = filter_root_nodes_v3(combined_nodes_3D_processed, rib_ranges);
+root_front_spar_intrados = combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'front spars' & combined_nodes_3D_processed.rib_index == 1e5 & combined_nodes_3D_processed.h == 'intrados',:);
+root_rear_spar_intrados = combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'rear spars' & combined_nodes_3D_processed.rib_index == rib_ranges(1,2) & combined_nodes_3D_processed.h == 'intrados',:);
+% filtered_root_nodes = remove_spar_intrados(root_nodes, root_front_spar_intrados, root_rear_spar_intrados);
+
+rib_fuselage_nodes_stringer = combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'stringer fuselaje' & combined_nodes_3D_processed.rib_index == 1,:);
+rib_fuselage_nodes_rear = combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'rear spars fuselaje' & combined_nodes_3D_processed.rib_index == 1,:);
+rib_fuselage_nodes_front = combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'front spars fuselaje' & combined_nodes_3D_processed.rib_index == 1,:);
+rib_fuselage_nodes = [rib_fuselage_nodes_stringer; rib_fuselage_nodes_rear; rib_fuselage_nodes_front];
+
+generate_boundary_conditions_bdf('..\Results\Nastran\BC_v1.bdf', root_nodes, root_front_spar_intrados, root_rear_spar_intrados, rib_fuselage_nodes);
+
+%% Forces
+L_total = avion.MTOW;
+rear_spar_extrados= combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'rear spars' & combined_nodes_3D_processed.rib_index >= rib_ranges(1,2),:);
+front_spar_extrados = combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'front spars',:);
+
+forces = generate_schrenk_forces_v1(front_spar_extrados, rear_spar_extrados, b, L_total);
+generate_forces_bdf('..\Results\Nastran\F_v1.bdf', forces, [rear_spar_extrados; front_spar_extrados]);
+
+%% Write todo
+% write_bdf_full('..\Results\Nastran\full_model.bdf', nodes, lines_updated, quads_all_3D_processed, tri_all_3D_processed, forces, BC, material_info, property_info, pshell_info);
+write_bdf_full('..\Results\Nastran\full_model.bdf', combined_nodes_3D_processed, lines_updated, quads_all_3D_processed, tri_all_3D_processed, forces, material_info, property_info, pshell_info, rib_ranges, Lf);
+% write_bdf_full('..\Results\Nastran\full_model.bdf', combined_nodes_3D_processed, lines, quads, tris, forces, material_info, property_info, pshell_info, rib_ranges, Lf);
+
+%% Save structure
+% save_project_data('..\Results\Nastran\structure1\structure1.bdf', lines, quads_all_3D, tri_all_3D, combined_nodes_3D, combined_nodes_3D_processed, combined_nodes, forces);
+save_project_data('..\Results\Data\project_data.mat', ...
+                  'lines', lines, ...
+                  'quads', quads_all_3D, ...
+                  'tri', tri_all_3D, ...
+                  'nodes', nodes, ...
+                  'combined_nodes_3D_processed', combined_nodes_3D_processed, ...
+                  'combined_nodes_3D', combined_nodes_3D, ...
+                  'combined_nodes', combined_nodes, ...
+                  'force', forces);
 
 %% TEST TEST MIKE TEST HELLO HELLO
 % P ( g_id 0 x y z 0)
@@ -572,3 +608,60 @@ write_bdf_quads_v1('..\Results\Nastran\quads_spars_v1.bdf', quad_spars_3D_proces
 % quad_root_3D = preprocess_3D_quads(quad_root);
 % quad_root_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_root_3D);
 % write_bdf_quads_v1('..\Results\Nastran\quads_root_v1.bdf', quad_root_3D_processed, [], pshell_info, material_info);
+
+% %% Quad 
+% 
+% OnlyQuadRegular = [quad_surfaces_regular;quad_rectangular_regular];
+% 
+% 
+% quad spar posterior
+% superficie_horizontal_larguero_posterior_3D = preprocess_3D_quads(superficie_horizontal_larguero_posterior);
+% superficie_horizontal_larguero_posterior_3D_updated = process_quads_v1(combined_nodes_3D_processed,superficie_horizontal_larguero_posterior_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_spar_v1.bdf', superficie_horizontal_larguero_posterior_3D_updated, [], pshell_info, material_info);
+% 
+% % quad_irregular tri_surfaces
+% quad_normales_3D = preprocess_3D_quads(quad_irregular);
+% quads_updated_irregular = process_quads_v1(combined_nodes_3D_processed,quad_normales_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_irregular_v1.bdf', quads_updated_irregular, [], pshell_info, material_info);
+% 
+% % Quad normal
+% quad_normales = [quad_surfaces_regular; quad_rectangular_regular  ];
+% quad_normales_3D = preprocess_3D_quads(quad_normales);
+% quads_updated = process_quads_v1(combined_nodes_3D_processed,quad_normales_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_v1.bdf', quads_updated, [], pshell_info, material_info);
+% 
+% % quad fuselaje
+% OnlyQuads_Fuselaje_3D = preprocess_3D_quads(OnlyQuads_Fuselaje);
+% OnlyQuads_Fuselaje_3D_processed = process_quads_v1(combined_nodes_3D_processed,OnlyQuads_Fuselaje_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_fuselaje_v1.bdf', OnlyQuads_Fuselaje_3D_processed, [], pshell_info, material_info);
+% 
+% % Quad root
+% quad_root_3D = preprocess_3D_quads(quad_root);
+% quad_root_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_root_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_root_v1.bdf', quad_root_3D_processed, [], pshell_info, material_info);
+% 
+% % Quad root corner stringer front spar
+% quad_root_stringer_3D = preprocess_3D_quads(quad_root_stringer);
+% quad_root_stringer_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_root_stringer_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_root_frontspars_v1.bdf', quad_root_stringer_3D_processed, [], pshell_info, material_info);
+
+% % Quad spar
+% % quad_spars_3D = preprocess_3D_quads(quad_spars);
+% quad_spars_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_spars_3D);
+% write_bdf_quads_v1('..\Results\Nastran\quads_spars_v1.bdf', quad_spars_3D_processed, [], pshell_info, material_info);
+
+%
+% Tri
+% % tri_surfaces_3D = preprocess_3D_tris(tri_surfaces);
+% % tri_surfaces_3D_processed = process_tri(combined_nodes_3D_processed, tri_surfaces_3D);
+% % write_bdf_tris_v1('..\Results\Nastran\tri_front_v1.bdf', tri_surfaces_3D_processed, pshell_info, material_info);
+% % 
+% 
+% tri_root_3D = preprocess_3D_tris(tri_root);
+% tri_root_3D_processed = process_tri(combined_nodes_3D_processed, tri_root_3D);
+% write_bdf_tris_v1('..\Results\Nastran\tri_root_v1.bdf', tri_root_3D_processed, pshell_info, material_info);
+% 
+% tri_root_stringer_3D = preprocess_3D_tris(tri_root_stringer);
+% tri_root_stringer_3D_processed = process_tri(combined_nodes_3D_processed, tri_root_stringer_3D);
+% write_bdf_tris_v1('..\Results\Nastran\tri_root_front_v1.bdf', tri_root_stringer_3D_processed, pshell_info, material_info);
+% 

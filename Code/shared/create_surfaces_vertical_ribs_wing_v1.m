@@ -40,6 +40,7 @@ function [quad_surfaces, warnings] = create_surfaces_vertical_ribs_wing_v1(combi
     % Additionally, the framework supports an extra rib (rib_index = 0) for the front spar, which is handled separately.
     % Future extensions can include auxiliary ribs (rib_index ≤ -3) while maintaining this convention.
 
+    
     for i = 2:2:num_ribs
         
         % Extract nodes for the quadrilateral

@@ -1,4 +1,4 @@
-function [tri_surfaces, warnings] = create_first_surface_root(combined_nodes, stringer_index, start_rib)
+function [tri_surfaces, warnings] = create_first_surface_root(combined_nodes)
 % Iteratively creates quadrilateral surfaces for irregular zones until the endpoint or triangle.
 %
 % Inputs:
@@ -63,8 +63,8 @@ function [tri_surfaces, warnings] = create_first_surface_root(combined_nodes, st
                 node_1.local_id, ...           % node_1
                 node_2.local_id, ...           % node_2
                 node_3.local_id, ...           % node_3
-                stringer_index, ...            % stringer_1
-                stringer_index + 1, ...        % stringer_2
+                -2, ...            % stringer_1
+                1, ...        % stringer_2
                  -1, ...                 % rib_1
                  start_rib, ...                        % rib_2
                 "tri corner root", ...    % tags
