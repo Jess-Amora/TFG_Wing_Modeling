@@ -27,7 +27,7 @@ function [results] = construir_fuselaje_v5(avion,datosEstructural, ala,output_co
     MTOW = avion.MTOW;
 
     y_global_punta_ala_borde_ataque = avion.geometria.y_global_punta_ala_borde_ataque;
-    flecha_radianes = avion.geometria.flecha.radian;
+    flecha_radianes = avion.geometria.flecha_radian;
 
     % Datos estructural
     Distancia_larguero_anterior_cuerda_porcentaje = datosEstructural.distancia_larguero_anterior_cuerda_porcentaje;
@@ -40,8 +40,11 @@ function [results] = construir_fuselaje_v5(avion,datosEstructural, ala,output_co
     n = datosEstructural.n;
     
     % Ala
-    numero_larguerillos_total = ala.numero_larguerillos_total;
-    flecha_posterior_radian = ala.geometria.alfa_larguero_posterior_radianes;
+    [numero_larguerillos_total, lengths, data] = extract_larguerillos_info(ala);
+    alfa_larguero_posterior_radianes = avion.geometria.alfa_larguero_posterior_radianes;
+
+    flecha_posterior_radian = alfa_larguero_posterior_radianes;
+    % [N, lengths, data] = extract_larguerillos_info(ala.mesh);
 
     %% Cálculo previo costilla
     numero_costillas_fuselaje = floor(Lf/distancia_entre_costillas);
@@ -162,74 +165,74 @@ function [results] = construir_fuselaje_v5(avion,datosEstructural, ala,output_co
             % fprintf('Nodos %d : %d\n', temp_size_nodos+1+Numero_nodos_elementos_fuselaje,size(nodos_larguerillos_fuselaje,2)+Numero_nodos_elementos_fuselaje);
         end
     end
-
-    %% Construcción de las barras
-    % % Creando las barras en los largueros posterior y anterior
-    barras_fuselaje_larguero_posterior = [];
-    barras_fuselaje_larguero_anterior = [];
-    barras_fuselaje_larguerillos = [];
-
-
-    %% Creando los primeros elementos en el larguero posterior
-    for i = 1 : Numero_nodos_elementos_fuselaje(1,1)-1
-        barras_fuselaje_larguero_posterior = [barras_fuselaje_larguero_posterior [i;i+1]];
-    end
-
-    numero_elementos_larguero_posterior_fuselaje = size(barras_fuselaje_larguero_posterior,2);
-    if output_command
-        fprintf('Numero de elementos en el larguero posterior = %d\n', numero_elementos_larguero_posterior_fuselaje);
-        fprintf('Elementos 1 : %d\n', numero_elementos_larguero_posterior_fuselaje);
-    end
-    
-    % counter_nodos_larguero_posterior_ala = Numero_nodos_elementos_fuselaje(1,1);
-
-    %% Creando Los elementos en el larguero anterior
-    % Numero_nodos_elementos_fuselaje(2,1)
-    for i = 1 : Numero_nodos_elementos_fuselaje(2,1)-1
-        % Numero_nodos_elementos_fuselaje(2,1)
-        barras_fuselaje_larguero_anterior = [barras_fuselaje_larguero_anterior [i;i+1]];
-    end
-    numero_elementos_larguero_anterior_fuselaje = size(barras_fuselaje_larguero_anterior,2);
-
-    if output_command
-        fprintf('Numero de elementos en el larguero anterior = %d\n', numero_elementos_larguero_anterior_fuselaje);
-        fprintf('Elementos %d : %d\n', numero_elementos_larguero_posterior_fuselaje+1,numero_elementos_larguero_posterior_fuselaje+numero_elementos_larguero_anterior_fuselaje);
-    end
-    
-    % % Es el número de barra en donde empieza los elementos de los
-    % % larguerillos;
-    % counter_barras = numero_elementos_larguero_posterior_fuselaje+numero_elementos_larguero_anterior_fuselaje;
-    % % Está counter es donde empezó el nodo de los larguerillos.
-    % counter_barras_nodos = numero_nodos_larguero_posterior_fuselaje+numero_nodos_larguero_anterior_ala;
-    
-    Numero_nodos_elementos_fuselaje(1,2) = numero_elementos_larguero_posterior_fuselaje;
-    Numero_nodos_elementos_fuselaje(2,2) = numero_elementos_larguero_anterior_fuselaje;
-    Numero_nodos_elementos_fuselaje_temp = Numero_nodos_elementos_fuselaje(3:end,:)
-
-    temp_node = 0;
-    %% Creando Los elementos en los larguerillos
-    for index_larguerillo_counter = 1:numero_larguerillos_total % El bucle para cada larguerillo
-        temp_size_barras = size(barras_fuselaje_larguerillos,2);
-
-        % Construyendo la barra en larguerillo numero = index_larguerillo_counter  
-
-        for index_nodos = 1:Numero_nodos_elementos_fuselaje(index_larguerillo_counter+2,1)-1
-            barras_fuselaje_larguerillos = [barras_fuselaje_larguerillos [temp_node + index_nodos; temp_node + index_nodos + 1]];
-        end
-        
-
-        temp_node = sum(Numero_nodos_elementos_fuselaje_temp(1:index_larguerillo_counter,1));
-
-        Numero_nodos_elementos_fuselaje(2+index_larguerillo_counter,2) = size(barras_fuselaje_larguerillos,2) - temp_size_barras;
-
-        % counter_barras_nodos = counter_barras_nodos + index_larguerillos_anterior(index_larguerillo_counter);
-        % numeros_elementos_larguerillos_index = counter_barras-counter_barra_minus_i;
-        if output_command
-            fprintf('---Numero de barras en el larguerillo numero %d = %d\n',index_larguerillo_counter, Numero_nodos_elementos_fuselaje(2+index_larguerillo_counter,2));
-            fprintf('Elements %d : %d\n', temp_size_barras+1,size(barras_fuselaje_larguerillos,2));
-            fprintf('nodos %d : %d\n', temp_node + 1,temp_node + Numero_nodos_elementos_fuselaje(index_larguerillo_counter+2,1));
-        end
-    end
+    % 
+    % %% Construcción de las barras
+    % % % Creando las barras en los largueros posterior y anterior
+    % barras_fuselaje_larguero_posterior = [];
+    % barras_fuselaje_larguero_anterior = [];
+    % barras_fuselaje_larguerillos = [];
+    % 
+    % 
+    % %% Creando los primeros elementos en el larguero posterior
+    % for i = 1 : Numero_nodos_elementos_fuselaje(1,1)-1
+    %     barras_fuselaje_larguero_posterior = [barras_fuselaje_larguero_posterior [i;i+1]];
+    % end
+    % 
+    % numero_elementos_larguero_posterior_fuselaje = size(barras_fuselaje_larguero_posterior,2);
+    % if output_command
+    %     fprintf('Numero de elementos en el larguero posterior = %d\n', numero_elementos_larguero_posterior_fuselaje);
+    %     fprintf('Elementos 1 : %d\n', numero_elementos_larguero_posterior_fuselaje);
+    % end
+    % 
+    % % counter_nodos_larguero_posterior_ala = Numero_nodos_elementos_fuselaje(1,1);
+    % 
+    % %% Creando Los elementos en el larguero anterior
+    % % Numero_nodos_elementos_fuselaje(2,1)
+    % for i = 1 : Numero_nodos_elementos_fuselaje(2,1)-1
+    %     % Numero_nodos_elementos_fuselaje(2,1)
+    %     barras_fuselaje_larguero_anterior = [barras_fuselaje_larguero_anterior [i;i+1]];
+    % end
+    % numero_elementos_larguero_anterior_fuselaje = size(barras_fuselaje_larguero_anterior,2);
+    % 
+    % if output_command
+    %     fprintf('Numero de elementos en el larguero anterior = %d\n', numero_elementos_larguero_anterior_fuselaje);
+    %     fprintf('Elementos %d : %d\n', numero_elementos_larguero_posterior_fuselaje+1,numero_elementos_larguero_posterior_fuselaje+numero_elementos_larguero_anterior_fuselaje);
+    % end
+    % 
+    % % % Es el número de barra en donde empieza los elementos de los
+    % % % larguerillos;
+    % % counter_barras = numero_elementos_larguero_posterior_fuselaje+numero_elementos_larguero_anterior_fuselaje;
+    % % % Está counter es donde empezó el nodo de los larguerillos.
+    % % counter_barras_nodos = numero_nodos_larguero_posterior_fuselaje+numero_nodos_larguero_anterior_ala;
+    % 
+    % Numero_nodos_elementos_fuselaje(1,2) = numero_elementos_larguero_posterior_fuselaje;
+    % Numero_nodos_elementos_fuselaje(2,2) = numero_elementos_larguero_anterior_fuselaje;
+    % Numero_nodos_elementos_fuselaje_temp = Numero_nodos_elementos_fuselaje(3:end,:)
+    % 
+    % temp_node = 0;
+    % %% Creando Los elementos en los larguerillos
+    % for index_larguerillo_counter = 1:numero_larguerillos_total % El bucle para cada larguerillo
+    %     temp_size_barras = size(barras_fuselaje_larguerillos,2);
+    % 
+    %     % Construyendo la barra en larguerillo numero = index_larguerillo_counter  
+    % 
+    %     for index_nodos = 1:Numero_nodos_elementos_fuselaje(index_larguerillo_counter+2,1)-1
+    %         barras_fuselaje_larguerillos = [barras_fuselaje_larguerillos [temp_node + index_nodos; temp_node + index_nodos + 1]];
+    %     end
+    % 
+    % 
+    %     temp_node = sum(Numero_nodos_elementos_fuselaje_temp(1:index_larguerillo_counter,1));
+    % 
+    %     Numero_nodos_elementos_fuselaje(2+index_larguerillo_counter,2) = size(barras_fuselaje_larguerillos,2) - temp_size_barras;
+    % 
+    %     % counter_barras_nodos = counter_barras_nodos + index_larguerillos_anterior(index_larguerillo_counter);
+    %     % numeros_elementos_larguerillos_index = counter_barras-counter_barra_minus_i;
+    %     if output_command
+    %         fprintf('---Numero de barras en el larguerillo numero %d = %d\n',index_larguerillo_counter, Numero_nodos_elementos_fuselaje(2+index_larguerillo_counter,2));
+    %         fprintf('Elements %d : %d\n', temp_size_barras+1,size(barras_fuselaje_larguerillos,2));
+    %         fprintf('nodos %d : %d\n', temp_node + 1,temp_node + Numero_nodos_elementos_fuselaje(index_larguerillo_counter+2,1));
+    %     end
+    % end
 
     %% Guardando los resultados
     results.larguerillos_fuselaje = larguerillos_fuselaje;
@@ -243,7 +246,7 @@ function [results] = construir_fuselaje_v5(avion,datosEstructural, ala,output_co
     results.mesh.nodos_anterior_fuselaje = nodos_anterior_fuselaje; % Los nodos en el larguero posterior.
     results.mesh.intersecciones_costillas_larguerillos = intersecciones_costillas_larguerillos;
     results.mesh.Numero_nodos_elementos_fuselaje = Numero_nodos_elementos_fuselaje;
-    results.mesh.barras_fuselaje_larguero_posterior = barras_fuselaje_larguero_posterior;
-    results.mesh.barras_fuselaje_larguero_anterior = barras_fuselaje_larguero_anterior;
-    results.mesh.barras_fuselaje_larguerillos = barras_fuselaje_larguerillos;
+    % results.mesh.barras_fuselaje_larguero_posterior = barras_fuselaje_larguero_posterior;
+    % results.mesh.barras_fuselaje_larguero_anterior = barras_fuselaje_larguero_anterior;
+    % results.mesh.barras_fuselaje_larguerillos = barras_fuselaje_larguerillos;
 end

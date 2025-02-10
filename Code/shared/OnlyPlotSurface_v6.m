@@ -14,7 +14,7 @@ function OnlyPlotSurface_v6(combined_nodes,combined_nodes_fuselaje, quad_surface
 % Output:
 %   A plot visualizing the specified surfaces (triangular, quadrilateral, pentagonal, and rear spar).
 %% cálculos previo
-[num_stringers_last_rib, max_rib_index, max_stringer_index, rib_ranges, special_rib_indices] = analyze_stringer_rib_data_v2(combined_nodes);
+[num_stringers_last_rib, max_rib_index, max_stringer_index, rib_ranges, rib_ranges_by_ribs, special_rib_indices, max_ribs_fuselaje] = analyze_stringer_rib_data_v5(combined_nodes);
 %% 🎯 Initialize Plot
 fig = figure('Name', 'Wing Surface Verification Plot', 'NumberTitle', 'off');
 hold on;
@@ -33,7 +33,7 @@ c2 = avion.geometria.c2;
 b = avion.geometria.b;
 
 y_global_punta_ala_borde_ataque = avion.geometria.y_global_punta_ala_borde_ataque;
-flecha_radianes = avion.geometria.flecha.radian;
+flecha_radianes = avion.geometria.flecha_radian;
 % Datos estructural
 Distancia_larguero_anterior_cuerda_porcentaje = datosEstructural.distancia_larguero_anterior_cuerda_porcentaje;
 Distancia_larguero_posterior_cuerda_porcentaje = datosEstructural.distancia_larguero_posterior_cuerda_porcentaje;

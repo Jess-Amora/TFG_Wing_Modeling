@@ -11,8 +11,9 @@ function forces = generate_schrenk_forces(front_spar_extrados, rear_spar_extrado
 %   forces              - Table of nodal forces for use in .bdf file generation.
 
     %% 📝 Initialize Force Table
-    forces = table([], [], [], [], [], ...
-        'VariableNames', {'load_id', 'node_id', 'type', 'magnitude', 'direction'});
+    forces = table([], [], [], [], [], [], [], ...
+        'VariableNames', {'load_id', 'node_id', 'type', 'magnitude', 'dir_x', 'dir_y', 'dir_z'});
+
 
     %% 🔄 Combine Spar Nodes and Compute Schrenk Forces
     % Combine nodes from front and rear spars
@@ -27,25 +28,41 @@ function forces = generate_schrenk_forces(front_spar_extrados, rear_spar_extrado
     % Iterate over nodes to compute Schrenk force
     load_id = 1; % Single load case
     for i = 1:height(combined_nodes)
-        % Spanwise position (y-coordinate of the node)
+        % Get the current node position
+        x = combined_nodes.x(i);
         y = combined_nodes.y(i);
-
-        % Elliptical lift distribution (normalized)
-        L_elliptical = sqrt(1 - (2 * y / b)^2);
-
-        % Planform distribution (proportional to chord length, assumed constant for simplicity)
-        c_y = 1; % Assuming chord length is constant across the span for simplicity
-        L_planform = c_y;
-
-        % Schrenk force at this position
+        z = combined_nodes.z(i);
+    
+        % 🔵 Compute the normal vector (approximation using finite differences)
+        if i < height(combined_nodes)
+            dx = combined_nodes.x(i+1) - x;
+            dy = combined_nodes.y(i+1) - y;
+            dz = combined_nodes.z(i+1) - z;
+        else
+            dx = x - combined_nodes.x(i-1);
+            dy = y - combined_nodes.y(i-1);
+            dz = z - combined_nodes.z(i-1);
+        end
+        
+        % 🔵 Normal approximation: Cross product of local chord & span direction
+        span_vector = [dx, dy, dz];  
+        chord_vector = [1, 0, 0];  % Assuming x-direction as chord (modify if needed)
+    
+        % Compute normal as cross product (spanwise × chordwise)
+        force_direction = cross(span_vector, chord_vector);
+        force_direction = force_direction / norm(force_direction);  % Normalize
+    
+        % Compute Schrenk force magnitude
+        y_pos = combined_nodes.y(i);
+        L_elliptical = sqrt(1 - (2 * y_pos / b)^2);
+        L_planform = 1;  % Assuming constant chord
         schrenk_force = 0.5 * (L_elliptical + L_planform);
-
-        % Scale force by total lift
         force_magnitude = (schrenk_force / num_nodes) * L_total;
-
-        % ✅ Store direction as a numeric array, not a cell
+    
+        % ✅ Store properly as a numeric array, NOT a cell
         forces = [forces; table(load_id, combined_nodes.global_id(i), {'FORCE'}, force_magnitude, ...
-                    force_direction, 'VariableNames', forces.Properties.VariableNames)];
-
+                                force_direction(1), force_direction(2), force_direction(3), ...
+                                'VariableNames', {'load_id', 'node_id', 'type', 'magnitude', 'dir_x', 'dir_y', 'dir_z'})];
     end
+
 end

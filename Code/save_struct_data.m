@@ -177,7 +177,7 @@ if guardarDatosEstructural
     TFG_Amora.datosEstructural.distancia_eje_de_referencia_estructural_cuerda = distancia_eje_de_referencia_estructural_cuerda; % Porcentaje de la distancia del eje de referencia estructural en la cuerda desde el borde de ataque
     TFG_Amora.datosEstructural.numero_de_puntos_en_las_lineas = numero_de_puntos_en_las_lineas; % El número de puntos que están en las gráficas
     TFG_Amora.datosEstructural.k_sust_a350_1000 = k_sust; % Es el constante de la función de sustentación distribuida de cuerda (l(x) = k * c(y), donde k = k_sust)
-
+    TFG_Amora.datosEstructural.numero_de_puntos_en_las_lineas = numero_de_puntos_en_las_lineas;
 end
 
 

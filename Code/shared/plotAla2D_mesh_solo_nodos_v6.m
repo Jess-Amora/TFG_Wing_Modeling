@@ -24,7 +24,7 @@ function plotAla2D_mesh_solo_nodos_v6(avion, datosEstructural, ala, plotTitle, x
     b = avion.geometria.b;
 
     y_global_punta_ala_borde_ataque = avion.geometria.y_global_punta_ala_borde_ataque;
-    flecha_radianes = avion.geometria.flecha.radian;
+    flecha_radianes = avion.geometria.flecha_radian;
     % Datos estructural
     Distancia_larguero_anterior_cuerda_porcentaje = datosEstructural.distancia_larguero_anterior_cuerda_porcentaje;
     Distancia_larguero_posterior_cuerda_porcentaje = datosEstructural.distancia_larguero_posterior_cuerda_porcentaje;

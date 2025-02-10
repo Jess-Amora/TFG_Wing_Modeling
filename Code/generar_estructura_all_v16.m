@@ -85,7 +85,7 @@ nodos_anterior_fuselaje = fuselaje.mesh.nodos_anterior_fuselaje; % Los nodos en 
 % Convert nodes to tables
 nodos_larguerillos = squeeze(ala.mesh.nodos_larguerillos);
 nodos_larguerillos(:, [3, 4]) = nodos_larguerillos(:, [4, 3]); % Swap rib/stringer if needed
-nodos_larguerillos_table = convert_nodes_to_table_v2(nodos_larguerillos);
+nodos_larguerillos_table = convert_nodes_to_table_v2(nodos_larguerillos); 
 
 nodos_anterior_ala_table = convert_nodes_front_spars_to_table_v2(nodos_anterior_ala);
 nodos_posterior_ala_table = convert_nodes_rear_spars_to_table_v2(nodos_posterior_ala);
@@ -513,17 +513,22 @@ L_total = avion.MTOW;
 rear_spar_extrados= combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'rear spars' & combined_nodes_3D_processed.rib_index >= rib_ranges(1,2),:);
 front_spar_extrados = combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'front spars',:);
 
-forces = generate_schrenk_forces_v1(front_spar_extrados, rear_spar_extrados, b, L_total);
-generate_forces_bdf('..\Results\Nastran\F_v1.bdf', forces, [rear_spar_extrados; front_spar_extrados]);
+forces_front = generate_schrenk_forces_v4(front_spar_extrados, b, L_total);
+forces_rear = generate_schrenk_forces_v4(rear_spar_extrados, b, L_total);
 
+export_forces_to_csv('..\Results\Nastran\forces.csv', [forces_front;forces_rear] );
+
+% generate_forces_bdf_v3('..\Results\Nastran\F_v1.bdf', [forces_rear; forces_front], [rear_spar_extrados; front_spar_extrados]);
 %% Write todo
 % write_bdf_full('..\Results\Nastran\full_model.bdf', nodes, lines_updated, quads_all_3D_processed, tri_all_3D_processed, forces, BC, material_info, property_info, pshell_info);
-write_bdf_full('..\Results\Nastran\full_model.bdf', combined_nodes_3D_processed, lines_updated, quads_all_3D_processed, tri_all_3D_processed, forces, material_info, property_info, pshell_info, rib_ranges, Lf);
+% write_bdf_full('..\Results\Nastran\full_model.bdf', combined_nodes_3D_processed, lines_updated, quads_all_3D_processed, tri_all_3D_processed, forces, material_info, property_info, pshell_info, rib_ranges, Lf);
 % write_bdf_full('..\Results\Nastran\full_model.bdf', combined_nodes_3D_processed, lines, quads, tris, forces, material_info, property_info, pshell_info, rib_ranges, Lf);
 
 %% Save structure
 % save_project_data('..\Results\Nastran\structure1\structure1.bdf', lines, quads_all_3D, tri_all_3D, combined_nodes_3D, combined_nodes_3D_processed, combined_nodes, forces);
-save_project_data('..\Results\Data\project_data.mat', ...
+timestamp = datetime("now"); % Generate timestamp
+filename = sprintf('./Nastran/structure_%s.bdf', timestamp); % Format string
+save_project_data(filename, ...
                   'lines', lines, ...
                   'quads', quads_all_3D, ...
                   'tri', tri_all_3D, ...
@@ -650,7 +655,7 @@ save_project_data('..\Results\Data\project_data.mat', ...
 % quad_spars_3D_processed = process_quads_v1(combined_nodes_3D_processed,quad_spars_3D);
 % write_bdf_quads_v1('..\Results\Nastran\quads_spars_v1.bdf', quad_spars_3D_processed, [], pshell_info, material_info);
 
-%
+%%
 % Tri
 % % tri_surfaces_3D = preprocess_3D_tris(tri_surfaces);
 % % tri_surfaces_3D_processed = process_tri(combined_nodes_3D_processed, tri_surfaces_3D);
@@ -665,3 +670,23 @@ save_project_data('..\Results\Data\project_data.mat', ...
 % tri_root_stringer_3D_processed = process_tri(combined_nodes_3D_processed, tri_root_stringer_3D);
 % write_bdf_tris_v1('..\Results\Nastran\tri_root_front_v1.bdf', tri_root_stringer_3D_processed, pshell_info, material_info);
 % 
+%% Forces
+% L_total = avion.MTOW;
+% rear_spar_extrados= combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'rear spars' & combined_nodes_3D_processed.rib_index >= rib_ranges(1,2),:);
+% front_spar_extrados = combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'front spars',:);
+% 
+% forces_front = generate_schrenk_forces_v4(front_spar_extrados, b, L_total);
+% forces_rear = generate_schrenk_forces_v4(rear_spar_extrados, b, L_total);
+% 
+% generate_forces_bdf_v3('..\Results\Nastran\F_v1.bdf', [forces_rear; forces_front], [rear_spar_extrados; front_spar_extrados]);
+% 
+% export_forces_to_csv('..\Results\Nastran\forces.csv', forces);
+% 
+% 
+% % forces = table( ...
+% %     [74; 94; 119; 149; 184], ...      % Node IDs
+% %     [100; 200; 300; 400; 500], ...    % Magnitudes
+% %     [1; 0; -1; 0.5; 0], ...           % dir_x
+% %     [0; 1; 0; 0.5; -1], ...           % dir_y
+% %     [0; 0; 1; 0; 1], ...              % dir_z
+% %     'VariableNames', {'node_id', 'magnitude', 'dir_x', 'dir_y', 'dir_z'});

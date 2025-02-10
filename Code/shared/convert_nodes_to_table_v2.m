@@ -1,4 +1,4 @@
-function nodes_table = convert_nodes_to_table(nodes)
+function nodes_table = convert_nodes_to_table_v2(nodes)
     % Validate and handle different input dimensions
     if ndims(nodes) == 3 && size(nodes, 1) == 1
         nodes = squeeze(nodes)';

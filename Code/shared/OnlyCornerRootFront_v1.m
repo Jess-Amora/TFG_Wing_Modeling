@@ -76,6 +76,13 @@ surface_coords = [
     node_4.x, node_4.y
 ];
 
+
+current_stringer_nodes
+node_1
+    node_2
+    node_3
+    node_4
+
 % Compute area and aspect ratio
 [is_valid, aspect_ratio] = check_aspect_ratio(surface_coords, 'quad');
 if ~is_valid

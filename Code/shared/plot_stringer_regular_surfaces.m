@@ -40,7 +40,7 @@ function plot_stringer_regular_surfaces(combined_nodes, quad_surfaces_regular, p
          'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'b', 'DisplayName', 'Rear Spar Nodes');
     
     % Plot stringers Nodes in black
-    plot(combined_nodes.x(front_spar_idx), combined_nodes.y(stringers_idx), ...
+    plot(combined_nodes.x(stringers_idx), combined_nodes.y(stringers_idx), ...
          'ko', 'MarkerSize', 4, 'MarkerFaceColor', 'r', 'DisplayName', 'stringers');
 
     % Add Node Labels (Optional for Debugging)

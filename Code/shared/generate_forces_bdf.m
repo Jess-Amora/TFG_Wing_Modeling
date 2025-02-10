@@ -61,8 +61,13 @@ function generate_forces_bdf(filename, forces, nodes_table)
                 % fprintf(fid, 'FORCE    %-8d%-8d%-8d%-16.6f%-16.6f%-16.6f%-16.6f\n', ...
                 %         load_id, node_id, 0, magnitude, direction(1), direction(2), direction(3));
                 % ✅ Fixed-field format: FORCE card (exact column spacing)
+
+                % fprintf(fid, 'FORCE   %8d%8d%8d%16.6f%16.6f%16.6f%16.6f\n', ...
+                %         load_id, node_id, 0, magnitude, direction(1), direction(2), direction(3));
+
                 fprintf(fid, 'FORCE   %8d%8d%8d%16.6f%16.6f%16.6f%16.6f\n', ...
-                        load_id, node_id, 0, magnitude, direction(1), direction(2), direction(3));
+                    load_id, node_id, 0, magnitude, force.dir_x, force.dir_y, force.dir_z);
+
 
             elseif strcmp(type, 'MOMENT')
                 % fprintf(fid, 'MOMENT   %-8d%-8d%-8d%-16.6f%-16.6f%-16.6f%-16.6f\n', ...
