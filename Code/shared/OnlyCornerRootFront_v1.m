@@ -62,6 +62,14 @@ node_2 = combined_nodes(combined_nodes.tag == 'front spars' & combined_nodes.rib
 node_3 = combined_nodes(combined_nodes.local_id == max_rib_index +1 & combined_nodes.tag == 'front spars', :); % Top-right
 node_4 = current_stringer_nodes(current_stringer_nodes.rib_index == 0, :); % Bottom-left
 
+if isempty(node_4)
+     node_4 = current_stringer_nodes(current_stringer_nodes.rib_index == 1, :);
+     node_4_empty = 1;
+else
+    node_4_empty = 0;
+end
+
+% if 
 % Validate nodes
 if isempty(node_1) || isempty(node_2) || isempty(node_3) || isempty(node_4)
     warnings{end+1} = sprintf('Skipping corner root-front_spar due to missing nodes.');
@@ -75,13 +83,13 @@ surface_coords = [
     node_3.x, node_3.y;
     node_4.x, node_4.y
 ];
+% 
 
-
-current_stringer_nodes
-node_1
-    node_2
-    node_3
-    node_4
+% current_stringer_nodes
+% node_1
+%     node_2
+%     node_3
+%     node_4
 
 % Compute area and aspect ratio
 [is_valid, aspect_ratio] = check_aspect_ratio(surface_coords, 'quad');
@@ -101,7 +109,7 @@ quad_surfaces = [quad_surfaces; table( ...
     max_stringer_index, ...         % stringer_1
     -1, ...     % stringer_2
     -1, ...                % rib_1
-    0, ...            % rib_2
+    node_4_empty, ...            % rib_2
     "quad OnlyNode1", ...       % tags
     area, ...                   % area
     aspect_ratio, ...           % aspect_ratio
@@ -111,13 +119,13 @@ quad_surfaces = [quad_surfaces; table( ...
 surface_counter = surface_counter + 1;
 
 %% EL bucle que recorre hasta la superficie triangular
-% if any(special_rib_indices.special_ribs == 0)
-%     start_rib = 0; % If rib_index = 0 exists, start from 0
-% else
-%     start_rib = 1; % Otherwise, start from 1
-% end
+if node_4_empty == 0
+    start_rib = 0; % If rib_index = 0 exists, start from 0
+else
+    start_rib = 1; % Otherwise, start from 1
+end
 
-start_rib = 0;
+% start_rib = 0;
 
 for index_rib = start_rib:rib_ranges(max_stringer_index,3)-1
     node_1 = current_stringer_nodes(current_stringer_nodes.rib_index == index_rib, :); % Bottom-left

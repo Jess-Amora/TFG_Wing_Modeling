@@ -45,7 +45,9 @@ function [results] = construirAla_v14(avion,datosEstructural,cargas,output_comma
     schrenk = cargas.schrenk;
 
     % La línea del larguero anterior
-    linea_larguero_anterior=linspace(c1*Distancia_larguero_anterior_cuerda_porcentaje,y_global_punta_ala_borde_ataque+Distancia_larguero_anterior_cuerda_porcentaje*c2,numero_de_puntos_en_las_lineas);
+    linea_larguero_anterior=linspace(c1*Distancia_larguero_anterior_cuerda_porcentaje, ...
+                                     y_global_punta_ala_borde_ataque+Distancia_larguero_anterior_cuerda_porcentaje*c2, ...
+                                     numero_de_puntos_en_las_lineas);
     
     % La línea del larguero posterior
     linea_larguero_posterior=linspace(c1*Distancia_larguero_posterior_cuerda_porcentaje,y_global_punta_ala_borde_ataque+Distancia_larguero_posterior_cuerda_porcentaje*c2,numero_de_puntos_en_las_lineas);

@@ -120,8 +120,9 @@ linea_eje_estructural=linspace(c1*distancia_eje_de_referencia_estructural_cuerda
         plot(x_local_ala,linea_eje_estructural,'g', 'DisplayName', 'El eje de referencia estructural', 'LineWidth', 0.1);
         
         % Ala Costillas
-        numero_costillas = ala.numero_costillas;
-        costillas = ala.costillas;
+        % numero_costillas = ala.numero_costillas;
+        numero_costillas = ala.ribs_struct.num_costillas_total;
+        costillas = ala.ribs_struct.costillas;
 
         for i=1:numero_costillas
             if i == 1
@@ -132,8 +133,8 @@ linea_eje_estructural=linspace(c1*distancia_eje_de_referencia_estructural_cuerda
         end
 
         %Ala larguerillo
-        numero_larguerillo_total = ala.numero_larguerillos_total;
-        larguerillos = ala.larguerillos;
+        numero_larguerillo_total = size(ala.mesh_struct.larguerillos,1);
+        larguerillos = ala.mesh_struct.larguerillos;
 
         for i=1:numero_larguerillo_total
             if i == 1
@@ -144,7 +145,7 @@ linea_eje_estructural=linspace(c1*distancia_eje_de_referencia_estructural_cuerda
         end
         
         % Nodo posterior
-        nodos_posterior = ala.mesh.nodos_posterior';
+        nodos_posterior = ala.mesh_struct.nodos_posterior';
         % size(nodos_posterior)
         counter_nodes = 0;
         for i=1:size(nodos_posterior,1)
@@ -166,7 +167,7 @@ linea_eje_estructural=linspace(c1*distancia_eje_de_referencia_estructural_cuerda
         % counter_nodes
 
         % Nodo anterior
-        nodos_anterior = ala.mesh.nodos_anterior';
+        nodos_anterior = ala.mesh_struct.nodos_anterior';
         % size(nodos_anterior)
         for i=1:size(nodos_anterior,1)
             if i == 1
@@ -187,25 +188,50 @@ linea_eje_estructural=linspace(c1*distancia_eje_de_referencia_estructural_cuerda
 
         % Nodos en los larguerillos
         % size(ala.mesh.nodos_larguerillos)
-        nodes = squeeze(ala.mesh.nodos_larguerillos);
+        % nodes = ala.mesh_struct.nodos_intersecciones;
+        nodes = ala.mesh_struct.nodos_larguerillos;
         % size(nodes)
         % counter_nodes
         for i=1:size(nodes,1)
-            if i == 1
-                plot(nodes(i,1),nodes(i,2),'ok', 'DisplayName', 'Nodos Larguerillos', 'LineWidth', 0.1);
-                % Add a label with the node number
-                counter_nodes = counter_nodes + 1;
-                label = sprintf('n %d', counter_nodes); % Format the label
-                text(nodes(i,1),nodes(i,2), label, 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right','FontSize', 10);
-            else
-                plot(nodes(i,1),nodes(i,2),'ok', 'HandleVisibility', 'off', 'LineWidth', 0.1);
-                % Add a label with the node number
-                counter_nodes = counter_nodes + 1;
-                label = sprintf('n %d', counter_nodes); % Format the label
-                text(nodes(i,1),nodes(i,2), label, 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right','FontSize', 10);
-
+            for j=1:size(nodes,2)
+                if i == 1
+                    plot(nodes(i,j,1),nodes(i,j,2),'ok', 'DisplayName', 'Nodos Larguerillos', 'LineWidth', 0.1);
+                    % Add a label with the node number
+                    counter_nodes = counter_nodes + 1;
+                    label = sprintf('n %d', counter_nodes); % Format the label
+                    text(nodes(i,j,1),nodes(i,j,2), label, 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right','FontSize', 10);
+                else
+                    plot(nodes(i,j,1),nodes(i,j,2),'ok', 'HandleVisibility', 'off', 'LineWidth', 0.1);
+                    % Add a label with the node number
+                    counter_nodes = counter_nodes + 1;
+                    label = sprintf('n %d', counter_nodes); % Format the label
+                    text(nodes(i,j,1),nodes(i,j,2), label, 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right','FontSize', 10);
+    
+                end
             end
         end
+
+        % % Nodos en los larguerillos
+        % % size(ala.mesh.nodos_larguerillos)
+        % nodes = squeeze(ala.mesh.larguerillos)';
+        % % size(nodes)
+        % % counter_nodes
+        % for i=1:size(nodes,1)
+        %     if i == 1
+        %         plot(nodes(i,1),nodes(i,2),'ok', 'DisplayName', 'Nodos Larguerillos', 'LineWidth', 0.1);
+        %         % Add a label with the node number
+        %         counter_nodes = counter_nodes + 1;
+        %         label = sprintf('n %d', counter_nodes); % Format the label
+        %         text(nodes(i,1),nodes(i,2), label, 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right','FontSize', 10);
+        %     else
+        %         plot(nodes(i,1),nodes(i,2),'ok', 'HandleVisibility', 'off', 'LineWidth', 0.1);
+        %         % Add a label with the node number
+        %         counter_nodes = counter_nodes + 1;
+        %         label = sprintf('n %d', counter_nodes); % Format the label
+        %         text(nodes(i,1),nodes(i,2), label, 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right','FontSize', 10);
+        % 
+        %     end
+        % end
 
     % Title and Labels
     if exist('plotTitle', 'var') && ~isempty(plotTitle)

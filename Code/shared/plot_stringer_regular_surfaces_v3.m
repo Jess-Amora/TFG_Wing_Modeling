@@ -1,4 +1,4 @@
-function plot_stringer_regular_surfaces(combined_nodes, quad_surfaces_regular, plottitle, plotfilename,avion,datosEstructural)
+function plot_stringer_regular_surfaces_v0(combined_nodes, quad_surfaces_regular, plottitle, plotfilename,avion,datosEstructural)
 % plot_stringer_regular_surfaces: Verifies and visualizes stringer surfaces (regular zones).
 %
 % Inputs:

@@ -1,7 +1,8 @@
-function [cargas] = schrenk_1(avion,datosEstructural)
+function [cargas] = schrenk_1(avion)
     % Extraer parámetros
     
     % Datos estructural
+    datosEstructural = avion.datosEstructural;
     flecha_radian = avion.geometria.flecha_radian;
     distancia_centro_aerodinamico = datosEstructural.distancia_centro_aerodinamico;
     numero_de_puntos_en_las_lineas = datosEstructural.numero_de_puntos_en_las_lineas;

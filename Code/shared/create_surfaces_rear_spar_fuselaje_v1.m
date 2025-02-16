@@ -94,6 +94,12 @@ if isempty(node_1) || isempty(node_2) || isempty(node_3) || isempty(node_4)
 end
 
 % Extract coordinates for surface property calculation
+node_1
+node_2
+node_3
+node_4
+current_stringer_nodes
+num_ribs
 surface_coords = [
     node_1.x(1), node_1.y(1);
     node_2.x(1), node_2.y(1);

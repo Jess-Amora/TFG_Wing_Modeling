@@ -125,40 +125,40 @@ end
 %          'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'black');
 % end
 
-%% 🟢 Plot Nodes Fuselaje
-% Identify node tags
-front_spar_idx_fuselaje = strcmp(combined_nodes_fuselaje.tag, 'front spars fuselaje');
-rear_spar_idx_fuselaje = strcmp(combined_nodes_fuselaje.tag, 'rear spars fuselaje');
-stringer_idx_fuselaje = strcmp(combined_nodes_fuselaje.tag, 'stringer fuselaje');
-
-front_spar_dots_fuselaje = combined_nodes_fuselaje(strcmp(combined_nodes_fuselaje.tag, 'front spars fuselaje'),:);
-rear_spar_dots_fuselaje = combined_nodes_fuselaje(strcmp(combined_nodes_fuselaje.tag, 'rear spars fuselaje'),:);
-stringer_dots_fuselaje = combined_nodes_fuselaje(strcmp(combined_nodes_fuselaje.tag, 'stringer fuselaje'),:);
-
-
-% Plot nodes with unique markers and colors
-front_spar_points_fuselaje = plot(combined_nodes_fuselaje.x(front_spar_idx_fuselaje), combined_nodes_fuselaje.y(front_spar_idx_fuselaje), ...
-     'ro', 'MarkerSize', 4, 'MarkerFaceColor', 'r', 'DisplayName', 'Front Spar Nodes');
-rear_spar_points_fuselaje = plot(combined_nodes_fuselaje.x(rear_spar_idx_fuselaje), combined_nodes_fuselaje.y(rear_spar_idx_fuselaje), ...
-     'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'b', 'DisplayName', 'Rear Spar Nodes');
-stringer_points_fuselaje = plot(combined_nodes_fuselaje.x(stringer_idx_fuselaje), combined_nodes_fuselaje.y(stringer_idx_fuselaje), ...
-     'ko', 'MarkerSize', 4, 'MarkerFaceColor', 'k', 'DisplayName', 'Stringer Nodes');
-
-% Add Node Labels (Optional for Debugging)
-for i = 1:height(front_spar_dots_fuselaje)
-    text(front_spar_dots_fuselaje.x(i), front_spar_dots_fuselaje.y(i), sprintf('%d', front_spar_dots_fuselaje.local_id(i)), ...
-         'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'red');
-end
-% Add Node Labels (Optional for Debugging)
-for i = 1:height(rear_spar_dots_fuselaje)
-    text(rear_spar_dots_fuselaje.x(i), rear_spar_dots_fuselaje.y(i), sprintf('%d', rear_spar_dots_fuselaje.local_id(i)), ...
-         'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'blue');
-end
-% Add Node Labels (Optional for Debugging)
-for i = 1:height(stringer_dots_fuselaje)
-    text(stringer_dots_fuselaje.x(i), stringer_dots_fuselaje.y(i), sprintf('%d', stringer_dots_fuselaje.local_id(i)), ...
-         'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'black');
-end
+% %% 🟢 Plot Nodes Fuselaje
+% % Identify node tags
+% front_spar_idx_fuselaje = strcmp(combined_nodes_fuselaje.tag, 'front spars fuselaje');
+% rear_spar_idx_fuselaje = strcmp(combined_nodes_fuselaje.tag, 'rear spars fuselaje');
+% stringer_idx_fuselaje = strcmp(combined_nodes_fuselaje.tag, 'stringer fuselaje');
+% 
+% front_spar_dots_fuselaje = combined_nodes_fuselaje(strcmp(combined_nodes_fuselaje.tag, 'front spars fuselaje'),:);
+% rear_spar_dots_fuselaje = combined_nodes_fuselaje(strcmp(combined_nodes_fuselaje.tag, 'rear spars fuselaje'),:);
+% stringer_dots_fuselaje = combined_nodes_fuselaje(strcmp(combined_nodes_fuselaje.tag, 'stringer fuselaje'),:);
+% 
+% 
+% % Plot nodes with unique markers and colors
+% front_spar_points_fuselaje = plot(combined_nodes_fuselaje.x(front_spar_idx_fuselaje), combined_nodes_fuselaje.y(front_spar_idx_fuselaje), ...
+%      'ro', 'MarkerSize', 4, 'MarkerFaceColor', 'r', 'DisplayName', 'Front Spar Nodes');
+% rear_spar_points_fuselaje = plot(combined_nodes_fuselaje.x(rear_spar_idx_fuselaje), combined_nodes_fuselaje.y(rear_spar_idx_fuselaje), ...
+%      'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'b', 'DisplayName', 'Rear Spar Nodes');
+% stringer_points_fuselaje = plot(combined_nodes_fuselaje.x(stringer_idx_fuselaje), combined_nodes_fuselaje.y(stringer_idx_fuselaje), ...
+%      'ko', 'MarkerSize', 4, 'MarkerFaceColor', 'k', 'DisplayName', 'Stringer Nodes');
+% 
+% % Add Node Labels (Optional for Debugging)
+% for i = 1:height(front_spar_dots_fuselaje)
+%     text(front_spar_dots_fuselaje.x(i), front_spar_dots_fuselaje.y(i), sprintf('%d', front_spar_dots_fuselaje.local_id(i)), ...
+%          'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'red');
+% end
+% % Add Node Labels (Optional for Debugging)
+% for i = 1:height(rear_spar_dots_fuselaje)
+%     text(rear_spar_dots_fuselaje.x(i), rear_spar_dots_fuselaje.y(i), sprintf('%d', rear_spar_dots_fuselaje.local_id(i)), ...
+%          'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'blue');
+% end
+% % Add Node Labels (Optional for Debugging)
+% for i = 1:height(stringer_dots_fuselaje)
+%     text(stringer_dots_fuselaje.x(i), stringer_dots_fuselaje.y(i), sprintf('%d', stringer_dots_fuselaje.local_id(i)), ...
+%          'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontSize', 8, 'Color', 'black');
+% end
 
 
 %% 🔵 Plot Quadrilateral Surfaces for Different Tags

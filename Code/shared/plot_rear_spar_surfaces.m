@@ -19,7 +19,7 @@ function plot_rear_spar_surfaces(combined_nodes, superficie_horizontal_larguero_
     hold on;
     axis equal;
     grid on;
-    title(plottitle, 'Interpreter', 'none'); % Use the custom title from input
+    title( 'Plot rear spar 2D quad'); % Use the custom title from input
     xlabel('X Coordinate');
     ylabel('Y Coordinate');
     

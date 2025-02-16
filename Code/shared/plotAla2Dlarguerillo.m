@@ -22,9 +22,11 @@ function plotAla2Dlarguerillo(avion,datosEstructural,ala)
     c1 = avion.geometria.c1;
     c2 = avion.geometria.c2;
     b = avion.geometria.b;
-
+    
+    numero_costillas = ala.ribs_struct.num_costillas_total;
+    
     y_global_punta_ala_borde_ataque = avion.geometria.y_global_punta_ala_borde_ataque;
-    flecha_radianes = avion.geometria.flecha.radian;
+    flecha_radianes = avion.geometria.flecha_radian;
     % Datos estructural
     Distancia_larguero_anterior_cuerda_porcentaje = datosEstructural.distancia_larguero_anterior_cuerda_porcentaje;
     Distancia_larguero_posterior_cuerda_porcentaje = datosEstructural.distancia_larguero_posterior_cuerda_porcentaje;
@@ -118,10 +120,10 @@ linea_eje_estructural=linspace(c1*distancia_eje_de_referencia_estructural_cuerda
 
         
         % Ala
-        numero_larguerillo_total = ala.numero_larguerillos_total;
-        larguerillos = ala.larguerillos;
+        numero_larguerillo_total = numero_costillas;
+        larguerillos = ala.mesh_struct.larguerillos;
 
-        for i=1:numero_larguerillo_total
+        for i=1:size(larguerillos,1)
             if i == 1
                 plot(squeeze(larguerillos(i,1,:)),squeeze(larguerillos(i,2,:)),'k', 'DisplayName', 'larguerillos');
             else

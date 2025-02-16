@@ -1,0 +1,5 @@
+name,porcentaje_peso_ala_MTOW,porcentaje_peso_combustible_MTOW,n,distancia_entre_costillas,distancia_entre_larguerillo,distancia_larguero_anterior_cuerda_porcentaje,distancia_larguero_posterior_cuerda_porcentaje,distancia_centro_aerodinamico,distancia_eje_de_referencia_estructural_larguero,distancia_eje_de_referencia_estructural_cuerda,numero_de_puntos_en_las_lineas,k_sust
+Commercial_Airliners,0.12,0.38,2.5,0.7,0.16,0.12,0.65,0.25,0.4,0.332,1000,0.9254
+Military_Jets,0.10,0.30,7.5,0.5,0.10,0.15,0.60,0.27,0.45,0.300,1200,0.9000
+General_Aviation,0.14,0.32,3.5,0.6,0.12,0.10,0.55,0.20,0.35,0.280,800,0.9500
+Structural_parameters_A350,0.1,0.2,2.5,0.7,0.16,0.12,0.65,0.25,0.4,0.332,1000,0.9254,

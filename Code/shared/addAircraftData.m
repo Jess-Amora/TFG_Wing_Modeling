@@ -1,5 +1,5 @@
 function TFG_Amora = addAircraftData(name, MTOW, Superficie, flecha_radian, b, Lf, c1, c2, datosEstructural_name, datosEstructural)
-    % ===========================================================
+     % ===========================================================
     % 📌 Function: addAircraftData
     % ===========================================================
     % Adds a new aircraft entry to the TFG_Amora database.
@@ -32,10 +32,15 @@ function TFG_Amora = addAircraftData(name, MTOW, Superficie, flecha_radian, b, L
     databasePath = fullfile(projectRoot, 'Data', 'TFG_Amora.mat');
 
     % ✅ Ensure fullAircraftName is always a char vector
-    fullAircraftName = strcat(name, '_', datosEstructural_name); % Convert to char
+    fullAircraftName = strcat(name, '_', datosEstructural_name);
 
-    % Define results folder path
+    % Define main results folder path
     resultsFolder = fullfile(projectRoot, 'Results', fullAircraftName);
+
+    % Define subfolders
+    figuresFolder = fullfile(resultsFolder, 'Figures');
+    meshesFolder = fullfile(resultsFolder, 'Meshes');
+    dataFolder = fullfile(resultsFolder, 'Data');
 
     % Load existing database if it exists
     if isfile(databasePath)
@@ -54,20 +59,39 @@ function TFG_Amora = addAircraftData(name, MTOW, Superficie, flecha_radian, b, L
             return;
         end
     end
-
+    
     % Store aircraft data
+    Lf = Lf / 2;
+    Lw = b / 2 - (Lf);
     aircraft.MTOW = MTOW;  % Maximum Take-Off Weight
     aircraft.superficie = Superficie;  % Wing area
     aircraft.geometria.flecha_radian = flecha_radian;  % Sweep angle
     aircraft.geometria.b = b;  % Wingspan
-    aircraft.geometria.Lf = Lf / 2;  % Adjusted half fuselage length
+    aircraft.geometria.Lf = Lf;  % Adjusted half fuselage length
     aircraft.geometria.c1 = c1;  % Root chord
     aircraft.geometria.c2 = c2;  % Tip chord
-    aircraft.geometria.Lw = b / 2 - (Lf / 2);  % Semi-wing span excluding fuselage
+    aircraft.geometria.Lw = Lw;  % Semi-wing span excluding fuselage
     
+    % Calculation y_global_punta_ala_borde_ataque
+    aircraft.geometria.y_global_punta_ala_borde_ataque = c1 * datosEstructural.distancia_centro_aerodinamico + sin(flecha_radian) * (Lw) - c2 * datosEstructural.distancia_centro_aerodinamico;
+
+    % Store folder path
+    aircraft.folder.results = resultsFolder;
+    aircraft.folder.figures = figuresFolder;
+    aircraft.folder.mesh = meshesFolder;
+    aircraft.folder.data = dataFolder;
+
     % Assign datosEstructural
     aircraft.datosEstructural_name = datosEstructural_name;
     aircraft.datosEstructural = datosEstructural;
+
+    % Store coordenadas
+    numero_de_puntos_en_las_lineas = datosEstructural.numero_de_puntos_en_las_lineas;
+    aircraft.coordenadas.x_local_ala = linspace(Lf,(Lw)+Lf,numero_de_puntos_en_las_lineas); % Es la coordenada horizontal que empieza desde el encastre y termina en la punta del ala.
+    aircraft.coordenadas.x_cuerda = linspace(0,Lw,numero_de_puntos_en_las_lineas);
+    aircraft.coordenadas.c = ( c1 - ( (c1-c2) / Lw ) * aircraft.coordenadas.x_cuerda );
+    aircraft.coordenadas.y = linspace( 0 , aircraft.geometria.y_global_punta_ala_borde_ataque , numero_de_puntos_en_las_lineas);
+    aircraft.coordenadas.x = linspace( 0 , b/2 , numero_de_puntos_en_las_lineas);
 
     % ✅ Save into database under the new name
     TFG_Amora.aviones.(fullAircraftName) = aircraft;
@@ -75,15 +99,25 @@ function TFG_Amora = addAircraftData(name, MTOW, Superficie, flecha_radian, b, L
     % Save the updated struct
     save(databasePath, 'TFG_Amora');
 
-    % Create the results folder for the aircraft
-    if ~isfolder(resultsFolder)
-        mkdir(resultsFolder);
-        disp(['✅ Created results folder: ', resultsFolder]);
-    else
-        disp(['ℹ️ Results folder already exists: ', resultsFolder]);
-    end
+    % ✅ Create results folder if missing
+    createFolderIfMissing(resultsFolder);
+    createFolderIfMissing(figuresFolder);
+    createFolderIfMissing(meshesFolder);
+    createFolderIfMissing(dataFolder);
 
     fprintf('✅ Aircraft "%s" successfully added/updated in the database.\n', fullAircraftName);
+end
+
+% ===========================================================
+% 🔹 Helper Function: Create Folder If Missing
+% ===========================================================
+function createFolderIfMissing(folderPath)
+    if ~isfolder(folderPath)
+        mkdir(folderPath);
+        disp(['📂 Created folder: ', folderPath]);
+    else
+        disp(['✔️ Folder already exists: ', folderPath]);
+    end
 end
 
 %% ================================================

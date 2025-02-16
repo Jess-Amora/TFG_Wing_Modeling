@@ -1,4 +1,4 @@
-function [results] = construir_fuselaje_v5(avion,datosEstructural, ala,output_command)
+function [results] = construir_fuselaje_v5(avion,datosEstructural, ala)
 
 % Parámetros de entrada:
     %   - wingParams: Estructura con los siguientes campos:
@@ -40,8 +40,9 @@ function [results] = construir_fuselaje_v5(avion,datosEstructural, ala,output_co
     n = datosEstructural.n;
     
     % Ala
-    [numero_larguerillos_total, lengths, data] = extract_larguerillos_info(ala);
-    alfa_larguero_posterior_radianes = avion.geometria.alfa_larguero_posterior_radianes;
+    % [numero_larguerillos_total, lengths, data] = extract_larguerillos_info(ala);
+    numero_larguerillos_total = size(ala.larguerillos,1);
+    alfa_larguero_posterior_radianes = ala.geometria.alfa_larguero_posterior_radianes;
 
     flecha_posterior_radian = alfa_larguero_posterior_radianes;
     % [N, lengths, data] = extract_larguerillos_info(ala.mesh);
@@ -156,14 +157,6 @@ function [results] = construir_fuselaje_v5(avion,datosEstructural, ala,output_co
         
         Numero_nodos_elementos_fuselaje(index_larguerillo_counter+2,1) = size(nodos_larguerillos_fuselaje,2) - temp_size_nodos;
 
-        if output_command
-            % Existe +1 en la linea de abajo, porque hay que añadir el nodo del
-            % encastre.
-            % fprintf('Numero de nodos en el larguerillo numero %d = %d\n',index_larguerillo_counter, index_larguerillos_anterior(index_larguerillo_counter) - index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter) +1);
-            % fprintf('Nodos %d : %d\n', counter_nodo_larguerillo_ala - index_larguerillos_anterior(index_larguerillo_counter)+index_counter_quitar_nodos_larguerillos_menor_Lf(index_larguerillo_counter),counter_nodo_larguerillo_ala);
-            % fprintf('Numero de nodos en el larguerillo numero %d = %d\n',index_larguerillo_counter, Numero_nodos_elementos_fuselaje(index_larguerillo_counter+2,1));
-            % fprintf('Nodos %d : %d\n', temp_size_nodos+1+Numero_nodos_elementos_fuselaje,size(nodos_larguerillos_fuselaje,2)+Numero_nodos_elementos_fuselaje);
-        end
     end
     % 
     % %% Construcción de las barras
