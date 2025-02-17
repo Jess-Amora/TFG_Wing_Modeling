@@ -1,14 +1,10 @@
-addpath('./shared');
-addpath('./wing_builder');
-addpath('./fuselage_builder');
+addpath('./1. Database');
 
-%% Añadir Information
+%% 🔹 Define Database Path
 database_computer = 'C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root';
-% data_path = fullfile(database_computer,"Data");
-
-%% Load or Create Database
 databasePath = fullfile(database_computer, 'Data', 'TFG_Amora.mat');
 
+%% 🔹 Load or Create Database
 if isfile(databasePath)
     load(databasePath, 'TFG_Amora');
     disp('✅ Database loaded.');
@@ -16,7 +12,8 @@ else
     TFG_Amora = struct('datosEstructural', struct(), 'aircraft_data', struct(), 'aviones', struct());
     disp('⚠️ No database found. Creating a new one.');
 end
-%% 🔹 Menu System for Database Management
+
+%% 🔹 Database Management Menu
 while true
     clc;
     disp('----------------------------------------');
@@ -25,12 +22,13 @@ while true
     disp('1️⃣ Add Structural Parameters (`datosEstructural`)');
     disp('2️⃣ Add Aircraft Data');
     disp('3️⃣ Construct Aircraft (Select from `datosEstructural` & `aircraft_data`)');
-    disp('4️⃣ Exit to Main System');
+    disp('4️⃣ Read Database (Load structural & aircraft data from CSV)');
+    disp('5️⃣ Exit to Main System');
     
-    choice = input('Select an option (1-4): ', 's');
+    choice = input('Select an option (1-5): ', 's');
 
-if strcmp(choice, '1')
-%% 🔹 Step 1: Structural Parameters Selection
+    if strcmp(choice, '1')
+        %% 🔹 Step 1: Structural Parameters Selection
 disp('----------------------------------------');
 disp('🔧 Structural Parameters Selection');
 disp('----------------------------------------');
@@ -80,8 +78,9 @@ end
 datosEstructural = TFG_Amora.datosEstructural.(name_structural_parameters);
 disp(['✅ Selected Structural Parameters: ', name_structural_parameters]);
 
-elseif strcmp(choice, '2')
-%% 🔹 Step 2: Aircraft Selection from Database or New Input
+
+    elseif strcmp(choice, '2')
+       %% 🔹 Step 2: Aircraft Selection from Database or New Input
 disp('----------------------------------------');
 disp('🛩 Aircraft Selection');
 disp('----------------------------------------');
@@ -135,34 +134,90 @@ end
 aircraftData = TFG_Amora.aircraft_data.(name_plane);
 disp(['✅ Selected Aircraft Data: ', name_plane]);
 
-elseif strcmp(choice, '3')
+    elseif strcmp(choice, '3')
 %% 🔹 Step 3: Create Final Aircraft in `aviones`
-fullAircraftName = strcat(name_plane, '_', name_structural_parameters);
+disp('----------------------------------------');
+disp('🛩 Aircraft-Structural Data Creation');
+disp('----------------------------------------');
 
-% Call addAircraftData to create the final aircraft entry with calculations
+% ✅ Step 1: Select Aircraft
+aircraftNames = fieldnames(TFG_Amora.aircraft_data);
+if isempty(aircraftNames)
+    disp('⚠️ No aircraft found in the database. Please add aircraft data first.');
+    return;
+end
+
+disp('Available Aircraft:');
+for i = 1:length(aircraftNames)
+    fprintf('%d) %s\n', i, aircraftNames{i});
+end
+aircraftChoice = input('Select an aircraft by number: ', 's');
+aircraftIndex = str2double(aircraftChoice);
+
+if isnan(aircraftIndex) || aircraftIndex < 1 || aircraftIndex > length(aircraftNames)
+    disp('❌ Invalid selection. Returning to menu.');
+    return;
+end
+
+name_plane = aircraftNames{aircraftIndex};
+aircraftData = TFG_Amora.aircraft_data.(name_plane);
+disp(['✅ Selected Aircraft: ', name_plane]);
+
+% ✅ Step 2: Select Structural Parameters
+structNames = fieldnames(TFG_Amora.datosEstructural);
+if isempty(structNames)
+    disp('⚠️ No structural parameters found. Please add structural data first.');
+    return;
+end
+
+disp('Available Structural Parameters:');
+for i = 1:length(structNames)
+    fprintf('%d) %s\n', i, structNames{i});
+end
+structChoice = input('Select structural parameters by number: ', 's');
+structIndex = str2double(structChoice);
+
+if isnan(structIndex) || structIndex < 1 || structIndex > length(structNames)
+    disp('❌ Invalid selection. Returning to menu.');
+    return;
+end
+
+name_structural_parameters = structNames{structIndex};
+datosEstructural = TFG_Amora.datosEstructural.(name_structural_parameters);
+disp(['✅ Selected Structural Parameters: ', name_structural_parameters]);
+
+% ✅ Step 3: Create Aircraft Structural Data in `TFG_Amora.aviones`
+fullAircraftName = strcat(name_plane, '_', name_structural_parameters);
 TFG_Amora = addAircraftData(name_plane, ...
-    aircraftData.MTOW, ...  % MTOW (kg)
-    aircraftData.superficie, ... % Wing Area (m²)
-    aircraftData.geometria.flecha_radian, ... % Sweep Angle (radian)
-    aircraftData.geometria.b, ... % Wingspan (m)
-    aircraftData.geometria.Lf, ... % Half fuselage length (Lf)
-    aircraftData.geometria.c1, ... % Root chord length (c1)
-    aircraftData.geometria.c2, ... % Tip chord length (c2)
+    aircraftData.MTOW, ...
+    aircraftData.superficie, ...
+    aircraftData.geometria.flecha_radian, ...
+    aircraftData.geometria.b, ...
+    aircraftData.geometria.Lf, ...
+    aircraftData.geometria.c1, ...
+    aircraftData.geometria.c2, ...
     name_structural_parameters, datosEstructural);
 
 disp(['✅ Aircraft "', fullAircraftName, '" has been created and linked to structural parameters.']);
 
-%% 🔹 Step 4: Save Database
-save(databasePath, 'TFG_Amora');
-disp('✅ Database updated.');
-disp('🚀 System is now ready for calculations!');
-elseif strcmp(choice, '4')
-        %% 🚪 Exit the Menu
+    elseif strcmp(choice, '4')
+        %% 🔹 Step 4: Read Database (Now inside `main_database.m`)
+        disp('🔄 Reading database from CSV files...');
+        read_database(database_computer);
+        disp('✅ Database successfully updated.');
+
+    elseif strcmp(choice, '5')
+        %% 🚪 Exit to Main Menu
         disp('🔙 Returning to Main System...');
         pause(1);
         break;
 
     else
-        disp('❌ Invalid choice. Please select 1-4.');
+        disp('❌ Invalid choice. Please select 1-5.');
         pause(2);
     end
+end
+
+%% 🔹 Save Database
+save(databasePath, 'TFG_Amora');
+disp('💾 Database saved.');

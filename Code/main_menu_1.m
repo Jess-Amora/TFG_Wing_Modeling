@@ -27,9 +27,7 @@ while true
     disp('2️⃣  Input Data (Manually add structural and aircraft data)');
     disp('3️⃣  Select Aircraft to Generate Wing');
     disp('4️⃣  Exit');
-    disp('5️⃣  Generate Aircraft Structure (Wing + Fuselage)'); % 🆕 NEW OPTION
-
-    choice = input('Enter your choice (1-5): ', 's');
+    choice = input('Enter your choice (1-4): ', 's');
 
     switch choice
         case '1' % 📂 **Read Database**
@@ -39,7 +37,7 @@ while true
 
         case '2' % ✏️ **Input Data**
             disp('✏️ Redirecting to Manual Data Input...');
-            main_database_1; % Calls the existing main script
+            main_database; % Calls the existing main script
 
         case '3' % 🛩 **Select Aircraft to Generate Wing**
             disp('🛩 Selecting an Aircraft for Wing Generation...');
@@ -79,59 +77,8 @@ while true
             disp('👋 Exiting the system. See you next time!');
             break;
 
-        case '5' % 🆕 **Generate Aircraft Structure (Wing + Fuselage)**
-            disp('🏗 Generating Aircraft Structure (Wing + Fuselage)...');
-
-            % ✅ Step 1: Check if aircraft exist in database
-            aircraftNames = fieldnames(TFG_Amora.aviones);
-            if isempty(aircraftNames)
-                warning('⚠️ No aircraft available. Please add an aircraft first.');
-                continue;
-            end
-
-            % ✅ Step 2: Display available aircraft
-            disp('Available Aircraft:');
-            for i = 1:length(aircraftNames)
-                fprintf('%d) %s\n', i, aircraftNames{i});
-            end
-
-            % ✅ Step 3: User selects an aircraft
-            aircraftChoice = input('Select an aircraft by number: ', 's');
-            aircraftIndex = str2double(aircraftChoice);
-
-            
-            if isnan(aircraftIndex) || aircraftIndex < 1 || aircraftIndex > length(aircraftNames)
-                warning('❌ Invalid selection. Please try again.');
-                continue;
-            end
-
-            name = aircraftNames{aircraftIndex};
-            avion = TFG_Amora.aviones.(name);
-            disp(['✅ Selected Aircraft: ', name]);
-
-            % ✅ Step 4: Compute Loads
-            disp('⚖️  Computing Loads using Schrenk method...');
-            cargas = schrenk_1(avion);
-            TFG_Amora.aviones.(name).cargas = cargas;
-            save(databasePath, 'TFG_Amora');
-
-            % ✅ Step 5: Generate Wing
-            disp('✈️  Constructing Wing...');
-            results = construirAla_v15(avion, avion.datosEstructural, cargas);
-            TFG_Amora.aviones.(name).ala = results;
-            save(databasePath, 'TFG_Amora');
-
-            % ✅ Step 6: Generate Fuselage
-            disp('🚀 Constructing Fuselage...');
-            results = construir_fuselaje_v5(avion, avion.datosEstructural, results);
-            TFG_Amora.aviones.(name).fuselaje = results;
-            save(databasePath, 'TFG_Amora');
-
-            generate_structure_v0(name);
-            disp('✅ Aircraft Structure Generation Complete!');
-        
         otherwise
-            warning('❌ Invalid selection. Please enter a number between 1 and 5.');
+            warning('❌ Invalid selection. Please enter a number between 1 and 4.');
     end
 end
 

@@ -1,9 +1,13 @@
 clc; clear;
+addpath('./shared');
+addpath('./wing_builder');
+addpath('./fuselage_builder');
+
 disp('----------------------------------------');
 disp('✈️  Aircraft Structural Analysis System');
 disp('----------------------------------------');
 
-% Define the project root (Modify if needed)
+% ✅ Define the project root (Modify if needed)
 projectRoot = 'C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root';
 databasePath = fullfile(projectRoot, 'Data', 'TFG_Amora.mat');
 
@@ -22,66 +26,44 @@ end
 % ✅ Step 2: Menu Selection
 while true
     disp('----------------------------------------');
-    disp('📌 **Select an Option:**');
-    disp('1️⃣  Read Database (Load structural and aircraft data from CSV)');
-    disp('2️⃣  Input Data (Manually add structural and aircraft data)');
-    disp('3️⃣  Select Aircraft to Generate Wing');
-    disp('4️⃣  Exit');
-    choice = input('Enter your choice (1-4): ', 's');
+    disp('📌 **Main System Menu**');
+    disp('1️⃣  Manage Database (Materials, Aircraft, Structural Data)');
+    disp('2️⃣  Generate Wing Geometry & Compute Forces');
+    disp('3️⃣  Strength Analysis (Validate Materials & Loads)');
+    disp('4️⃣  Generate FEA Structure for Patran/Nastran');
+    disp('5️⃣  Validate FEM Results');
+    disp('6️⃣  Exit');
+    
+    choice = input('Enter your choice (1-6): ', 's');
 
     switch choice
-        case '1' % 📂 **Read Database**
-            disp('🔄 Loading structural parameters and aircraft data...');
-            read_database(projectRoot);
-            disp('✅ Database successfully updated.');
+        case '1'  % 📂 **Manage Database**
+            disp('🔄 Opening Database Management System...');
+            main_database;  % Calls `main_database.m`
 
-        case '2' % ✏️ **Input Data**
-            disp('✏️ Redirecting to Manual Data Input...');
-            main_database; % Calls the existing main script
+        case '2'  % 🛩 **Generate Wing & Compute Forces**
+            disp('🛩 Generating Wing Geometry & Computing Forces...');
+            main_generate_wing_forces;  % Calls `main_generate_wing_forces.m`
 
-        case '3' % 🛩 **Select Aircraft to Generate Wing**
-            disp('🛩 Selecting an Aircraft for Wing Generation...');
-            
-            % ✅ Step 1: Check if there are saved aircraft
-            aircraftNames = fieldnames(TFG_Amora.aviones);
-            if isempty(aircraftNames)
-                warning('⚠️ No aircraft data available. Please input aircraft data first.');
-                continue;
-            end
+        case '3'  % ⚖️ **Strength Analysis**
+            disp('⚖️ Running Strength Analysis...');
+            main_strength_analysis;  % Calls `main_strength_analysis.m`
 
-            % ✅ Step 2: Display available aircraft
-            disp('Available Aircraft:');
-            for i = 1:length(aircraftNames)
-                fprintf('%d) %s\n', i, aircraftNames{i});
-            end
+        case '4'  % 🏗 **Generate FEA Structure**
+            disp('🏗 Generating FEA Structure...');
+            main_generate_FEA_structure;  % Calls `main_generate_FEA_structure.m`
 
-            % ✅ Step 3: User selects an aircraft
-            aircraftChoice = input('Select an aircraft by number: ', 's');
-            aircraftIndex = str2double(aircraftChoice);
+        case '5'  % ✅ **Validate FEM Results**
+            disp('📊 Running FEM Validation...');
+            main_validation;  % Calls `main_validation.m`
 
-            if isnan(aircraftIndex) || aircraftIndex < 1 || aircraftIndex > length(aircraftNames)
-                warning('❌ Invalid selection. Please try again.');
-                continue;
-            end
-
-            selectedAircraft = aircraftNames{aircraftIndex};
-            avion = TFG_Amora.aviones.(selectedAircraft);
-            disp(['✅ Selected Aircraft: ', selectedAircraft]);
-
-            % ✅ Step 4: Generate Wing
-            disp('✈️  Generating Wing...');
-            results = generate_wing_v7(avion);
-            disp('✅ Wing Generation Complete.');
-
-        case '4' % ❌ **Exit**
+        case '6'  % ❌ **Exit**
             disp('👋 Exiting the system. See you next time!');
+            save(databasePath, 'TFG_Amora');
+            disp('💾 Database saved.');
             break;
 
         otherwise
-            warning('❌ Invalid selection. Please enter a number between 1 and 4.');
+            warning('❌ Invalid selection. Please enter a number between 1 and 6.');
     end
 end
-
-% ✅ Save any modifications to the database
-save(databasePath, 'TFG_Amora');
-disp('💾 Database saved.');

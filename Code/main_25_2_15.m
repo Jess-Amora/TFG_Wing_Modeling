@@ -12,20 +12,16 @@ database_computer = 'C:\Users\jessa\OneDrive - Universidad Politécnica de Madri
 data_path = fullfile(database_computer,"Data");
 load(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
 
-% name = 'A350_original_Structural_parameters_A350';
-% name = 'Boeing_737_Commercial_Airliners';
 name = 'Airbus_A380_Structural_parameters_A350';
 avion = TFG_Amora.aviones.(name);
 cargas = avion.cargas;
 ala = avion.ala;
-% name = 'A350_original_Structural_parameters_A350';
 
-% plotAla2D(avion,datosEstructural)
-%% CARGAS
-% cargas = schrenk_1(avion);
-% TFG_Amora.aviones.(name).cargas = cargas;
-% save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
-% cargas = TFG_Amora.aviones.(name).cargas;
+% CARGAS
+cargas = schrenk_1(avion);
+TFG_Amora.aviones.(name).cargas = cargas;
+save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
+cargas = TFG_Amora.aviones.(name).cargas;
 
 %% ALA
 % results = generate_wing_v9(avion,cargas);
@@ -33,14 +29,14 @@ ala = avion.ala;
 %     ala = results;
 %     save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
 
-% [results] = construirAla_v15(avion,avion.datosEstructural,cargas);
-% TFG_Amora.aviones.(name).ala = results;
-% save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
+[results] = construirAla_v15(avion,avion.datosEstructural,cargas);
+TFG_Amora.aviones.(name).ala = results;
+save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
 
-% results = construir_fuselaje_v5(avion,avion.datosEstructural, results);
-%     TFG_Amora.aviones.(name).fuselaje = results;
-%     fuselaje = results;
-%     save('../Data/TFG_amora.mat', 'TFG_Amora');
+results = construir_fuselaje_v5(avion,avion.datosEstructural, results);
+    TFG_Amora.aviones.(name).fuselaje = results;
+    fuselaje = results;
+    save('../Data/TFG_amora.mat', 'TFG_Amora');
 %% Force
 name = 'Airbus_A380_Structural_parameters_A350';
 avion = TFG_Amora.aviones.(name);

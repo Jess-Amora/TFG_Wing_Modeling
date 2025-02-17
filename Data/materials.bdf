@@ -1,0 +1,13 @@
+$ MSC.Nastran Material File
+CEND
+BEGIN BULK
+
+$ PATRAN MATERIAL: Aluminum_7075_T6
+MAT1    1       71700.000000    0.000000        0.330000        
+$ Material: Aluminum_7075_T6
+$ PATRAN MATERIAL: Aluminum_2024_T3
+MAT1    2       73100.000000    0.000000        0.330000        
+$ Material: Aluminum_2024_T3
+
+
+ENDDATA
