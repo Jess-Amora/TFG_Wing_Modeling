@@ -297,7 +297,7 @@ function [results] = construirAla(avion,datosEstructural,cargas)
     end
     
     cociente_L_W_inicial=2*sum(L)/n/MTOW;
-    cociente_L_W_inicial
+    % cociente_L_W_inicial
     
 
     

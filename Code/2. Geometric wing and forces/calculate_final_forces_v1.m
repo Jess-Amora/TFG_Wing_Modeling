@@ -65,6 +65,7 @@ R1_A_aero = zeros(size_L, 1);
 R2_A_aero = zeros(size_L, 1);
 R1_R_aero = zeros(size_L, 1);
 R2_R_aero = zeros(size_L, 1);
+V = struct();
 
 for i = 1:size_L
     h_A_aero(i) = norm([x_L(i) y_L(i)] - coord_interseccion_paralela_costillas_pasa_por_A(i+1, :, 1));
@@ -82,7 +83,23 @@ for i = 1:size_L
     R2_A_aero(i) = P_A_aero(i) * l1_A(i) / (l1_A(i) + l2_A(i));
     R1_R_aero(i) = P_R_aero(i) * l2_R(i) / (l1_R(i) + l2_R(i));
     R2_R_aero(i) = P_R_aero(i) * l1_R(i) / (l1_R(i) + l2_R(i));
+
 end
+
+V.rear(1) = R1_R_aero(1);
+V.front(1) = R1_A_aero(1);
+V.rear(size_L+1) = R2_R_aero(end);
+V.front(size_L+1) = R2_A_aero(end);
+
+for i = 2:size_L
+    
+    V.rear(i) = R1_R_aero(i) + R2_R_aero(i-1);
+    V.front(i) = R1_A_aero(i) + R2_A_aero(i-1);
+
+end
+
+
+
 
 %% 🔹 **Verify Load Summation Consistency**
 total_aero_force = sum(R1_A_aero + R2_A_aero + R1_R_aero + R2_R_aero);
@@ -96,13 +113,20 @@ else
     disp('✅ Load distribution verified successfully.');
 end
 
+%% Distancia Eje estructural
+eje_distancia = avion.datosEstructural.distancia_eje_de_referencia_estructural_larguero;
+
 %% ✨ **Compute Rib–Spar Intersection Coordinates (R_i)**
 % Since the aerodynamic forces are applied only at the internal ribs,
 % we restrict R_i to the same ribs (from rib 2 to rib end-1).
 R_i.anterior = squeeze(ala.costillas(2:end-1, :, end));
 R_i.posterior = squeeze(ala.costillas(2:end-1, :, 1));
-% The structural (eje) axis is taken as 40% of the distance from the anterior spar.
-R_i.eje = R_i.anterior + 0.4 * (R_i.posterior - R_i.anterior);
+R_i.eje = R_i.anterior + eje_distancia * (R_i.posterior - R_i.anterior);
+
+%% My y T
+yshear = eje_distancia * ((R_i.anterior(:,2) + R_i.posterior(:,2)) / 2); % Only modify y-coordinates
+[My, T] = calcMyT(V.front, V.rear, R_i.anterior, R_i.posterior, yshear);
+
 
 %% ✨ **Return Results**
 results = struct();
@@ -118,6 +142,8 @@ results.R2_R_aero = R2_R_aero;
 results.total_lift_required = total_lift_required;
 results.error_check = error_check;
 results.R_i = R_i;  % Rib–spar intersection coordinates (for internal ribs only).
-
+results.V = V;
+results.My = My;
+results.T = T;
 
 end

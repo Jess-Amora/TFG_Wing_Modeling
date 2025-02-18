@@ -1,5 +1,5 @@
 clear all;
-addpath('./2. Geometric wing and forces');
+addpath('./3. Strength Analysis');
 
 %% 🔹 Step 1: Load Database
 database_computer = 'C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root';

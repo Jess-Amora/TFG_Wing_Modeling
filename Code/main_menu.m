@@ -1,7 +1,10 @@
 clc; clear;
-addpath('./shared');
-addpath('./wing_builder');
-addpath('./fuselage_builder');
+% addpath('./shared');
+% addpath('./wing_builder');
+% addpath('./fuselage_builder');
+addpath('./1. Database');
+addpath('./2. Geometric wing and forces');
+addpath('./3. Strength Analysis');
 
 disp('----------------------------------------');
 disp('✈️  Aircraft Structural Analysis System');
@@ -59,7 +62,7 @@ while true
 
         case '6'  % ❌ **Exit**
             disp('👋 Exiting the system. See you next time!');
-            save(databasePath, 'TFG_Amora');
+            save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
             disp('💾 Database saved.');
             break;
 
