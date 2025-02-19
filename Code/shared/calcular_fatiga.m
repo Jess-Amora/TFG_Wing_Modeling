@@ -22,7 +22,7 @@ function fatigue_life = calcular_fatiga(stress, materialType, num_cycles)
     end
 
     % Calculate number of cycles to failure using Basquin’s equation
-    N_f = 10^((log10(sigma_f) - log10(stress)) / b);
+    N_f = 10.^((log10(sigma_f) - log10(stress)) / b);
 
     % Apply Miner’s Rule if num_cycles is provided
     if nargin == 3

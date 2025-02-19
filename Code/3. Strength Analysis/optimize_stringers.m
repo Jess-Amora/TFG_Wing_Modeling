@@ -32,5 +32,5 @@ function A_Ls = optimize_stringers_3(My, tss, material)
     % ✅ Apply Upper Limit (Max 0.0025 m²)
     A_Ls = min(A_Ls, 0.0025);  
 
-    fprintf('🔹 Computed Stringer Area: %.6f m²\n', A_Ls);
+    % fprintf('🔹 Computed Stringer Area: %.6f m²\n', A_Ls);
 end

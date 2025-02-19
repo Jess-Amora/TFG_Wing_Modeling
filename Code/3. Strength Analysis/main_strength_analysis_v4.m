@@ -1,0 +1,235 @@
+clear all;
+addpath('./3. Strength Analysis');
+
+%% 🔹 Step 1: Load Database
+database_computer = 'C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root';
+data_path = fullfile(database_computer, "Data");
+load(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
+
+%% 🔹 Step 2: User Selects Aircraft
+disp('----------------------------------------');
+disp('🛩 Select an Aircraft for Strength Analysis:');
+avionNames = fieldnames(TFG_Amora.aviones);
+
+if isempty(avionNames)
+    disp('⚠️ No aircraft data available. Please add data first.');
+    return;
+end
+
+% ✅ Display available aircraft options
+for i = 1:length(avionNames)
+    fprintf('%d) %s\n', i, avionNames{i});
+end
+fprintf('%d) 🔙 Return to Main Menu\n', length(avionNames) + 1);
+
+% ✅ User selects an aircraft
+avionChoice = input('Select an option: ', 's');
+avionIndex = str2double(avionChoice);
+
+if isnan(avionIndex) || avionIndex < 1 || avionIndex > (length(avionNames) + 1)
+    disp('❌ Invalid selection. Returning to menu.');
+    return;
+end
+
+% ✅ If user selects the last option, return to `main_menu.m`
+if avionIndex == length(avionNames) + 1
+    disp('🔙 Returning to Main Menu...');
+    run('main_menu.m');
+    return;
+end
+
+% ✅ Load selected aircraft
+name = avionNames{avionIndex}; % Selected aircraft name
+disp(['✅ Selected Aircraft: ', name]);
+avion = TFG_Amora.aviones.(name);
+
+%% 🔹 Step 3: Select Mode (Analysis or Create Parts)
+disp('----------------------------------------');
+disp('🔍 Strength Analysis & Structural Parts');
+disp('1) Analysis (Pre-Dimensioning & Strength Analysis)');
+disp('2) Create Parts (Cajón, Larguerillo, Cordon, NACA Wing)');
+disp('3) 🔙 Return to Main Menu');
+
+modeChoice = input('Select an option: ', 's');
+modeIndex = str2double(modeChoice);
+
+if isnan(modeIndex) || modeIndex < 1 || modeIndex > 3
+    disp('❌ Invalid selection. Returning to menu.');
+    return;
+end
+
+% ✅ If user selects option 3, return to Main Menu
+if modeIndex == 3
+    disp('🔙 Returning to Main Menu...');
+    run('main_menu.m');
+    return;
+end
+
+%% 🔹 Step 4: Execute Selected Mode
+if modeIndex == 1
+    % ✅ Run Analysis (Pre-Dimensioning & Strength Analysis)
+disp('----------------------------------------');
+disp('🔩 Select a Material for Pre-Dimensioning:');
+materialNames = fieldnames(TFG_Amora.materials);
+
+if isempty(materialNames)
+    disp('⚠️ No material data available. Please add materials first.');
+    return;
+end
+
+% ✅ Display available materials
+for i = 1:length(materialNames)
+    fprintf('%d) %s\n', i, materialNames{i});
+end
+fprintf('%d) 🔙 Return to Main Menu\n', length(materialNames) + 1);
+
+% ✅ User selects a material
+materialChoice = input('Select a material: ', 's');
+materialIndex = str2double(materialChoice);
+
+if isnan(materialIndex) || materialIndex < 1 || materialIndex > (length(materialNames) + 1)
+    disp('❌ Invalid selection. Returning to menu.');
+    return;
+end
+
+% ✅ If user selects the last option, return to `main_menu.m`
+if materialIndex == length(materialNames) + 1
+    disp('🔙 Returning to Main Menu...');
+    run('main_menu.m');
+    return;
+end
+
+% ✅ Load selected material
+materialName = materialNames{materialIndex};
+disp(['✅ Selected Material: ', materialName]);
+material = TFG_Amora.materials.(materialName);
+
+%% 🔹 Step 6: Ensure Structural Parts Exist Before Running Analysis
+disp('----------------------------------------');
+disp('🛠  Verifying Structural Parts Selection');
+
+% ✅ Select Larguerillo
+larguerilloNames = fieldnames(TFG_Amora.parts.larguerillo);
+if isempty(larguerilloNames)
+    disp('❌ No Larguerillos available. Please create one first.');
+    return;
+end
+
+disp('Available Larguerillos:');
+for i = 1:length(larguerilloNames)
+    fprintf('%d) %s\n', i, larguerilloNames{i});
+end
+larguerilloIndex = input('Select a Larguerillo: ');
+if isnan(larguerilloIndex) || larguerilloIndex < 1 || larguerilloIndex > length(larguerilloNames)
+    disp('❌ Invalid selection.');
+    return;
+end
+selected_larguerillo = larguerilloNames{larguerilloIndex};
+disp(['✅ Selected Larguerillo: ', selected_larguerillo]);
+
+% ✅ Select Cordon
+cordonNames = fieldnames(TFG_Amora.parts.cordon);
+if isempty(cordonNames)
+    disp('❌ No Cordons available. Please create one first.');
+    return;
+end
+
+disp('Available Cordons:');
+for i = 1:length(cordonNames)
+    fprintf('%d) %s\n', i, cordonNames{i});
+end
+cordonIndex = input('Select a Cordon: ');
+if isnan(cordonIndex) || cordonIndex < 1 || cordonIndex > length(cordonNames)
+    disp('❌ Invalid selection.');
+    return;
+end
+selected_cordon = cordonNames{cordonIndex};
+disp(['✅ Selected Cordon: ', selected_cordon]);
+
+% ✅ Select Wing (Airfoil)
+if ~isfield(TFG_Amora.aviones.(name), 'perfil') || isempty(TFG_Amora.aviones.(name).perfil)
+    disp('❌ No airfoil data available. Please create an airfoil first.');
+    return;
+end
+disp('✅ Airfoil Data Found.');
+
+% ✅ Select Cajón
+cajonNames = fieldnames(TFG_Amora.parts.cajon);
+if isempty(cajonNames)
+    disp('❌ No Cajón available. Please create one first.');
+    return;
+end
+
+disp('Available Cajóns:');
+for i = 1:length(cajonNames)
+    fprintf('%d) %s\n', i, cajonNames{i});
+end
+cajonIndex = input('Select a Cajón: ');
+if isnan(cajonIndex) || cajonIndex < 1 || cajonIndex > length(cajonNames)
+    disp('❌ Invalid selection.');
+    return;
+end
+selected_cajon = cajonNames{cajonIndex};
+disp(['✅ Selected Cajón: ', selected_cajon]);
+
+%% 🔹 Step 7: Run Pre-Dimensioning
+disp('⚙️ Running Pre-Dimensioning for Selected Aircraft and Material...');
+
+% ✅ Use the structural reference axis as the spanwise position
+x = avion.forces.R_i.eje(:,1);  % Spanwise positions from the structural reference axis
+My = avion.forces.My;  % Bending moment about y-axis
+Vy = avion.forces.V.rear + avion.forces.V.front;  % Total shear force
+T = avion.forces.T;  % Torsional moment
+geom = avion.geometria;
+datosEstructural = avion.datosEstructural;
+
+% ✅ Fetch Safety Factor from `datosEstructural`
+SF = avion.datosEstructural.SF;
+
+% ✅ Run pre-dimensioning with selected structural parts
+structure = pre_dimensioning_graph(My, Vy, T, x, material, SF, geom, datosEstructural);
+
+
+strength_results = strength_analysis(material, datosEstructural, selected_larguerillo, selected_cordon, selected_cajon, naca_wing, My, Vy, T, num_cycles)
+
+
+% ✅ Save the computed structural parameters
+TFG_Amora.aviones.(name).structure = structure;
+save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
+
+disp('✅ Structural Pre-Dimensioning Completed and Saved.');
+
+
+
+
+elseif modeIndex == 2
+    % ✅ Run Create Parts Menu
+    disp('----------------------------------------');
+    disp('🛠  Structural Parts Creation');
+    disp('1) Create Cordon');
+    disp('2) Create Larguerillo');
+    disp('3) Create Cajón');
+    disp('4) Create NACA Wing');
+    disp('5) 🔙 Return');
+    
+    partChoice = input('Select an option: ', 's');
+    partIndex = str2double(partChoice);
+    
+    if isnan(partIndex) || partIndex < 1 || partIndex > 5
+        disp('❌ Invalid selection. Returning to menu.');
+        return;
+    end
+    
+    if partIndex == 5
+        disp('🔙 Returning...');
+        return;
+    end
+    
+    % ✅ Call the function to create the selected structural part
+    add_structural_parts(partIndex,database_computer);
+    
+    % ✅ Save updated data
+    save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
+    disp('✅ Structural part creation completed and saved.');
+
+end

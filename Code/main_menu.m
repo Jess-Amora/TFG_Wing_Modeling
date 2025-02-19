@@ -35,7 +35,8 @@ while true
     disp('3️⃣  Strength Analysis (Validate Materials & Loads)');
     disp('4️⃣  Generate FEA Structure for Patran/Nastran');
     disp('5️⃣  Validate FEM Results');
-    disp('6️⃣  Exit');
+    disp('6️⃣  Edit avion');
+    disp('7  Exit');
     
     choice = input('Enter your choice (1-6): ', 's');
 
@@ -59,8 +60,11 @@ while true
         case '5'  % ✅ **Validate FEM Results**
             disp('📊 Running FEM Validation...');
             main_validation;  % Calls `main_validation.m`
-
-        case '6'  % ❌ **Exit**
+        case '6'  % ✏️ **Edit Aircraft Data**
+            disp('✏️ Opening Aircraft Editing Menu...');
+            save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');  % 💾 Ensure data is saved before editing
+            run('main_edit.m');  % 🔁 Run the editing menu instead of exiting
+        case '7'  % ❌ **Exit**
             disp('👋 Exiting the system. See you next time!');
             save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
             disp('💾 Database saved.');

@@ -13,5 +13,5 @@ function t = optimize_skin_thickness(My, material, SF)
     % ✅ Ensure Minimum Practical Thickness (2mm)
     t = max(real(t_min), 0.002);  % Ignore imaginary parts
     
-    fprintf('🔹 Estimated Skin Thickness: %.6f m\n', t);
+    % fprintf('🔹 Estimated Skin Thickness: %.6f m\n', t);
 end

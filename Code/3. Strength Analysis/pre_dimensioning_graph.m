@@ -1,4 +1,4 @@
-function structure = pre_dimensioning_graph(My, Vy, T, x, material, SF, geom, datosEstructural)
+function structure = pre_dimensioning_graph(My, Vy, T, x, material, SF, geom, datosEstructural, showGraph)
     % =============================================================
     % 📌 Function: pre_dimensioning (Updated to Include Graph)
     % =============================================================
@@ -53,7 +53,8 @@ function structure = pre_dimensioning_graph(My, Vy, T, x, material, SF, geom, da
     end
 
     fprintf('🔹 Pre-Dimensioning Complete for Entire Span!\n');
-
+    
+    if showGraph
     % ✅ Plot Results for Better Visualization
     figure;
     
@@ -86,6 +87,6 @@ function structure = pre_dimensioning_graph(My, Vy, T, x, material, SF, geom, da
     ylabel('Spar Thickness t_s (m)');
     title('Spar Thickness Distribution');
     grid on;
-
+    end
     fprintf('✅ Structural Pre-Dimensioning Completed and Saved.\n');
 end

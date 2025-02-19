@@ -58,19 +58,19 @@ function RF = analizar_resistencia(stresses, materialType)
     RF.sigma_Ci = abs(stresses.sigma_Ci) / sigma_rupt_Ci;
     
     % Larguero (Spar)
-    RF.sigma_VM_L_A = sqrt(stresses.sigma_Cs^2 + 3 * stresses.tau_SS^2) / sigma_rupt_Cs;
-    RF.sigma_VM_L_C = sqrt(stresses.sigma_Ci^2 + 3 * stresses.tau_SI^2) / sigma_rupt_Ci;
+    RF.sigma_VM_L_A = sqrt(stresses.sigma_Cs.^2 + 3 * stresses.tau_SS.^2) / sigma_rupt_Cs;
+    RF.sigma_VM_L_C = sqrt(stresses.sigma_Ci.^2 + 3 * stresses.tau_SI.^2) / sigma_rupt_Ci;
     RF.tau_L = abs(stresses.tau_L) / tau_lim_L;
     
     % Costilla (Rib)
-    RF.sigma_VM_C = sqrt(stresses.sigma_C^2 + 3 * stresses.tau_C^2) / sigma_fatigue_C;
+    RF.sigma_VM_C = sqrt(stresses.sigma_C.^2 + 3 * stresses.tau_C.^2) / sigma_fatigue_C;
 
     % Upper & Lower Skin Analysis
     if strcmp(materialType, 'metal')
         RF.tau_SS = abs(stresses.tau_SS) / tau_lim_SS;
-        RF.sigma_VM_RI = sqrt(stresses.sigma_RI^2 + 3 * stresses.tau_SI^2) / tau_lim_SI;
+        RF.sigma_VM_RI = sqrt(stresses.sigma_RI.^2 + 3 * stresses.tau_SI.^2) / tau_lim_SI;
     else
-        RF.sigma_VM_RS = sqrt(stresses.sigma_RS^2 + 3 * stresses.tau_SS^2) / sigma_lim_RS;
-        RF.sigma_VM_RI = sqrt(stresses.sigma_RI^2 + 3 * stresses.tau_SI^2) / sigma_lim_RI;
+        RF.sigma_VM_RS = sqrt(stresses.sigma_RS.^2 + 3 * stresses.tau_SS.^2) / sigma_lim_RS;
+        RF.sigma_VM_RI = sqrt(stresses.sigma_RI.^2 + 3 * stresses.tau_SI.^2) / sigma_lim_RI;
     end
 end

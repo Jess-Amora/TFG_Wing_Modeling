@@ -23,11 +23,11 @@ while true
     disp('2️⃣ Add Aircraft Data');
     disp('3️⃣ Construct Aircraft (Select from `datosEstructural` & `aircraft_data`)');
     disp('4️⃣ Add Material Properties');
-    disp('5️⃣ Add Structural Parts (Cordon, Larguerillo, Cajón)');
-    disp('6️⃣ Read Database (Load structural & aircraft data from CSV)');
-    disp('7️⃣ Exit to Main System');
+    disp('5️⃣ Read Database (Load structural & aircraft data from CSV)');
+    disp('6️⃣ Exit to Main System');
+
     
-    choice = input('Select an option (1-6): ', 's');
+    choice = input('Select an option (1-5): ', 's');
 
     if strcmp(choice, '1')
 %% 🔹 Step 1: Structural Parameters Selection
@@ -206,75 +206,12 @@ disp(['✅ Aircraft "', fullAircraftName, '" has been created and linked to stru
         end
 
     elseif strcmp(choice, '5')
-      %% 🔹 Step 5: Add Structural Parts
-        disp('----------------------------------------');
-        disp('🏗️ Structural Parts Database');
-        disp('----------------------------------------');
-        disp('1️⃣ Add Cordon');
-        disp('2️⃣ Add Larguerillo');
-        disp('3️⃣ Add Cajón (Requires Cordon & Larguerillo)');
-
-        partChoice = input('Select an option (1-3): ', 's');
-
-        if strcmp(partChoice, '1')
-            % ✅ Add Cordon
-            cordon_name = input('Enter name for the new Cordon: ', 's');
-            material_name = input('Enter material name for the Cordon: ', 's');
-
-            TFG_Amora.parts.cordon.(cordon_name) = struct( ...
-                'material', material_name ...
-            );
-            disp(['✅ Cordon "', cordon_name, '" saved.']);
-
-        elseif strcmp(partChoice, '2')
-            % ✅ Add Larguerillo
-            larguerillo_name = input('Enter name for the new Larguerillo: ', 's');
-            material_name = input('Enter material name for the Larguerillo: ', 's');
-
-            TFG_Amora.parts.larguerillo.(larguerillo_name) = struct( ...
-                'material', material_name ...
-            );
-            disp(['✅ Larguerillo "', larguerillo_name, '" saved.']);
-
-        elseif strcmp(partChoice, '3')
-            % ✅ Add Cajón (Needs Cordon & Larguerillo)
-            cajon_name = input('Enter name for the new Cajón: ', 's');
-
-            % ✅ Select Cordon
-            cordonNames = fieldnames(TFG_Amora.parts.cordon);
-            disp('Available Cordons:');
-            for i = 1:length(cordonNames)
-                fprintf('%d) %s\n', i, cordonNames{i});
-            end
-            cordonIndex = input('Select a Cordon: ');
-            selected_cordon = cordonNames{cordonIndex};
-
-            % ✅ Select Larguerillo
-            larguerilloNames = fieldnames(TFG_Amora.parts.larguerillo);
-            disp('Available Larguerillos:');
-            for i = 1:length(larguerilloNames)
-                fprintf('%d) %s\n', i, larguerilloNames{i});
-            end
-            larguerilloIndex = input('Select a Larguerillo: ');
-            selected_larguerillo = larguerilloNames{larguerilloIndex};
-
-            TFG_Amora.parts.cajon.(cajon_name) = struct( ...
-                'cordon', selected_cordon, ...
-                'larguerillo', selected_larguerillo ...
-            );
-            disp(['✅ Cajón "', cajon_name, '" saved.']);
-        end
-
-        % ✅ Save database
-        save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
-
-    elseif strcmp(choice, '6')
         %% 🔹 Step 6: Read Database
         disp('🔄 Reading database from CSV files...');
         read_database(database_computer);
         disp('✅ Database successfully updated.');
 
-    elseif strcmp(choice, '7')
+    elseif strcmp(choice, '6')
         %% 🚪 Exit to Main Menu
         disp('🔙 Returning to Main System...');
         pause(1);
