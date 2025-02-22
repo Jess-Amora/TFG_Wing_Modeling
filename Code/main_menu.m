@@ -2,9 +2,9 @@ clc; clear;
 % addpath('./shared');
 % addpath('./wing_builder');
 % addpath('./fuselage_builder');
-addpath('./1. Database');
-addpath('./2. Geometric wing and forces');
-addpath('./3. Strength Analysis');
+% addpath('./1. Database');
+% addpath('./2. Geometric wing and forces');
+% addpath('./3. Strength Analysis');
 
 disp('----------------------------------------');
 disp('✈️  Aircraft Structural Analysis System');
@@ -43,19 +43,23 @@ while true
     switch choice
         case '1'  % 📂 **Manage Database**
             disp('🔄 Opening Database Management System...');
-            main_database;  % Calls `main_database.m`
+            % main_database;  % Calls `main_database.m`
+            main1;
 
         case '2'  % 🛩 **Generate Wing & Compute Forces**
             disp('🛩 Generating Wing Geometry & Computing Forces...');
-            main_generate_wing_forces;  % Calls `main_generate_wing_forces.m`
+            % main_generate_wing_forces;  % Calls `main_generate_wing_forces.m`
+            main2;
 
         case '3'  % ⚖️ **Strength Analysis**
             disp('⚖️ Running Strength Analysis...');
-            main_strength_analysis;  % Calls `main_strength_analysis.m`
+            % main_strength_analysis;  % Calls `main_strength_analysis.m`
+            main3;
 
         case '4'  % 🏗 **Generate FEA Structure**
             disp('🏗 Generating FEA Structure...');
-            main_generate_FEA_structure;  % Calls `main_generate_FEA_structure.m`
+            % main_generate_FEA_structure;  % Calls `main_generate_FEA_structure.m`
+            main4;
 
         case '5'  % ✅ **Validate FEM Results**
             disp('📊 Running FEM Validation...');
