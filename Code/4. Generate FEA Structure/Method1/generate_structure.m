@@ -1,6 +1,10 @@
-function generate_structure(avion,datosEstructural,cargas,ala,fuselaje)
+function results = generate_structure(avion)
 
 % Geometría
+datosEstructural = avion.datosEstructural;
+ala = avion.ala;
+fuselaje = avion.fuselaje;
+
 Lf = avion.geometria.Lf;
 c1 = avion.geometria.c1;
 b = avion.geometria.b;
@@ -58,7 +62,7 @@ end
 
 %% 🛡️ Loop Through Stringers in the Irregular Zones
 quad_irregular_wing = quad_initialize();
-quad_surfaces_regular_wing = quad_initialize();
+% quad_surfaces_regular_wing = quad_initialize();
 tri_surfaces = tri_initialize(); % Use a standardized initialization for triangles
 warnings = {}; % Initialize warnings array
 
@@ -88,24 +92,24 @@ for stringer_index = num_stringers_last_rib:max_stringer - 1
 end
 
 %% Construyendo nuevas costillas
-P1=combined_nodes(combined_nodes.rib_index==1 & combined_nodes.tag =='rear spars',:);
-P1.y=P1.y - (distancia_entre_costillas/2/sin(ala.geometria.alfa_larguero_posterior_radianes));
-point_1_x = P1.x;
-point_1_y = P1.y;
-point_1 = [point_1_x point_1_y];
-point_2 = find_point_on_front_spar(point_1_x, point_1_y, ala,avion,datosEstructural);
-
-% Create the first new node
-new_nodes_1 = table(NaN, point_1(1), point_1(2), 0, -2, "rear spars", ...
-    'VariableNames', {'local_id', 'x', 'y', 'rib_index', 'stringer_index', 'tag'});
-
-% Create the second new node
-new_nodes_2 = table(NaN, point_2(1), point_2(2), 0, -1, "front spars", ...
-    'VariableNames', {'local_id', 'x', 'y', 'rib_index', 'stringer_index', 'tag'});
-
-combined_nodes = add_nodes_to_combined_nodes(combined_nodes, new_nodes_1);
-combined_nodes = add_nodes_to_combined_nodes(combined_nodes, new_nodes_2);
-combined_nodes = add_singular_rib(combined_nodes, point_1, point_2,0,"stringer");
+% P1=combined_nodes(combined_nodes.rib_index==1 & combined_nodes.tag =='rear spars',:);
+% P1.y=P1.y - (distancia_entre_costillas/2/sin(ala.geometria.alfa_larguero_posterior_radianes));
+% point_1_x = P1.x;
+% point_1_y = P1.y;
+% point_1 = [point_1_x point_1_y];
+% point_2 = find_point_on_front_spar(point_1_x, point_1_y, ala,avion,datosEstructural);
+% 
+% % Create the first new node
+% new_nodes_1 = table(NaN, point_1(1), point_1(2), 0, -2, "rear spars", ...
+%     'VariableNames', {'local_id', 'x', 'y', 'rib_index', 'stringer_index', 'tag'});
+% 
+% % Create the second new node
+% new_nodes_2 = table(NaN, point_2(1), point_2(2), 0, -1, "front spars", ...
+%     'VariableNames', {'local_id', 'x', 'y', 'rib_index', 'stringer_index', 'tag'});
+% 
+% combined_nodes = add_nodes_to_combined_nodes(combined_nodes, new_nodes_1);
+% combined_nodes = add_nodes_to_combined_nodes(combined_nodes, new_nodes_2);
+% combined_nodes = add_singular_rib(combined_nodes, point_1, point_2,0,"stringer");
 
 %% Superficies cercanas al encastre
 
@@ -148,7 +152,7 @@ warnings = [warnings; warnings_i(:)];
 
 for index_larguerillo = 1:max_stringer-1
 
-    [quad_surfaces_stringer, warning] = create_surfaces_stringer_fuselaje(combined_nodes_fuselaje, combined_nodes, index_larguerillo);
+    [quad_surfaces_stringer, warnings_i] = create_surfaces_stringer_fuselaje(combined_nodes_fuselaje, combined_nodes, index_larguerillo);
 
     quad_fuselaje = [quad_fuselaje; quad_surfaces_stringer];
     warnings = [warnings; warnings_i(:)];
@@ -233,20 +237,20 @@ pshell_info = struct( ...
     'material_mid4', 0);       % Fourth material property (for advanced applications)
 % [longest_lines, stats, top_10_longest] = analyze_line_lengths_v2(lines_table, threshold_factor)
 
-% lines_updated = process_lines(combined_nodes_3D_processed, lines);
-% write_bdf_lines(fullfile(avion.folder.data,"\lines.bdf"), lines_updated, material_info, property_info);
+lines_updated = process_lines(combined_nodes_3D_processed, lines);
+write_bdf_lines(fullfile(avion.folder.data,"\lines.bdf"), lines_updated, material_info, property_info);
 
 %% Quad 
 
-% quad_surfaces_vertical_rib = [quad_surfaces_vertical_rib_ala; quad_surfaces_vertical_rib_fuselaje]; % Está bien
-% quad_fuselaje = [quad_rear_root_fuselaje; quad_fuselaje; quad_front_root_fuselaje];% Está bien
-% quad_spars_all = [quad_rear; quad_front; quad_rear_fuselaje; quad_front_fuselaje];
-% quads_wing = [quad_rear_spar_wing; quad_irregular_wing; quad_surfaces_regular_wing; quad_root_wing; quad_root_stringer_wing];
-% quads_horizontal =[quads_wing; quad_fuselaje; quad_spars_all];
-% 
-% quads_all_3D = preprocess_3D_quads(quads_horizontal);
-% quads_all_3D_processed = process_quads(combined_nodes_3D_processed,[quads_all_3D; quad_surfaces_vertical_rib] );
-% write_bdf_quads(fullfile(avion.folder.data,"\quad.bdf"), quads_all_3D_processed, [], pshell_info, material_info);
+quad_surfaces_vertical_rib = [quad_surfaces_vertical_rib_ala; quad_surfaces_vertical_rib_fuselaje]; % Está bien
+quad_fuselaje = [quad_rear_root_fuselaje; quad_fuselaje; quad_front_root_fuselaje];% Está bien
+quad_spars_all = [quad_rear; quad_front; quad_rear_fuselaje; quad_front_fuselaje];
+quads_wing = [quad_rear_spar_wing; quad_irregular_wing; quad_surfaces_regular_wing; quad_root_wing; quad_root_stringer_wing];
+quads_horizontal =[quads_wing; quad_fuselaje; quad_spars_all];
+
+quads_all_3D = preprocess_3D_quads(quads_horizontal);
+quads_all_3D_processed = process_quads(combined_nodes_3D_processed,[quads_all_3D; quad_surfaces_vertical_rib] );
+write_bdf_quads(fullfile(avion.folder.data,"\quad.bdf"), quads_all_3D_processed, [], pshell_info, material_info);
 
 %% Tri
 
@@ -280,4 +284,25 @@ forces_rear = generate_schrenk_forces_v4(rear_spar_extrados, avion.geometria.b, 
 
 export_forces_to_csv(fullfile(avion.folder.data,"\forces.csv"), [forces_front;forces_rear] );
 
+results.quad.quad_surfaces_vertical_rib_ala = quad_surfaces_vertical_rib_ala;
+results.quad.quad_surfaces_vertical_rib_fuselaje = quad_surfaces_vertical_rib_fuselaje;
+results.quad.quad_rear_root_fuselaje = quad_rear_root_fuselaje;
+results.quad.quad_fuselaje = quad_fuselaje;
+results.quad.quad_front_root_fuselaje = quad_front_root_fuselaje;
+results.quad.quad_rear = quad_rear;
+results.quad_front = quad_front;
+results.quad.quad_rear_fuselaje = quad_rear_fuselaje;
+results.quad.quad_front_fuselaje = quad_front_fuselaje;
+results.quad.quad_surfaces_vertical_rib_ala = quad_surfaces_vertical_rib_ala;
+results.quad.quad_rear_spar_wing = quad_rear_spar_wing;
+results.quad.quad_irregular_wing = quad_irregular_wing;
+results.quad.quad_surfaces_regular_wing = quad_surfaces_regular_wing;
+results.quad.quad_root_wing = quad_root_wing;
+results.quad.quad_root_stringer_wing = quad_root_stringer_wing;
+
+results.nodes = combined_nodes;
+
+results.tri.tri_surfaces = tri_surfaces;
+results.tri.tri_root = tri_root;
+results.tri.tri_root_stringer = tri_root_stringer;
 end

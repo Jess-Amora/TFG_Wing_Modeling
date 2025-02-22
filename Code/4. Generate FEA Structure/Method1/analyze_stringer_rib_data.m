@@ -1,4 +1,4 @@
-function [num_stringers_last_rib, max_rib_index, max_stringer_index, rib_ranges, rib_ranges_by_ribs, special_rib_indices, max_ribs_fuselaje] = analyze_stringer_rib_data_v5(combined_nodes)
+function [num_stringers_last_rib, max_rib_index, max_stringer_index, rib_ranges, rib_ranges_by_ribs, special_rib_indices, max_ribs_fuselaje] = analyze_stringer_rib_data(combined_nodes)
 % analyze_stringer_rib_data_v5: Analyzes stringer and rib data, including bounded ranges for both stringers and ribs.
 %
 % Inputs:

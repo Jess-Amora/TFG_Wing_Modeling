@@ -172,12 +172,14 @@ if actionIndex == 1
 
     if exist(generateStructurePath, 'file')
         disp(['🚀 Running generate_structure from ', methodFolders(folderIndex).name, '...']);
-        generate_structure(avion, datosEstructural, cargas, ala, fuselaje);
+        elements = generate_structure(avion);
+        TFG_Amora.aviones.(name).elements = elements;
+        save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
         disp(['✅ Structure generation completed using ', methodFolders(folderIndex).name, ' and saved.']);
     else
         disp('❌ Error: generate_structure.m not found in the selected folder.');
     end
-
+    
     rmpath(selectedFolder);
 
 else

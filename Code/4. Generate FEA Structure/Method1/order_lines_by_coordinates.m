@@ -1,4 +1,4 @@
-function ordered_lines_table = order_lines_by_coordinates_v2(lines_table, distance_threshold)
+function ordered_lines_table = order_lines_by_coordinates(lines_table, distance_threshold)
     % order_lines_by_coordinates_v2: Orders points in lines_table based on spatial continuity.
     %
     % INPUTS:
