@@ -38,16 +38,16 @@ load(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
 % name = avionNames{avionIndex}; 
 % disp(['✅ Selected Aircraft: ', name]);
 % avion = TFG_Amora.aviones.(name);
-% avion = TFG_Amora.aviones.Airbus_A380_Structural_parameters_A350;
+avion = TFG_Amora.aviones.Airbus_A380_Structural_parameters_A350;
 
-avion = TFG_Amora.aviones.A350_XWB_Structural_parameters_A350;
+% avion = TFG_Amora.aviones.A350_XWB_Structural_parameters_A350;
 
 
 
-elements = avion.elements;
-combined_nodes = elements.nodes;
-quad_rear_spar_wing = elements.quad.quad_rear_spar_wing;
-quad_surfaces_regular_wing = elements.quad.quad_surfaces_regular_wing;
+% elements = avion.elements;
+% combined_nodes = elements.nodes;
+% quad_rear_spar_wing = elements.quad.quad_rear_spar_wing;
+% quad_surfaces_regular_wing = elements.quad.quad_surfaces_regular_wing;
 
 
 % plot_rear_spar_surfaces(combined_nodes, quad_rear_spar_wing);
@@ -55,7 +55,7 @@ quad_surfaces_regular_wing = elements.quad.quad_surfaces_regular_wing;
 
 
 
-plot_stringer_regular_surfaces(combined_nodes, quad_surfaces_regular_wing,avion);
+% plot_stringer_regular_surfaces(combined_nodes, quad_surfaces_regular_wing,avion);
 
 
 
@@ -65,33 +65,37 @@ plot_stringer_regular_surfaces(combined_nodes, quad_surfaces_regular_wing,avion)
 
 
 %% 🔹 Step 3: Plotting Geometry
+plotAla2D_costillas_larguerillos(avion)
+plotAla2Dlarguerillo_fuselaje(avion)
+plotAla2Dcostilla_fuselaje(avion)
+plotAla2D_costillas_larguerillo_fuselaje(avion)
+plotAla2Dcostilla_total(avion)
+plotAla2Dlarguerillo_total(avion)
+plotAla2Dcostilla_larguerillo_total(avion)
+plotAla2D_costillas(avion)
+plotAla2D_mesh_nodos(avion)
+plotAla2D(avion)
 
-% plotAla2Dlarguerillo_fuselaje(avion)
-% plotAla2Dcostilla_fuselaje(avion)
-% plotAla2D_costillas_larguerillo_fuselaje(avion)
-% plotAla2Dcostilla_total(avion)
-% plotAla2Dlarguerillo_total(avion)
-% plotAla2Dcostilla_larguerillo_total(avion)
 disp('🛩 Plotting Results stage 2:');
 disp('----------------------------------------');
 disp('🛩 Plotting: The geometry of the wing');
 % try
-    % plotAla2D(avion)
+    plotAla2D(avion)
 % catch ME
 %     warning('Error in plotAla2Dlarguerillo: %s', ME.message);
 % end
 disp('----------------------------------------');
 disp('🛩 Plotting: Larguerillo');
 % try
-%     plotAla2Dlarguerillo(avion)
+    plotAla2Dlarguerillo(avion)
 % catch ME
 %     warning('Error in plotAla2Dlarguerillo: %s', ME.message);
 % end
 disp('----------------------------------------');
 disp('🛩 Plotting: costillas');
 % try
-% % plotAla2D_mesh_nodos(avion,geom_struct,ribs_struct,mesh_struct)
-% %     plotAla2D_mesh_nodos(avion,geom_struct)
+% plotAla2D_mesh_nodos(avion,geom_struct,ribs_struct,mesh_struct)
+%     plotAla2D_mesh_nodos(avion,geom_struct)
     % plotAla2D_costillas(avion)
 % catch ME
 %     warning('Error in plotAla2Dlarguerillo: %s', ME.message);

@@ -1,15 +1,20 @@
 function strength_results = strength_analysis(material, datosEstructural, larguerillo, cordon, cajon, naca_wing, My, Vy, T, num_cycles, database_computer)
-    % Computes strength analysis for the wing structure
+    % Computes strength analysis for the wing structure, now on a per-rib basis.
     % Inputs:
-    %   - material: Struct containing material properties
-    %   - datosEstructural: Safety factors and design constraints
-    %   - larguerillo, cordon, cajon: Structural part data
-    %   - naca_wing: Airfoil geometry data
-    %   - My: Bending moment (N·m)
-    %   - Vy: Shear force (N)
-    %   - T: Torsional moment (N·m)
-    %   - num_cycles: Number of fatigue cycles
-    % ✅ Load database again to ensure it has the latest data
+    %   - material: Struct containing material properties.
+    %   - datosEstructural: Safety factors and design constraints.
+    %   - larguerillo, cordon, cajon: Structural part data.
+    %   - naca_wing: Airfoil geometry data.
+    %   - My: Bending moment (N·m).
+    %   - Vy: Shear force (N).
+    %   - T: Torsional moment (N·m).
+    %   - num_cycles: Number of fatigue cycles.
+    %   - database_computer: Path to the database.
+    %
+    % The function loads the latest TFG_Amora database, retrieves the cajón data,
+    % and then performs strength analysis for each rib (slice) of the cajón.
+    
+    % ✅ Load database to ensure latest data
     load(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
     
     % ✅ Check if `parts` and `cajon` exist
@@ -20,151 +25,85 @@ function strength_results = strength_analysis(material, datosEstructural, largue
     %% Initializing
     pitch = datosEstructural.distancia_entre_larguerillo;
     n = datosEstructural.n;
-    disp('⚙️ Running Strength Analysis...');
+    disp('⚙️ Running Strength Analysis (per rib)...');
     
-    %% 1️⃣ Compute Cajón Properties
+    %% 1️⃣ Compute Cajón Properties for each rib slice
     materialType = material.type;  
     pandeoLocalsuperior = true;  
     
-    % ✅ Now pass the struct instead of a string
-    cajon_struct = cajon_funcion(cajon, materialType, datosEstructural, pandeoLocalsuperior);
+    % For the new approach, cajon is passed along with rib properties.
+    % (Assume cajon now contains the necessary dimensions and that the rib
+    % properties were previously computed and stored in cajon.rib_props.)
+    %
+    % Call the updated cajon_funcion, which returns an array of structs.
+    cajon_struct = cajon_funcion(cajon, cajon.rib_props, materialType, datosEstructural, pandeoLocalsuperior);
     
-    % ✅ Store results inside `strength_results` struct
-    strength_results = struct( ...
-        'A', cajon_struct.A, ...
-        'hcg', cajon_struct.hcg, ...
-        'I', cajon_struct.I ...
-    );
+    % Preallocate results array (one per rib)
+    num_ribs = length(cajon_struct);
+    strength_results = repmat(struct(), num_ribs, 1);
     
-    % ✅ Display computed properties
-    fprintf('  ✅ Cajón Properties Computed:\n');
-    fprintf('  - Center of Gravity (hcg): %.6f m\n', cajon_struct.hcg);
-    fprintf('  - Moment of Inertia (I): %.6f m⁴\n', cajon_struct.I);
-
-    %% 2️⃣ Compute Axial Stresses
-    sigma = calculate_esfuerzos(cajon.H, cajon_struct.hcg, My, cajon_struct.I);
-    strength_results.sigma = sigma;
+    %% Loop over each rib slice
+    for i = 1:num_ribs
+        % For this rib, extract its properties
+        A_i     = cajon_struct(i).A;
+        hcg_i   = cajon_struct(i).hcg;
+        I_i     = cajon_struct(i).I;
+        H_i     = cajon_struct(i).H;
+        pitch_i = cajon_struct(i).pitch;
+        
+        % 2️⃣ Compute Axial Stresses for rib i
+        sigma_i = calculate_esfuerzos(H_i, hcg_i, My, I_i);
+        
+        % 3️⃣ Compute Load Distribution for rib i
+        P_i = reparto_de_fuerzas(A_i, sigma_i, n, materialType, pitch_i);
+        
+        % 4️⃣ Compute Shear Stresses for rib i (using same Vy and T)
+        shear_i = calcularEsfuerzosCortantes(Vy, T, cajon_struct(i), pitch_i, materialType);
+        
+        % 5️⃣ Compute Resistance Factors for rib i
+        stresses.sigma_LS = P_i.sigma_LS;
+        stresses.sigma_Li = P_i.sigma_Li;
+        stresses.sigma_Cs = P_i.sigma_CS;
+        stresses.sigma_Ci = P_i.sigma_Ci;
+        stresses.sigma_RS = P_i.sigma_RS;
+        stresses.sigma_RI = P_i.sigma_RI;
+        stresses.tau_SS   = shear_i.tau_ss;
+        stresses.tau_SI   = shear_i.tau_si;
+        stresses.tau_L    = P_i.tau_L;
+        stresses.tau_C    = P_i.tau_C;
+        % For costilla stress, assume same as lower spar cap stress:
+        stresses.sigma_C  = stresses.sigma_Ci;
+        
+        RF_i = analizar_resistencia(stresses, materialType);
+        
+        % 6️⃣ Compute Fatigue Life for rib i
+        fatigue_i = calcular_fatiga(sigma_i / 1e6, materialType, num_cycles);
+        
+        % 7️⃣ Compute Stability for rib i
+        stability_i = calcular_estabilidad(cajon_struct(i), material, Vy);
+        
+        % Store all computed results for rib i
+        strength_results(i).A                = A_i;
+        strength_results(i).hcg              = hcg_i;
+        strength_results(i).I                = I_i;
+        strength_results(i).sigma            = sigma_i;
+        strength_results(i).P                = P_i;
+        strength_results(i).shear_stresses   = shear_i;
+        strength_results(i).RF               = RF_i;
+        strength_results(i).fatigue_results  = fatigue_i;
+        strength_results(i).stability_results= stability_i;
+        strength_results(i).rib_index        = cajon.rib_props.rib_id(i);
+        
+        % Optionally display a brief summary for this rib
+        fprintf('Rib %d:\n', strength_results(i).rib_index);
+        fprintf('  - hcg: %.6f m, I: %.6f m⁴\n', hcg_i, I_i);
+        fprintf('  - Axial Stress: Max %.2f MPa, Min %.2f MPa, Avg %.2f MPa\n', ...
+                max(sigma_i)/1e6, min(sigma_i)/1e6, mean(sigma_i)/1e6);
+        fprintf('  - Upper Skin Resultant Force: Max %.2f N, Min %.2f N, Avg %.2f N\n', ...
+                max(P_i.P_RS), min(P_i.P_RS), mean(P_i.P_RS));
+        fprintf('  - Lower Skin Resultant Force: Max %.2f N, Min %.2f N, Avg %.2f N\n\n', ...
+                max(P_i.P_RI), min(P_i.P_RI), mean(P_i.P_RI));
+    end
     
-    fprintf('  ✅ Axial Stress Computed:\n');
-    fprintf('  - Max Axial Stress: %.2f MPa\n', max(sigma) / 1e6);
-    fprintf('  - Min Axial Stress: %.2f MPa\n', min(sigma) / 1e6);
-    fprintf('  - Avg Axial Stress: %.2f MPa\n', mean(sigma) / 1e6);
-
-
-    %% 3️⃣ Compute Load Distribution
-    
-    % ✅ Extract `A` from the struct (fixing the error)
-    A = cajon_struct.A;
-
-    P = reparto_de_fuerzas(A, sigma, n, materialType, pitch);
-    strength_results.P = P;
-
-    fprintf('  ✅ Load Distribution Computed:\n');
-    fprintf('  - Max Upper Skin Resultant Force: %.2f N\n', max(P.P_RS));
-    fprintf('  - Min Upper Skin Resultant Force: %.2f N\n', min(P.P_RS));
-    fprintf('  - Avg Upper Skin Resultant Force: %.2f N\n', mean(P.P_RS));
-    
-    fprintf('  - Max Lower Skin Resultant Force: %.2f N\n', max(P.P_RI));
-    fprintf('  - Min Lower Skin Resultant Force: %.2f N\n', min(P.P_RI));
-    fprintf('  - Avg Lower Skin Resultant Force: %.2f N\n', mean(P.P_RI));
-
-
-    %% 4️⃣ Compute Shear Stresses (Using Vy and T)
-    shear_stresses = calcularEsfuerzosCortantes(Vy, T, cajon_struct,pitch, materialType);
-    strength_results.shear_stresses = shear_stresses;
-
-    fprintf('  ✅ Shear Stress Computed:\n');
-    fprintf('  - Max Upper Skin Shear Stress: %.2f MPa\n', max(shear_stresses.tau_ss) / 1e6);
-    fprintf('  - Min Upper Skin Shear Stress: %.2f MPa\n', min(shear_stresses.tau_ss) / 1e6);
-    fprintf('  - Avg Upper Skin Shear Stress: %.2f MPa\n', mean(shear_stresses.tau_ss) / 1e6);
-    
-    fprintf('  - Max Lower Skin Shear Stress: %.2f MPa\n', max(shear_stresses.tau_si) / 1e6);
-    fprintf('  - Min Lower Skin Shear Stress: %.2f MPa\n', min(shear_stresses.tau_si) / 1e6);
-    fprintf('  - Avg Lower Skin Shear Stress: %.2f MPa\n', mean(shear_stresses.tau_si) / 1e6);
-
-
-    %% 5️⃣ Compute Resistance Factors
-    stresses.sigma_LS = P.sigma_LS;
-    stresses.sigma_Li = P.sigma_Li;
-    stresses.sigma_Cs = P.sigma_CS;
-    stresses.sigma_Ci = P.sigma_Ci;
-    stresses.sigma_RS = P.sigma_RS;
-    stresses.sigma_RI = P.sigma_RI;
-    stresses.tau_SS = shear_stresses.tau_ss;
-    stresses.tau_SI = shear_stresses.tau_si;
-    stresses.tau_L = P.tau_L;
-    stresses.tau_C = P.tau_C;
-    
-    % ✅ Fix: Compute missing sigma_C (Costilla stress)
-    stresses.sigma_C = stresses.sigma_Ci;  % Assume lower spar cap stress for costilla
-    
-    RF = analizar_resistencia(stresses, materialType);
-    strength_results.RF = RF;
-    
-    % ✅ Print computed stresses
-    fprintf('\n🔍 Computed Stresses:\n');
-    fprintf('  - Upper Stringer Axial Stress: Max %.2f MPa | Min %.2f MPa | Avg %.2f MPa\n', ...
-        max(stresses.sigma_LS) / 1e6, min(stresses.sigma_LS) / 1e6, mean(stresses.sigma_LS) / 1e6);
-    fprintf('  - Lower Stringer Axial Stress: Max %.2f MPa | Min %.2f MPa | Avg %.2f MPa\n', ...
-        max(stresses.sigma_Li) / 1e6, min(stresses.sigma_Li) / 1e6, mean(stresses.sigma_Li) / 1e6);
-    fprintf('  - Upper Spar Cap Axial Stress: Max %.2f MPa | Min %.2f MPa | Avg %.2f MPa\n', ...
-        max(stresses.sigma_Cs) / 1e6, min(stresses.sigma_Cs) / 1e6, mean(stresses.sigma_Cs) / 1e6);
-    fprintf('  - Lower Spar Cap Axial Stress: Max %.2f MPa | Min %.2f MPa | Avg %.2f MPa\n', ...
-        max(stresses.sigma_Ci) / 1e6, min(stresses.sigma_Ci) / 1e6, mean(stresses.sigma_Ci) / 1e6);
-    fprintf('  - Upper Skin Axial Stress: Max %.2f MPa | Min %.2f MPa | Avg %.2f MPa\n', ...
-        max(stresses.sigma_RS) / 1e6, min(stresses.sigma_RS) / 1e6, mean(stresses.sigma_RS) / 1e6);
-    fprintf('  - Lower Skin Axial Stress: Max %.2f MPa | Min %.2f MPa | Avg %.2f MPa\n', ...
-        max(stresses.sigma_RI) / 1e6, min(stresses.sigma_RI) / 1e6, mean(stresses.sigma_RI) / 1e6);
-    fprintf('  - Upper Skin Shear Stress: Max %.2f MPa | Min %.2f MPa | Avg %.2f MPa\n', ...
-        max(stresses.tau_SS) / 1e6, min(stresses.tau_SS) / 1e6, mean(stresses.tau_SS) / 1e6);
-    fprintf('  - Lower Skin Shear Stress: Max %.2f MPa | Min %.2f MPa | Avg %.2f MPa\n', ...
-        max(stresses.tau_SI) / 1e6, min(stresses.tau_SI) / 1e6, mean(stresses.tau_SI) / 1e6);
-    fprintf('  - Spar Shear Stress (tau_L): Max %.2f MPa | Min %.2f MPa | Avg %.2f MPa\n', ...
-        max(stresses.tau_L) / 1e6, min(stresses.tau_L) / 1e6, mean(stresses.tau_L) / 1e6);
-    fprintf('  - Rib Shear Stress (tau_C): Max %.2f MPa | Min %.2f MPa | Avg %.2f MPa\n', ...
-        max(stresses.tau_C) / 1e6, min(stresses.tau_C) / 1e6, mean(stresses.tau_C) / 1e6);
-    fprintf('  - Costilla Axial Stress: Max %.2f MPa | Min %.2f MPa | Avg %.2f MPa\n', ...
-        max(stresses.sigma_C) / 1e6, min(stresses.sigma_C) / 1e6, mean(stresses.sigma_C) / 1e6);
-    % ✅ Print computed resistance factors
-    fprintf('\n🔍 Resistance Factors:\n');
-    fprintf('  - Upper Stringer RF: Max %.2f | Min %.2f | Avg %.2f\n', ...
-        max(RF.sigma_LS), min(RF.sigma_LS), mean(RF.sigma_LS));
-    fprintf('  - Lower Stringer RF: Max %.2f | Min %.2f | Avg %.2f\n', ...
-        max(RF.sigma_Li), min(RF.sigma_Li), mean(RF.sigma_Li));
-    fprintf('  - Upper Spar Cap RF: Max %.2f | Min %.2f | Avg %.2f\n', ...
-        max(RF.sigma_Cs), min(RF.sigma_Cs), mean(RF.sigma_Cs));
-    fprintf('  - Lower Spar Cap RF: Max %.2f | Min %.2f | Avg %.2f\n', ...
-        max(RF.sigma_Ci), min(RF.sigma_Ci), mean(RF.sigma_Ci));
-    fprintf('  - Spar Shear RF (tau_L): Max %.2f | Min %.2f | Avg %.2f\n', ...
-        max(RF.tau_L), min(RF.tau_L), mean(RF.tau_L));
-    fprintf('  - Rib Shear RF (tau_C): Max %.2f | Min %.2f | Avg %.2f\n', ...
-        max(RF.sigma_VM_C), min(RF.sigma_VM_C), mean(RF.sigma_VM_C));
-
-
-    
-    % % Upper & Lower Skin Analysis (Fix the missing case for metals)
-    % if strcmp(materialType, 'metal')
-    %     RF.sigma_VM_RS = sqrt(stresses.sigma_RS.^2 + 3 * stresses.tau_SS.^2) / sigma_lim_RS;
-    %     fprintf('  - Upper Skin RF: %.2f\n', RF.sigma_VM_RS);
-    %     fprintf('  - Lower Skin RF: %.2f\n', RF.sigma_VM_RI);
-    % else
-    %     fprintf('  - Upper Skin RF: %.2f\n', RF.sigma_VM_RS);
-    %     fprintf('  - Lower Skin RF: %.2f\n', RF.sigma_VM_RI);
-    % end
-
-
-    %% 6️⃣ Compute Fatigue Life
-    fatigue_results = calcular_fatiga(sigma / 1e6, materialType, num_cycles);
-    strength_results.fatigue_results = fatigue_results;
-    
-    fprintf('  ✅ Fatigue Life Computed.\n');
-
-    %% 7️⃣ Compute Stability
-    stability_results = calcular_estabilidad(cajon_struct, material, Vy);
-    strength_results.stability_results = stability_results;
-
-    fprintf('  ✅ Stability Analysis Completed.\n');
-
-    %% ✅ Return Results
-    disp('✅ Strength Analysis Completed.');
+    disp('✅ Strength Analysis Completed for all ribs.');
 end

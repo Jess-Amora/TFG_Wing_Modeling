@@ -35,7 +35,7 @@ while true  % 🔁 Keep the menu active until the user exits
 
     if avionIndex == length(avionNames) + 1
         disp('🔙 Returning to Main Menu...');
-        run('main_menu.m');
+        run('main.m');
         return;
     end
 
@@ -185,7 +185,8 @@ while true  % 🔁 Keep the menu active until the user exits
             
             num_cycles = 1e6; % Default fatigue cycles
             strength_results = strength_analysis(material, datosEstructural, selected_larguerillo, selected_cordon, cajon_dims, naca_wing, My, Vy, T, num_cycles, database_computer);
-            
+            plot_strength_results(strength_results);
+
             % ✅ Ask the user for a name for this pre-dimensioning case
             disp('----------------------------------------');
             disp('📢 Strength Analysis Completed!');
@@ -195,7 +196,7 @@ while true  % 🔁 Keep the menu active until the user exits
             % ✅ If the user just presses Enter, do NOT save anything & return to main_strength_analysis
             if isempty(predim_name)
                 disp('❌ Configuration NOT saved. Returning to Strength Analysis Menu...');
-                run('main_strength_analysis.m');  % 🔄 Restart Strength Analysis
+                run('main3.m');  % 🔄 Restart Strength Analysis
                 return;  % Exit this script
             end
             
@@ -230,7 +231,7 @@ while true  % 🔁 Keep the menu active until the user exits
             disp(['✅ Configuration "', predim_name, '" saved successfully for the next stage (generate_structure).']);
             
             % ✅ Return to Strength Analysis Menu
-            run('main_strength_analysis.m');  % 🔄 Restart Strength Analysis
+            run('main3.m');  % 🔄 Restart Strength Analysis
 
 
         elseif modeIndex == 2
