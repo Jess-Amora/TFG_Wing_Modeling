@@ -1,4 +1,4 @@
-function [avion, cargas, results] = adjust_k_sust_final_forces(ala, avion)
+function [avion, cargas, results] = adjust_k_sust_final_forces(ala, avion, n)
     % adjust_k_sust_final_forces iteratively adjusts the structural scaling factor
     % k_sust (stored in avion.datosEstructural.k_sust_a350_1000) so that the 
     % aerodynamic forces computed in calculate_final_forces match the overall 
@@ -23,7 +23,7 @@ function [avion, cargas, results] = adjust_k_sust_final_forces(ala, avion)
     
     % Initial calculation of load distribution and final forces.
     cargas = schrenk_1(avion);
-    results = calculate_final_forces_v1(ala, avion, cargas);
+    results = calculate_final_forces_v1(ala, avion, cargas, n);
     
     % Compute the total aerodynamic force from the discrete rib intersections.
     % (Sum the forces from both the anterior and posterior sides.)
@@ -40,15 +40,14 @@ function [avion, cargas, results] = adjust_k_sust_final_forces(ala, avion)
         scale_factor = total_lift_required / total_aero_force;
         
         % Update k_sust in the avion structure.
-        avion.datosEstructural.k_sust_a350_1000 = avion.datosEstructural.k_sust_a350_1000 * scale_factor;
+        avion.datosEstructural.k_i = avion.datosEstructural.k_i * scale_factor;
         
         % Recompute the load distribution and final forces with the updated k_sust.
         cargas = schrenk_1(avion);
-        results = calculate_final_forces_v1(ala, avion, cargas);
+        results = calculate_final_forces_v1(ala, avion, cargas, n);
         
         % Recalculate the total aerodynamic force.
-        total_aero_force = sum(results.R1_A_aero + results.R2_A_aero + ...
-                                results.R1_R_aero + results.R2_R_aero);
+        total_aero_force = sum(results.V.rear) + sum(results.V.front);
         total_lift_required = results.total_lift_required;
     end
     

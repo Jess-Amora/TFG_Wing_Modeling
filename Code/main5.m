@@ -59,22 +59,22 @@ avion = TFG_Amora.aviones.Airbus_A380_Structural_parameters_A350;
 
 
 
-
+plotAla2D_fuerzas(avion)
 
 
 
 
 %% 🔹 Step 3: Plotting Geometry
-plotAla2D_costillas_larguerillos(avion)
-plotAla2Dlarguerillo_fuselaje(avion)
-plotAla2Dcostilla_fuselaje(avion)
-plotAla2D_costillas_larguerillo_fuselaje(avion)
-plotAla2Dcostilla_total(avion)
-plotAla2Dlarguerillo_total(avion)
-plotAla2Dcostilla_larguerillo_total(avion)
-plotAla2D_costillas(avion)
-plotAla2D_mesh_nodos(avion)
-plotAla2D(avion)
+% plotAla2D_costillas_larguerillos(avion)
+% plotAla2Dlarguerillo_fuselaje(avion)
+% plotAla2Dcostilla_fuselaje(avion)
+% plotAla2D_costillas_larguerillo_fuselaje(avion)
+% plotAla2Dcostilla_total(avion)
+% plotAla2Dlarguerillo_total(avion)
+% plotAla2Dcostilla_larguerillo_total(avion)
+% plotAla2D_costillas(avion)
+% plotAla2D_mesh_nodos(avion)
+% plotAla2D(avion)
 
 disp('🛩 Plotting Results stage 2:');
 disp('----------------------------------------');

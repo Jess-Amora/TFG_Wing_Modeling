@@ -536,6 +536,44 @@ function [results] = construirAla(avion,datosEstructural,cargas)
     
     numero_larguerillos_total = numero_larguerillos_total - quitar_larguerillo;
     
+    %%
+    y_intercept = y_l - pendiente_perpendicular_larguero_posterior * x_l;
+    coord_interseccion_paralela_costillas_pasa_por_A = zeros(size(y_intercept,1),2,3); % dimension es num_costillas y (X,Y) y (larguero anterior;larguero posterior,eje estructural)
+    
+    for i = 1:size(x_l,1) 
+        
+        if i <= numero_costillas_triangulo
+    
+        %posterior
+        coord_interseccion_paralela_costillas_pasa_por_A(i,1,2) = Lf;
+        coord_interseccion_paralela_costillas_pasa_por_A(i,2,2)  = pendiente_perpendicular_larguero_posterior * Lf + y_intercept(i);
+    
+        else
+    
+        %posterior
+        coord_interseccion_paralela_costillas_pasa_por_A(i,1,2) = (constante_linea_larguero_posterior - y_intercept(i)) / (pendiente_perpendicular_larguero_posterior - pendiente_larguero_posterior);
+        coord_interseccion_paralela_costillas_pasa_por_A(i,2,2)  = pendiente_perpendicular_larguero_posterior * coord_interseccion_paralela_costillas_pasa_por_A(i,1,2) + y_intercept(i);
+    
+        end
+    
+       %anterior
+        coord_interseccion_paralela_costillas_pasa_por_A(i,1,1) = (constante_linea_larguero_anterior - y_intercept(i)) / (pendiente_perpendicular_larguero_posterior - pendiente_larguero_anterior);
+        coord_interseccion_paralela_costillas_pasa_por_A(i,2,1)  = pendiente_perpendicular_larguero_posterior * coord_interseccion_paralela_costillas_pasa_por_A(i,1,1) + y_intercept(i);
+    
+        %eje estructural
+        coord_interseccion_paralela_costillas_pasa_por_A(i,1,3) = (constante_linea_eje_estructural - y_intercept(i)) / (pendiente_perpendicular_larguero_posterior - pendiente_eje_estructural);
+        coord_interseccion_paralela_costillas_pasa_por_A(i,2,3)  = pendiente_perpendicular_larguero_posterior * coord_interseccion_paralela_costillas_pasa_por_A(i,1,3) + y_intercept(i);
+    
+    
+        % plot(x_l(i),y_l(i),'d')
+        % plot(coord_interseccion_paralela_costillas_pasa_por_A(i,1,1),coord_interseccion_paralela_costillas_pasa_por_A(i,2,1),'pentagram')
+        % plot(coord_interseccion_paralela_costillas_pasa_por_A(i,1,2),coord_interseccion_paralela_costillas_pasa_por_A(i,2,2),'pentagram')
+        % plot(coord_interseccion_paralela_costillas_pasa_por_A(i,1,3),coord_interseccion_paralela_costillas_pasa_por_A(i,2,3),'pentagram')
+        % y_temp = y_intercept(i) + x_local_ala(i) * pendiente_perpendicular_larguero_posterior
+        % plot(x_local_ala(i),y_temp,'hexagram')
+    
+    end
+
     % Datos Generales
     results.costillas = costillas; %
     results.numero_costillas = numero_costillas;
@@ -563,9 +601,8 @@ function [results] = construirAla(avion,datosEstructural,cargas)
     results.coord_aerodinamica_costillas_punto_medio = coord_aerodinamica_costillas_punto_medio; %(x,y)
     results.coord_aerodinamico_costillas = coord_aerodinamico_costillas; %(x,y)
     % results.coord_aerodinamica_costillas_pasa_por_A = coord_aerodinamica_costillas_pasa_por_A;
-    % results.coord_interseccion_paralela_costillas_pasa_por_A = coord_interseccion_paralela_costillas_pasa_por_A; % dimension es num_costillas y (X,Y) y (larguero anterior;larguero posterior,eje estructural)
-    % results.y_L = y_L; 
-    
+    results.coord_interseccion_paralela_costillas_pasa_por_A = coord_interseccion_paralela_costillas_pasa_por_A; % dimension es num_costillas y (X,Y) y (larguero anterior;larguero posterior,eje estructural)
+
     % Geometria
     results.geometria.linea_larguero_anterior = linea_larguero_anterior; % (x_local_ala,linea)
     results.geometria.linea_larguero_posterior = linea_larguero_posterior; % (x_local_ala,linea)

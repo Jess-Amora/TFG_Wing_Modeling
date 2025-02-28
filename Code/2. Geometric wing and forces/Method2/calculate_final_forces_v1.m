@@ -1,4 +1,4 @@
-function results = calculate_final_forces_v1(ala, avion, cargas)
+function results = calculate_final_forces_v1(ala, avion, cargas, n)
     % CALCULATE_FINAL_FORCES Computes the final forces applied to the wing 
     % considering aerodynamic and mass forces, following the TFG guide.
     %
@@ -12,7 +12,7 @@ function results = calculate_final_forces_v1(ala, avion, cargas)
 
 %% 📌 Load Inputs
 MTOW = avion.MTOW;
-n = avion.datosEstructural.n;
+% n_lim = avion.datosEstructural.n;
 Lw = avion.geometria.Lw;
 numero_costillas = ala.numero_costillas;
 pendiente_perpendicular_larguero_posterior = ala.geometria.pendiente_perpendicular_larguero_posterior;
@@ -22,7 +22,11 @@ x_l = ala.x_l;
 y_l = ala.y_l;
 
 coord_aerodinamica_costillas_punto_medio = ala.coord_aerodinamica_costillas_punto_medio;
-
+coord_interseccion_paralela_costillas_pasa_por_A = ala.coord_interseccion_paralela_costillas_pasa_por_A;
+% x_L = ala.x_L;
+% y_L = ala.y_L;
+% L = ala.L;
+% size_L = size(L,1);
 schrenk = cargas.schrenk;
 
 % ✅ Schrenk’s Interpolation
@@ -32,17 +36,17 @@ l = l * n * MTOW * 2 / Lw^2;  % Scale by load factor and weight
 %% ✨ **Discretization of Aerodynamic Forces**
 % We exclude the first and last coordinate (see guide)
 size_L = length(l) - 2;
-x_L = coord_aerodinamica_costillas_punto_medio(2:end-1);
+x_L = coord_aerodinamica_costillas_punto_medio(2:end-1,:);
 y_L = zeros(size(x_L));
 
 L = zeros(size_L, 1);
-for i = 2:numel(x_L)-1
+for i = 2:size(x_L,1)-1
     L(i-1) = (1/6) * (x_L(i+1) - x_L(i)) * (2*l(i) + l(i+1)) ...
            + (1/6) * (x_L(i) - x_L(i-1)) * (l(i) + 2*l(i-1));
 end
 
-y_intercept = y_l - pendiente_perpendicular_larguero_posterior * x_l;
-coord_interseccion_paralela_costillas_pasa_por_A = zeros(size(y_intercept,1),2,3);
+% y_intercept = y_l - pendiente_perpendicular_larguero_posterior * x_l;
+% coord_interseccion_paralela_costillas_pasa_por_A = zeros(size(y_intercept,1),2,3);
 % Dimension: [number of ribs] x (X,Y) x (anterior spar, posterior spar, structural axis)
 
 %% ✅ **Compute Weight Forces**

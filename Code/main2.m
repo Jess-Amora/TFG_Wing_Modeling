@@ -113,15 +113,48 @@ else
 end
 
 % ✅ Remove folder from path after execution to avoid conflicts
-rmpath(selectedFolder);
+
 
 %% 🔹 Step 7: Compute Final Forces & Adjust `k_sust`
 disp('🛠 Adjusting k_sust for Final Forces...');
-[avion, cargas, results_k] = adjust_k_sust_final_forces(ala, avion);
 
-TFG_Amora.aviones.(name).forces = results_k;
-TFG_Amora.aviones.(name).datosEstructural.k_sust_a350_1000 = avion.datosEstructural.k_sust_a350_1000;
-TFG_Amora.aviones.(name).cargas = cargas;
+rib_prop = generate_rib_properties(ala.mesh.nodos_anterior', ala.mesh.nodos_posterior', avion.perfil.airfoil);
+avion.datosEstructural.k_i = 1;
+
+% n = 1
+n1 = 1;
+[avion, cargas, results_k] = adjust_k_sust_final_forces(ala, avion, n1);
+
+TFG_Amora.aviones.(name).forces_n1 = results_k;
+TFG_Amora.aviones.(name).datosEstructural.k_n1 = 1;
+TFG_Amora.aviones.(name).datosEstructural.k_n1 = avion.datosEstructural.k_i;
+TFG_Amora.aviones.(name).cargas_n1 = cargas;
+
+TFG_Amora.aviones.(name).weight_n1 = calculate_weight_wing_fuel(ala, avion, rib_prop,n1);
+
+% n = n_lim
+n_lim = avion.datosEstructural.n;
+[avion, cargas, results_k] = adjust_k_sust_final_forces(ala, avion,n_lim );
+
+TFG_Amora.aviones.(name).forces_n_lim = results_k;
+TFG_Amora.aviones.(name).datosEstructural.k_n_lim = 1;
+TFG_Amora.aviones.(name).datosEstructural.k_n_lim = avion.datosEstructural.k_i;
+TFG_Amora.aviones.(name).cargas_n_lim = cargas;
+
+TFG_Amora.aviones.(name).weight_n_lim = calculate_weight_wing_fuel(ala, avion, rib_prop,n_lim);
+
+% n = n_ult
+n_ult = 1.5 * avion.datosEstructural.n;
+[avion, cargas, results_k] = adjust_k_sust_final_forces(ala, avion, n_ult);
+
+TFG_Amora.aviones.(name).forces_n_ult = results_k;
+TFG_Amora.aviones.(name).datosEstructural.k_n_ult = 1;
+TFG_Amora.aviones.(name).datosEstructural.k_n_ult = avion.datosEstructural.k_i;
+TFG_Amora.aviones.(name).cargas_n_ult = cargas;
+
+TFG_Amora.aviones.(name).weight_n_ult = calculate_weight_wing_fuel(ala, avion, rib_prop, n_ult);
+
 save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
 
+rmpath(selectedFolder);
 disp('✅ Final force calculations saved.');
