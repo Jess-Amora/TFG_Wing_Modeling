@@ -1,6 +1,9 @@
 CEND
 BEGIN BULK
-MAT1    1       69000.000000    0.000000        0.330000        
+$ Material Record : mat1.1
+$ Description of Material :
+MAT1*   1       69000.          69000.          25939.8         
+*       .33             2.7e-09         
 PSHELL  1       1       2.100000        
 CQUAD4  1       1       190     191     236     235     0.0     0.0     
 CQUAD4  2       1       235     236     281     280     0.0     0.0     

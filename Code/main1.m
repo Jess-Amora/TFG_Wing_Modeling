@@ -23,8 +23,9 @@ while true
     disp('2️⃣ Add Aircraft Data');
     disp('3️⃣ Construct Aircraft (Select from `datosEstructural` & `aircraft_data`)');
     disp('4️⃣ Add Material Properties');
-    disp('5️⃣ Read Database (Load structural & aircraft data from CSV)');
-    disp('6️⃣ Exit to Main System');
+    disp('5️⃣ create naca');
+    disp('6️⃣ Read Database (Load structural & aircraft data from CSV)');
+    disp('7 Exit to Main System');
 
     
     choice = input('Select an option (1-5): ', 's');
@@ -206,12 +207,132 @@ disp(['✅ Aircraft "', fullAircraftName, '" has been created and linked to stru
         end
 
     elseif strcmp(choice, '5')
+         % ✅ NACA Wing Creation or View
+            while true
+                disp('----------------------------------------');
+                    disp('🛩 Select an Aircraft for Naca:');
+                    avionNames = fieldnames(TFG_Amora.aviones);
+                
+                    if isempty(avionNames)
+                        disp('⚠️ No aircraft data available. Please add data first.');
+                        return;
+                    end
+                
+                    % ✅ Display available aircraft options
+                    for i = 1:length(avionNames)
+                        fprintf('%d) %s\n', i, avionNames{i});
+                    end
+                    fprintf('%d) 🔙 Return to Main Menu\n', length(avionNames) + 1);
+                
+                    % ✅ User selects an aircraft
+                    avionChoice = input('Select an option: ', 's');
+                    avionIndex = str2double(avionChoice);
+                
+                    if isnan(avionIndex) || avionIndex < 1 || avionIndex > (length(avionNames) + 1)
+                        disp('❌ Invalid selection. Returning to menu.');
+                        continue;
+                    end
+                
+                    if avionIndex == length(avionNames) + 1
+                        disp('🔙 Returning to Main Menu...');
+                        run('main.m');
+                        return;
+                    end
+                
+                    % ✅ Load selected aircraft
+                    name = avionNames{avionIndex};
+                    disp(['✅ Selected Aircraft: ', name]);
+                    avion = TFG_Amora.aviones.(name);
+                    
+                disp('----------------------------------------');
+                disp('✈️  NACA Wing Management');
+                disp('1) Create or Overwrite NACA Wing');
+                disp('2) View Existing NACA Wing');
+                disp('3) 🔙 Return');
+
+                nacaChoice = input('Select an option: ', 's');
+                nacaIndex = str2double(nacaChoice);
+
+                if isnan(nacaIndex) || nacaIndex < 1 || nacaIndex > 3
+                    disp('❌ Invalid selection. Try again.');
+                    continue;
+                end
+
+                if nacaIndex == 3
+                    break;
+                end
+
+                if nacaIndex == 1
+                    % ✅ User chooses to create a NACA 6-Series airfoil
+                    disp('📌 Creating a NACA 6-Series Airfoil...');
+                    
+                    % Explain the parameters
+                    disp('- m: Maximum camber (fraction of chord, e.g., 0.02 for 2%)');
+                    disp('- p: Position of maximum camber (fraction of chord, e.g., 0.4 for 40%)');
+                    disp('- t: Maximum thickness (fraction of chord, e.g., 0.12 for 12%)');
+                    disp('- c: Chord length (m)');
+                
+                    % Ask for user input (or use default values)
+                    m = input('Enter maximum camber (default 0.02): ');
+                    if isempty(m), m = 0.02; end
+                
+                    p = input('Enter position of maximum camber (default 0.4): ');
+                    if isempty(p), p = 0.4; end
+                
+                    t = input('Enter maximum thickness (default 0.12): ');
+                    if isempty(t), t = 0.12; end
+                
+                    c = input('Enter chord length (default 1.0 m): ');
+                    if isempty(c), c = 1.0; end
+                
+                    num_points = 100; % Fixed number of points for smooth airfoil curve
+                    show_graph = true; % Display the airfoil plot
+                
+                    % 🔹 Generate airfoil struct
+                    airfoil = naca6series(m, p, t, c, num_points, show_graph);
+                    
+                    % ✅ Retrieve wing geometry data
+                    wing_geom = avion.ala.geometria;
+                    
+                    % ✅ Extract x-coordinates (spanwise locations)
+                    x_span = avion.coordenadas.x_local_ala; % Spanwise positions
+                    
+                    % ✅ Compute chord distribution using front and rear spar lines
+                    y_front = wing_geom.linea_larguero_anterior; % y-coordinates of front spar
+                    y_rear = wing_geom.linea_larguero_posterior; % y-coordinates of rear spar
+                    
+                    % ✅ Chord length at each spanwise position
+                    chord_distribution = abs(y_rear - y_front); % Compute chord length as difference
+                
+                
+                    % 🔹 Compute wing box height along the span
+                    h_values = compute_wingbox_height(airfoil, chord_distribution);
+                    
+                    % 🔹 Store in aircraft struct
+                    TFG_Amora.aviones.(name).perfil.h_values = h_values;
+                    TFG_Amora.aviones.(name).perfil.airfoil = airfoil; % Save full airfoil struct
+                    save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
+                    
+                    disp('✅ Wing box height stored successfully.');
+                elseif nacaIndex == 2
+                    if isfield(TFG_Amora.aviones.(name), 'perfil')
+                        disp('✅ Existing NACA Wing Found:');
+                        disp(TFG_Amora.aviones.(name).perfil);
+                    else
+                        disp('❌ No NACA Wing available. Please create one first.');
+                    end
+                    input('Press Enter to return...');
+                end
+            end
+
+        elseif strcmp(choice, '6')
+
         %% 🔹 Step 6: Read Database
         disp('🔄 Reading database from CSV files...');
         read_database(database_computer);
         disp('✅ Database successfully updated.');
 
-    elseif strcmp(choice, '6')
+    elseif strcmp(choice, '7')
         %% 🚪 Exit to Main Menu
         disp('🔙 Returning to Main System...');
         pause(1);

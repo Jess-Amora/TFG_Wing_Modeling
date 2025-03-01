@@ -68,37 +68,7 @@ if actionIndex == 3
     return;
 end
 
-% %% 🔹 Step 5: User Selects Pre-Dimensioned Configuration
-% if ~isfield(avion, 'predimensionado') || isempty(fieldnames(avion.predimensionado))
-%     disp('⚠️ No pre-dimensioned configurations found for this aircraft.');
-%     return;
-% end
-% 
-% disp('📐 Select a Pre-Dimensioned Configuration:');
-% predimNames = fieldnames(avion.predimensionado);
-% 
-% for i = 1:length(predimNames)
-%     fprintf('%d) %s\n', i, predimNames{i});
-% end
-% fprintf('%d) 🔙 Return to Main Menu\n', length(predimNames) + 1);
-% 
-% predimChoice = input('Select an option: ', 's');
-% predimIndex = str2double(predimChoice);
-% 
-% if isnan(predimIndex) || predimIndex < 1 || predimIndex > (length(predimNames) + 1)
-%     disp('❌ Invalid selection. Returning to menu.');
-%     return;
-% end
-% 
-% if predimIndex == length(predimNames) + 1
-%     disp('🔙 Returning to Main Menu...');
-%     run('main_menu.m');
-%     return;
-% end
-% 
-% selectedPredim = predimNames{predimIndex}; 
-% disp(['✅ Selected Pre-Dimensioned Case: ', selectedPredim]);
-% predimData = avion.predimensionado.(selectedPredim);
+
 
 %% 🔹 Step 6: Extract Required Inputs for `generate_structure`
 if isfield(avion, 'datosEstructural')
@@ -160,7 +130,7 @@ if actionIndex == 1
 
     if folderIndex == length(methodFolders) + 1
         disp('🔙 Returning to Main Menu...');
-        run('main_menu.m');
+        run('main.m');
         return;
     end
 
@@ -183,18 +153,90 @@ if actionIndex == 1
     rmpath(selectedFolder);
 
 else
-    %% 📄 Write BDF Files
-    disp('📂 Checking if the structure is already processed...');
-
-    if ~isfield(avion, 'estructura')
-        disp('❌ Structure has not been generated yet. Please generate the structure first.');
-        return;
-    end
-
-    disp('✅ Structure found. Writing BDF files...');
+    %% 🔹 Step 5: User Selects Pre-Dimensioned Configuration
+        if ~isfield(avion, 'predimensionado') || isempty(fieldnames(avion.predimensionado))
+            disp('⚠️ No pre-dimensioned configurations found for this aircraft.');
+            return;
+        end
+        
+        disp('📐 Select a Pre-Dimensioned Configuration:');
+        predimNames = fieldnames(avion.predimensionado);
+        
+        for i = 1:length(predimNames)
+            fprintf('%d) %s\n', i, predimNames{i});
+        end
+        fprintf('%d) 🔙 Return to Main Menu\n', length(predimNames) + 1);
+        
+        predimChoice = input('Select an option: ', 's');
+        predimIndex = str2double(predimChoice);
+        
+        if isnan(predimIndex) || predimIndex < 1 || predimIndex > (length(predimNames) + 1)
+            disp('❌ Invalid selection. Returning to menu.');
+            return;
+        end
+        
+        if predimIndex == length(predimNames) + 1
+            disp('🔙 Returning to Main Menu...');
+            run('main_menu.m');
+            return;
+        end
+        
+        selectedPredim = predimNames{predimIndex}; 
+        disp(['✅ Selected Pre-Dimensioned Case: ', selectedPredim]);
+        predimData = avion.predimensionado.(selectedPredim);
+        
+        % ✅ Select Structure Generation Method Folder
+        baseFolder = fullfile(database_computer, "Code", "4. Generate FEA Structure");
+        methodFolders = dir(baseFolder);
+        methodFolders = methodFolders([methodFolders.isdir]); 
+        methodFolders = methodFolders(~ismember({methodFolders.name}, {'.', '..'})); 
     
-    % Call your function to write BDF files (replace with actual function)
-    write_bdf_files(avion, datosEstructural, cargas, ala, fuselaje);
+        if isempty(methodFolders)
+            disp('⚠️ No structure generation methods available.');
+            return;
+        end
     
+        for i = 1:length(methodFolders)
+            fprintf('%d) %s\n', i, methodFolders(i).name);
+        end
+        fprintf('%d) 🔙 Return to Main Menu\n', length(methodFolders) + 1);
+    
+        folderChoice = input('Select a structure generation method folder: ', 's');
+        folderIndex = str2double(folderChoice);
+    
+        if isnan(folderIndex) || folderIndex < 1 || folderIndex > (length(methodFolders) + 1)
+            disp('❌ Invalid selection. Returning to menu.');
+            return;
+        end
+    
+        if folderIndex == length(methodFolders) + 1
+            disp('🔙 Returning to Main Menu...');
+            run('main.m');
+            return;
+        end
+    
+        selectedFolder = fullfile(baseFolder, methodFolders(folderIndex).name);
+        disp(['🛠 Using structure generation methods from folder: ', methodFolders(folderIndex).name]);
+        addpath(selectedFolder);
+    
+        generateStructurePath = fullfile(selectedFolder, 'main_write_structure.m');
+    
+        if exist(generateStructurePath, 'file')
+            disp(['🚀 Running generate_structure from ', methodFolders(folderIndex).name, '...']);
+
+            main_write_structure(avion,predimData);
+            save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
+            disp(['✅ Structure generation completed using ', methodFolders(folderIndex).name, ' and saved.']);
+        else
+            disp('❌ Error: main_write_structure.m not found in the selected folder.');
+        end
+        
+        
+
+        %% 📄 Write BDF Files
+        disp('✅ Writing BDF files...');
+        
+    
+        rmpath(selectedFolder);
     disp('✅ BDF files successfully written.');
 end

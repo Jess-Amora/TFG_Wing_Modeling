@@ -1,20 +1,20 @@
-%% 🔹 Step 1: Load Database
-database_computer = 'C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root';
-data_path = fullfile(database_computer, "Data");
-load(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
-name = "Airbus_A380_Structural_parameters_A350";
-avion = TFG_Amora.aviones.(name);
-name_predim = "test_2_27";
-predim = avion.predimensionado.(name_predim);
-name_larguerillo = predim.larguerillo;
-name_cordon = predim.cordon;
-name_cajon = predim.cajon;
-larguerillo_parts = TFG_Amora.parts.larguerillo.(name_larguerillo);
-cordon_parts = TFG_Amora.parts.larguerillo.(name_cordon);
-cajon_parts = TFG_Amora.parts.larguerillo.(name_cajon);
+% %% 🔹 Step 1: Load Database
+% database_computer = 'C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root';
+% data_path = fullfile(database_computer, "Data");
+% load(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
+% name = "Airbus_A380_Structural_parameters_A350";
+% avion = TFG_Amora.aviones.(name);
+% name_predim = "test_2_27";
+% predim = avion.predimensionado.(name_predim);
+% name_larguerillo = predim.larguerillo;
+% name_cordon = predim.cordon;
+% name_cajon = predim.cajon;
+% larguerillo_parts = TFG_Amora.parts.larguerillo.(name_larguerillo);
+% cordon_parts = TFG_Amora.parts.larguerillo.(name_cordon);
+% % cajon_parts = TFG_Amora.parts.larguerillo.(name_cajon);
 
 % 
-% function results = generate_structure(avion)
+function results = generate_structure(avion)
 % close all
     
 % H = 1;
@@ -146,7 +146,7 @@ quad_rear_spar_wing = create_rear_spar_surfaces(...
 % 
 % quad_rear_spar_wing_3D = preprocess_3D_quads(quad_rear_spar_wing);
 % quad_rear_spar_wing_3D_processed = process_quads(combined_nodes_3D_processed,[quad_rear_spar_wing_3D]);
-% write_bdf_quads_v1(fullfile(folder_parts,"\test.bdf"), quad_rear_spar_wing_3D_processed, [], pshell_info, material_info);
+% write_bdf_quads(fullfile(folder_parts,"\test.bdf"), quad_rear_spar_wing_3D_processed, [], pshell_info, material_info);
 % disp('until here')
 % plottitle = 'Verification Plot for rear spar surface Region';
 % plotfilename = '../Results/Figures/plot_rear_spar_surfaces_generate_structure_v6_rear_spar_ala12_TFG';
@@ -181,7 +181,7 @@ plotfilename = strcat('../Results/Figures/plot_stringer_regular_surfaces_v3_gene
 
 % quad_surfaces_regular_3D = preprocess_3D_quads(quad_surfaces_regular);
 % quad_surfaces_regular_3D_processed = process_quads(combined_nodes_3D_processed,[quad_surfaces_regular_3D]);
-% write_bdf_quads_v1(fullfile(folder_parts,"\test_regular.bdf"), quad_surfaces_regular_3D_processed, [], pshell_info, material_info);
+% write_bdf_quads(fullfile(folder_parts,"\test_regular.bdf"), quad_surfaces_regular_3D_processed, [], pshell_info, material_info);
 % disp('until here')
 %% 🛡️ Loop Through Stringers in the Irregular Zones
 % Loop through stringers in the stinger irregular zones
@@ -278,12 +278,12 @@ end
 % 
 % quad_rectangular_regular_3D = preprocess_3D_quads(quad_rectangular_regular);
 % quad_rectangular_regular_3D_processed = process_quads(combined_nodes_3D_processed,[quad_rectangular_regular_3D]);
-% write_bdf_quads_v1(fullfile(folder_parts,"\test_regular_irregular.bdf"), quad_rectangular_regular_3D_processed, [], pshell_info, material_info);
+% write_bdf_quads(fullfile(folder_parts,"\test_regular_irregular.bdf"), quad_rectangular_regular_3D_processed, [], pshell_info, material_info);
 % % disp('until here')
 % 
 % quad_irregular_wing_3D = preprocess_3D_quads(quad_irregular_wing);
 % quad_irregular_wing_3D_processed = process_quads(combined_nodes_3D_processed,[quad_irregular_wing_3D]);
-% write_bdf_quads_v1(fullfile(folder_parts,"\test_irregular.bdf"), quad_irregular_wing_3D_processed, [], pshell_info, material_info);
+% write_bdf_quads(fullfile(folder_parts,"\test_irregular.bdf"), quad_irregular_wing_3D_processed, [], pshell_info, material_info);
 % disp('until here')
 % 
 % 
@@ -513,7 +513,7 @@ write_bdf_lines_v3(fullfile(avion.folder.data,"\lines.bdf"), lines_updated, mate
 quads_all = [quad_rear_spar_wing; quad_irregular_wing; quad_surfaces_regular; quad_rectangular_regular; OnlyQuads_Fuselaje; quad_root; quad_root_stringer; quad_spars];
 quads_all_3D = preprocess_3D_quads(quads_all);
 quads_all_3D_processed = process_quads(combined_nodes_3D_processed,[quads_all_3D; quad_surfaces_vertical_rib]);
-write_bdf_quads_v1(fullfile(avion.folder.data,"\quads.bdf"), quads_all_3D_processed, [], pshell_info, material_info);
+write_bdf_quads(fullfile(avion.folder.data,"\quads.bdf"), quads_all_3D_processed, [], pshell_info, material_info);
 
 
 %% Tri
@@ -547,21 +547,76 @@ rib_fuselage_nodes = [rib_fuselage_nodes_stringer; rib_fuselage_nodes_rear; rib_
 
 generate_boundary_conditions_bdf(fullfile(avion.folder.data,"\BC.bdf"), root_nodes, root_front_spar_intrados, root_rear_spar_intrados, rib_fuselage_nodes);
 
-%% Forces
-% L_total = avion.MTOW;
-% rear_spar_extrados= combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'rear spars' & combined_nodes_3D_processed.rib_index >= rib_ranges(1,2),:);
-% front_spar_extrados = combined_nodes_3D_processed(combined_nodes_3D_processed.tag == 'front spars',:);
-% 
-% forces_front = generate_schrenk_forces_v4(front_spar_extrados, b, L_total);
-% forces_rear = generate_schrenk_forces_v4(rear_spar_extrados, b, L_total);
-posterior_points = ala.nodos_posterior';
-V = avion.forces_n1.V;
-input_matrix = [posterior_points(:,1),posterior_points(:,2), V.rear];
-forces = generate_input_forces_table(input_matrix, combined_nodes_3D, tolerance)
+%% Fuerzas initialización
+tolerance = 1e-6;
 
-export_forces_to_csv(fullfile(avion.folder.data,"\forces.csv"), [forces] );
+posterior_points = ala.mesh.nodos_posterior';
+anterior_points = ala.mesh.nodos_anterior';
+posterior_points_x = posterior_points(:,1);
+posterior_points_y = posterior_points(:,2);
+anterior_points_x = anterior_points(:,1);
+anterior_points_y = anterior_points(:,2);
 
-% generate_forces_bdf_v3('..\Results\Nastran\F_v1.bdf', [forces_rear; forces_front], [rear_spar_extrados; front_spar_extrados]);
+posterior_points_x_weight = posterior_points_x(1:2:end);
+posterior_points_y_weight = posterior_points_y(1:2:end);
+anterior_points_x_weight = anterior_points_x(1:2:end);
+anterior_points_y_weight = anterior_points_y(1:2:end);
+
+V_mass_wing_n1 = avion.weight_n1.V_mass_wing;
+V_mass_wing_n_lim = avion.weight_n_lim.V_mass_wing;
+V_mass_wing_n_ult = avion.weight_n_ult.V_mass_wing;
+
+V_mass_comb_n1 = avion.weight_n1.V_mass_comb;
+V_mass_comb_n_lim = avion.weight_n_lim.V_mass_comb;
+V_mass_comb_n_ult = avion.weight_n_ult.V_mass_comb;
+
+%% Fuerzas másicas
+weight_wing_n1 = generate_input_forces_table([[posterior_points_x_weight; anterior_points_x_weight],[posterior_points_y_weight;anterior_points_y_weight], ...
+                                        [V_mass_wing_n1.rear'; V_mass_wing_n1.front']], combined_nodes_3D_processed, tolerance);
+weight_wing_n_lim = generate_input_forces_table([[posterior_points_x_weight; anterior_points_x_weight],[posterior_points_y_weight;anterior_points_y_weight], ...
+                                        [V_mass_wing_n_lim.rear'; V_mass_wing_n_lim.front']], combined_nodes_3D_processed, tolerance);
+weight_wing_n_ult = generate_input_forces_table([[posterior_points_x_weight; anterior_points_x_weight],[posterior_points_y_weight;anterior_points_y_weight], ...
+                                        [V_mass_wing_n_ult.rear'; V_mass_wing_n_ult.front']], combined_nodes_3D_processed, tolerance);
+
+
+export_forces_to_csv(fullfile(avion.folder.data,"\weight_wing_n1.csv"), [weight_wing_n1] );
+export_forces_to_csv(fullfile(avion.folder.data,"\weight_wing_n_lim.csv"), [weight_wing_n_lim] );
+export_forces_to_csv(fullfile(avion.folder.data,"\weight_wing_n_ult.csv"), [weight_wing_n_ult] );
+
+weight_comb_n1 = generate_input_forces_table([[posterior_points_x_weight; anterior_points_x_weight],[posterior_points_y_weight;anterior_points_y_weight], ...
+                                        [V_mass_comb_n1.rear'; V_mass_comb_n1.front']], combined_nodes_3D_processed, tolerance);
+weight_comb_n_lim = generate_input_forces_table([[posterior_points_x_weight; anterior_points_x_weight],[posterior_points_y_weight;anterior_points_y_weight], ...
+                                        [V_mass_comb_n_lim.rear'; V_mass_comb_n_lim.front']], combined_nodes_3D_processed, tolerance);
+weight_comb_n_ult = generate_input_forces_table([[posterior_points_x_weight; anterior_points_x_weight],[posterior_points_y_weight;anterior_points_y_weight], ...
+                                        [V_mass_comb_n_ult.rear'; V_mass_comb_n_ult.front']], combined_nodes_3D_processed, tolerance);
+
+
+export_forces_to_csv(fullfile(avion.folder.data,"\weight_comb_n1.csv"), [weight_comb_n1] );
+export_forces_to_csv(fullfile(avion.folder.data,"\weight_comb_n_lim.csv"), [weight_comb_n_lim] );
+export_forces_to_csv(fullfile(avion.folder.data,"\weight_comb_n_ult.csv"), [weight_comb_n_ult] );
+
+%% Fuerza aerodinámica
+posterior_points_x = posterior_points_x(3:2:end-1);
+anterior_points_x = anterior_points_x(3:2:end-1);
+posterior_points_y = posterior_points_y(3:2:end-1);
+anterior_points_y = anterior_points_y(3:2:end-1);
+
+V_n1 = avion.forces_n1.V;
+V_n_lim = avion.forces_n_lim.V;
+V_n_ult = avion.forces_n_ult.V;
+
+
+forces_n1 = generate_input_forces_table([[posterior_points_x; anterior_points_x],[posterior_points_y;anterior_points_y], ...
+                                        [V_n1.rear'; V_n1.front']], combined_nodes_3D_processed, tolerance);
+forces_n_lim = generate_input_forces_table([[posterior_points_x; anterior_points_x],[posterior_points_y;anterior_points_y], ...
+                                        [V_n_lim.rear'; V_n_lim.front']], combined_nodes_3D_processed, tolerance);
+forces_n_ult = generate_input_forces_table([[posterior_points_x; anterior_points_x],[posterior_points_y;anterior_points_y], ...
+                                        [V_n_ult.rear'; V_n_ult.front']], combined_nodes_3D_processed, tolerance);
+
+
+export_forces_to_csv(fullfile(avion.folder.data,"\forces_n1.csv"), [forces_n1] );
+export_forces_to_csv(fullfile(avion.folder.data,"\forces_n_lim.csv"), [forces_n_lim] );
+export_forces_to_csv(fullfile(avion.folder.data,"\forces_n_ult.csv"), [forces_n_ult] );
 %% Quads por partes
 
 % % Folders
@@ -580,33 +635,33 @@ end
 
 quad_rear_spar_wing_3D = preprocess_3D_quads(quad_rear_spar_wing);
 quad_rear_spar_wing_3D_processed = process_quads(combined_nodes_3D_processed,[quad_rear_spar_wing_3D]);
-write_bdf_quads_v1(fullfile(folder_parts,"\rear_spar_wing_horizontal.bdf"), quad_rear_spar_wing_3D_processed, [], pshell_info, material_info);
+write_bdf_quads(fullfile(folder_parts,"\rear_spar_wing_horizontal.bdf"), quad_rear_spar_wing_3D_processed, [], pshell_info, material_info);
 
 
 quad_irregular_wing_3D = preprocess_3D_quads(quad_irregular_wing);
 quad_irregular_wing_3D_processed = process_quads(combined_nodes_3D_processed,[quad_irregular_wing_3D]);
-write_bdf_quads_v1(fullfile(folder_parts,"\quad_irregular_wing_wing_horizontal.bdf"), quad_irregular_wing_3D_processed, [], pshell_info, material_info);
+write_bdf_quads(fullfile(folder_parts,"\quad_irregular_wing_wing_horizontal.bdf"), quad_irregular_wing_3D_processed, [], pshell_info, material_info);
 
 quads_regular_wing = [quad_surfaces_regular; quad_rectangular_regular];
 quads_regular_wing_3D = preprocess_3D_quads(quads_regular_wing);
 quads_regular_wing_3D_processed = process_quads(combined_nodes_3D_processed,[quads_regular_wing_3D]);
-write_bdf_quads_v1(fullfile(folder_parts,"\quad_regular_wing_horizontal.bdf"), quads_regular_wing_3D_processed, [], pshell_info, material_info);
+write_bdf_quads(fullfile(folder_parts,"\quad_regular_wing_horizontal.bdf"), quads_regular_wing_3D_processed, [], pshell_info, material_info);
 
 OnlyQuads_Fuselaje_3D = preprocess_3D_quads(OnlyQuads_Fuselaje);
 OnlyQuads_Fuselaje_3D_processed = process_quads(combined_nodes_3D_processed,[OnlyQuads_Fuselaje_3D]);
-write_bdf_quads_v1(fullfile(folder_parts,"\quad_fuselaje_horizontal.bdf"), OnlyQuads_Fuselaje_3D_processed, [], pshell_info, material_info);
+write_bdf_quads(fullfile(folder_parts,"\quad_fuselaje_horizontal.bdf"), OnlyQuads_Fuselaje_3D_processed, [], pshell_info, material_info);
 
 quad_root_3D = preprocess_3D_quads(quad_root);
 quad_root_3D_processed = process_quads(combined_nodes_3D_processed,[quad_root_3D]);
-write_bdf_quads_v1(fullfile(folder_parts,"\quad_root_wing_horizontal.bdf"), quad_root_3D_processed, [], pshell_info, material_info);
+write_bdf_quads(fullfile(folder_parts,"\quad_root_wing_horizontal.bdf"), quad_root_3D_processed, [], pshell_info, material_info);
 
 quad_root_stringer_3D = preprocess_3D_quads(quad_root_stringer);
 quad_root_stringer_3D_processed = process_quads(combined_nodes_3D_processed,[quad_root_stringer_3D]);
-write_bdf_quads_v1(fullfile(folder_parts,"\quad_root_stringer_wing_horizontal.bdf"), quad_root_stringer_3D_processed, [], pshell_info, material_info);
+write_bdf_quads(fullfile(folder_parts,"\quad_root_stringer_wing_horizontal.bdf"), quad_root_stringer_3D_processed, [], pshell_info, material_info);
 
 quad_spars_3D = preprocess_3D_quads(quad_spars);
 quad_spars_3D_processed = process_quads(combined_nodes_3D_processed,[quad_spars_3D]);
-write_bdf_quads_v1(fullfile(folder_parts,"\quad_spars_vertical.bdf"), quad_spars_3D_processed, [], pshell_info, material_info);
+write_bdf_quads(fullfile(folder_parts,"\quad_spars_vertical.bdf"), quad_spars_3D_processed, [], pshell_info, material_info);
 
 % tri OnlyTri = [tri_surfaces; tri_root; tri_root_stringer];
 
@@ -643,9 +698,12 @@ results.quad.quads_regular_wing = quads_regular_wing;
 results.quad.quad_root = quad_root;
 results.quad.quad_root_stringer = quad_root_stringer;
 
-results.nodes = combined_nodes;
+results.nodes.combined_nodes = combined_nodes;
+results.nodes.combined_nodes_fuselaje = combined_nodes_fuselaje;
 
 results.tri.tri_surfaces = tri_surfaces;
 results.tri.tri_root = tri_root;
 results.tri.tri_root_stringer = tri_root_stringer;
-% end
+
+results.lines = lines;
+end

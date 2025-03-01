@@ -36,14 +36,19 @@ l = l * n * MTOW * 2 / Lw^2;  % Scale by load factor and weight
 %% ✨ **Discretization of Aerodynamic Forces**
 % We exclude the first and last coordinate (see guide)
 size_L = length(l) - 2;
-x_L = coord_aerodinamica_costillas_punto_medio(2:end-1,:);
+x_L = coord_aerodinamica_costillas_punto_medio(:,1);
 y_L = zeros(size(x_L));
 
 L = zeros(size_L, 1);
-for i = 2:size(x_L,1)-1
+for i = 2:size_L+1
     L(i-1) = (1/6) * (x_L(i+1) - x_L(i)) * (2*l(i) + l(i+1)) ...
            + (1/6) * (x_L(i) - x_L(i-1)) * (l(i) + 2*l(i-1));
 end
+% size_L = size(x_L,1) - 1;
+% L = zeros(size_L, 1);
+% for i = 1:size_L
+%     L(i) = (x_L(i+1) - x_L(i)) / 6 * (l(i) + 4*l(i+1) + l(i+2));
+% end
 
 % y_intercept = y_l - pendiente_perpendicular_larguero_posterior * x_l;
 % coord_interseccion_paralela_costillas_pasa_por_A = zeros(size(y_intercept,1),2,3);
@@ -92,8 +97,8 @@ end
 
 V.rear(1) = R1_R_aero(1);
 V.front(1) = R1_A_aero(1);
-V.rear(size_L+1) = R2_R_aero(end);
-V.front(size_L+1) = R2_A_aero(end);
+V.rear(size_L+1) = R2_R_aero(size_L);
+V.front(size_L+1) = R2_A_aero(size_L);
 
 for i = 2:size_L
     
@@ -134,6 +139,7 @@ yshear = eje_distancia * ((R_i.anterior(:,2) + R_i.posterior(:,2)) / 2); % Only 
 
 %% ✨ **Return Results**
 results = struct();
+results.l = l;
 results.L = L;
 results.W_ala = W_ala;
 results.W_comb = W_comb;
