@@ -1,4 +1,0 @@
-Global Node Organization
-
-Rear Spar Extrados: Nodes 90 to 400
-Leading Edge: Nodes 401 to 800
