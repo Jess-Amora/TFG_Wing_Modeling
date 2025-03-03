@@ -1,4 +1,4 @@
-function strength_results = strength_analysis(material, datosEstructural, larguerillo, cordon, cajon, naca_wing, My, Vy, T, num_cycles, database_computer)
+function strength_results = strength_analysis(material, datosEstructural, rib_props, larguerillo, cordon, cajon, naca_wing, My, Vy, T, num_cycles, database_computer)
     % Computes strength analysis for the wing structure, now on a per-rib basis.
     % Inputs:
     %   - material: Struct containing material properties.
@@ -36,7 +36,8 @@ function strength_results = strength_analysis(material, datosEstructural, largue
     % properties were previously computed and stored in cajon.rib_props.)
     %
     % Call the updated cajon_funcion, which returns an array of structs.
-    cajon_struct = cajon_funcion(cajon, cajon.rib_props, materialType, datosEstructural, pandeoLocalsuperior);
+    
+    cajon_struct = cajon_funcion(cajon, rib_props, materialType, datosEstructural, pandeoLocalsuperior);
     
     % Preallocate results array (one per rib)
     num_ribs = length(cajon_struct);
@@ -92,7 +93,7 @@ function strength_results = strength_analysis(material, datosEstructural, largue
         strength_results(i).RF               = RF_i;
         strength_results(i).fatigue_results  = fatigue_i;
         strength_results(i).stability_results= stability_i;
-        strength_results(i).rib_index        = cajon.rib_props.rib_id(i);
+        strength_results(i).rib_index        = rib_props.rib_id(i);
         
         % Optionally display a brief summary for this rib
         fprintf('Rib %d:\n', strength_results(i).rib_index);

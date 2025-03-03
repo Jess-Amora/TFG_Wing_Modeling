@@ -11,8 +11,8 @@ disp('✈️  Aircraft Structural Analysis System');
 disp('----------------------------------------');
 
 % ✅ Define the project root (Modify if needed)
-projectRoot = 'C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root';
-databasePath = fullfile(projectRoot, 'Data', 'TFG_Amora.mat');
+database_computer = 'C:\Users\jessa\OneDrive - Universidad Politécnica de Madrid\0. TFG 23-24\Project_Root';
+databasePath = fullfile(database_computer, 'Data', 'TFG_Amora.mat');
 
 % ✅ Step 1: Load or Initialize Database
 if isfile(databasePath)
@@ -63,7 +63,7 @@ while true
 
         case '5'  % ✅ **Validate FEM Results**
             disp('📊 Running FEM Validation...');
-            main_validation;  % Calls `main_validation.m`
+            main5;  % Calls `main_validation.m`
         case '6'  % ✏️ **Edit Aircraft Data**
             disp('✏️ Opening Aircraft Editing Menu...');
             save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');  % 💾 Ensure data is saved before editing

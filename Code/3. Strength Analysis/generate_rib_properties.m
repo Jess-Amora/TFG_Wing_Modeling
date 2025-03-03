@@ -1,4 +1,4 @@
-function rib_properties = generate_rib_properties(nodos_anterior, nodos_posterior, m, p, t, num_points, show_graph)
+function rib_properties = generate_rib_properties(nodos_anterior, nodos_posterior, airfoil, show_graph)
 % GENERATE_RIB_PROPERTIES Computes the chord length (C) and thickness (H) for each rib slice.
 %
 %   rib_properties = generate_rib_properties(nodos_anterior, nodos_posterior, m, p, t, num_points, show_graph)
@@ -40,7 +40,10 @@ function rib_properties = generate_rib_properties(nodos_anterior, nodos_posterio
 %
 %   This information (C and H for each rib) can then be used in your subsequent strength
 %   analysis routines and exported to Patran as needed.
-
+    m = airfoil.m;
+    p = airfoil.p;
+    t = airfoil.t;
+    num_points = airfoil.num_points;
     % Ensure the nodal arrays have the same number of rows
     if size(nodos_anterior,1) ~= size(nodos_posterior,1)
         error('nodos_anterior and nodos_posterior must have the same number of rows.');

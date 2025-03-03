@@ -31,7 +31,7 @@ end
 
 if avionIndex == length(avionNames) + 1
     disp('🔙 Returning to Main Menu...');
-    run('main_menu.m');
+    run('main.m');
     return;
 end
 
@@ -224,7 +224,7 @@ else
         if exist(generateStructurePath, 'file')
             disp(['🚀 Running generate_structure from ', methodFolders(folderIndex).name, '...']);
 
-            main_write_structure(avion,predimData);
+            main_write_structure(avion,selectedPredim,database_computer);
             save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
             disp(['✅ Structure generation completed using ', methodFolders(folderIndex).name, ' and saved.']);
         else

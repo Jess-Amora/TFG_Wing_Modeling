@@ -31,7 +31,7 @@ end
 
 if avionIndex == length(avionNames) + 1
     disp('🔙 Returning to Main Menu...');
-    run('main_menu.m');
+    run('main.m');
     return;
 end
 

@@ -15,7 +15,7 @@ end
 
 %% 🔹 Database Management Menu
 while true
-    clc;
+   % clc;
     disp('----------------------------------------');
     disp('📊 MAIN DATABASE MENU');
     disp('----------------------------------------');
@@ -23,12 +23,13 @@ while true
     disp('2️⃣ Add Aircraft Data');
     disp('3️⃣ Construct Aircraft (Select from `datosEstructural` & `aircraft_data`)');
     disp('4️⃣ Add Material Properties');
-    disp('5️⃣ create naca');
-    disp('6️⃣ Read Database (Load structural & aircraft data from CSV)');
-    disp('7 Exit to Main System');
-
+    disp('5️⃣ Create NACA Wing');
+    disp('6️⃣ Read Database from CSV');
+    disp('7️⃣ Delete Aircraft');
+    disp('8️⃣ Back up TFG_amora.mat');
+    disp('9 Exit to Main System');
     
-    choice = input('Select an option (1-5): ', 's');
+    choice = input('Select an option (1-9): ', 's');
 
     if strcmp(choice, '1')
 %% 🔹 Step 1: Structural Parameters Selection
@@ -48,28 +49,44 @@ else
     end
     structChoice = input('Enter the number to select, or type "new" to create: ', 's');
 end
-
 if strcmp(structChoice, 'new')
     name_structural_parameters = input('Enter a name for the new structural parameters: ', 's');
-    
+
     % Ask user for input values
-    distancia_anterior = input('Enter distance for anterior stringer (% of chord): ');
-    distancia_posterior = input('Enter distance for posterior stringer (% of chord): ');
-    n = input('Enter load factor: ');
-    factor_material = input('Enter material factor: ');
-    espesor = input('Enter thickness: ');
-    carga_maxima = input('Enter max load: ');
-    
-    % Store in database
-    TFG_Amora.datosEstructural.(name_structural_parameters) = struct( ...
-        'distancia_larguero_anterior_cuerda_porcentaje', distancia_anterior, ...
-        'distancia_larguero_posterior_cuerda_porcentaje', distancia_posterior, ...
-        'n', n, ...
-        'factor_material', factor_material, ...
-        'espesor', espesor, ...
-        'carga_maxima', carga_maxima, ...
-        'projectRoot', database_computer ...
+    SF = input('Enter Safety Factor (SF): ');
+    porcentaje_peso_ala_MTOW = input('Enter Wing Weight Percentage of MTOW: ');
+    porcentaje_peso_combustible_MTOW = input('Enter Fuel Weight Percentage of MTOW: ');
+    n = input('Enter Load Factor (n): ');
+    distancia_entre_costillas = input('Enter Distance Between Ribs (m): ');
+    distancia_entre_larguerillo = input('Enter Distance Between Stringers (m): ');
+    distancia_anterior = input('Enter Distance for Anterior Stringer (% of chord): ');
+    distancia_posterior = input('Enter Distance for Posterior Stringer (% of chord): ');
+    distancia_centro_aerodinamico = input('Enter Aerodynamic Center Position (% of chord): ');
+    distancia_eje_de_referencia_estructural_larguero = input('Enter Reference Axis Position (Spar) (m): ');
+    distancia_eje_de_referencia_estructural_cuerda = input('Enter Reference Axis Position (% of chord): ');
+    numero_de_puntos_en_las_lineas = input('Enter Number of Points in Lines (resolution): ');
+
+    % Call the add_datosEstructural function without k_sust
+    add_datosEstructural( ...
+        name_structural_parameters, ...
+        porcentaje_peso_ala_MTOW, ...
+        porcentaje_peso_combustible_MTOW, ...
+        n, ...
+        distancia_entre_costillas, ...
+        distancia_entre_larguerillo, ...
+        distancia_anterior, ...
+        distancia_posterior, ...
+        distancia_centro_aerodinamico, ...
+        distancia_eje_de_referencia_estructural_larguero, ...
+        distancia_eje_de_referencia_estructural_cuerda, ...
+        numero_de_puntos_en_las_lineas, ...
+        SF, ...
+        database_computer ...
     );
+    
+    disp(['✅ Structural Parameters "', name_structural_parameters, '" have been saved using add_datosEstructural function.']);
+
+
 else
     structIndex = str2double(structChoice);
     if isnan(structIndex) || structIndex < 1 || structIndex > length(structNames)
@@ -78,7 +95,7 @@ else
     name_structural_parameters = structNames{structIndex};
 end
 
-datosEstructural = TFG_Amora.datosEstructural.(name_structural_parameters);
+% datosEstructural = TFG_Amora.datosEstructural.(name_structural_parameters);
 disp(['✅ Selected Structural Parameters: ', name_structural_parameters]);
     elseif strcmp(choice, '2')
 %% 🔹 Step 2: Aircraft Selection from Database or New Input
@@ -132,11 +149,110 @@ else
     name_plane = aircraftNames{aircraftIndex};
 end
 
-aircraftData = TFG_Amora.aircraft_data.(name_plane);
+% aircraftData = TFG_Amora.aircraft_data.(name_plane);
 disp(['✅ Selected Aircraft Data: ', name_plane]);
 
     elseif strcmp(choice, '3')
 %% 🔹 Step 3: Create Final Aircraft in `aviones`
+disp('----------------------------------------');
+disp('🔧 Structural Parameters Selection');
+disp('----------------------------------------');
+
+% List available structural parameters
+structNames = fieldnames(TFG_Amora.datosEstructural);
+if isempty(structNames)
+    disp('⚠️ No structural parameters found.');
+    structChoice = 'new';
+else
+    disp('Available Structural Parameters:');
+    for i = 1:length(structNames)
+        fprintf('%d) %s\n', i, structNames{i});
+    end
+    structChoice = input('Enter the number to select, or type "new" to create: ', 's');
+end
+
+if strcmp(structChoice, 'new')
+    name_structural_parameters = input('Enter a name for the new structural parameters: ', 's');
+    
+    % Ask user for input values
+    distancia_anterior = input('Enter distance for anterior stringer (% of chord): ');
+    distancia_posterior = input('Enter distance for posterior stringer (% of chord): ');
+    n = input('Enter load factor: ');
+    factor_material = input('Enter material factor: ');
+    espesor = input('Enter thickness: ');
+    carga_maxima = input('Enter max load: ');
+    
+    % Store in database
+    TFG_Amora.datosEstructural.(name_structural_parameters) = struct( ...
+        'distancia_larguero_anterior_cuerda_porcentaje', distancia_anterior, ...
+        'distancia_larguero_posterior_cuerda_porcentaje', distancia_posterior, ...
+        'n', n, ...
+        'factor_material', factor_material, ...
+        'espesor', espesor, ...
+        'carga_maxima', carga_maxima, ...
+        'projectRoot', database_computer ...
+    );
+else
+    structIndex = str2double(structChoice);
+    if isnan(structIndex) || structIndex < 1 || structIndex > length(structNames)
+        error('❌ Invalid selection.');
+    end
+    name_structural_parameters = structNames{structIndex};
+end
+
+datosEstructural = TFG_Amora.datosEstructural.(name_structural_parameters);
+%% 🔹 Step 2: Aircraft Selection from Database or New Input
+disp('----------------------------------------');
+disp('🛩 Aircraft Selection');
+disp('----------------------------------------');
+
+% List available aircraft
+aircraftNames = fieldnames(TFG_Amora.aircraft_data);
+if isempty(aircraftNames)
+    disp('⚠️ No aircraft found in the database.');
+    aircraftChoice = 'new';
+else
+    disp('Available Aircraft Data:');
+    for i = 1:length(aircraftNames)
+        fprintf('%d) %s\n', i, aircraftNames{i});
+    end
+    aircraftChoice = input('Enter the number to select, or type "new" to create: ', 's');
+end
+
+if strcmp(aircraftChoice, 'new')
+    name_plane = input('Enter a name for the new aircraft: ', 's');
+    
+    % Ask user for aircraft details
+    MTOW = input('Enter Maximum Take-Off Weight (kg): ');
+    Superficie = input('Enter Wing Area (m²): ');
+    flecha_radian = input('Enter Sweep Angle (radians): ');
+    b = input('Enter Wingspan (meters): ');
+    Lf = input('Enter Half Fuselage Length (meters): ');
+    c1 = input('Enter Root Chord (meters): ');
+    c2 = input('Enter Tip Chord (meters): ');
+
+    % Store in aircraft_data
+    TFG_Amora.aircraft_data.(name_plane) = struct( ...
+        'MTOW', MTOW, ...
+        'superficie', Superficie, ...
+        'geometria', struct( ...
+            'flecha_radian', flecha_radian, ...
+            'b', b, ...
+            'Lf', Lf, ...
+            'c1', c1, ...
+            'c2', c2, ...
+            'Lw', b / 2 - (Lf / 2) ...
+        ) ...
+    );
+else
+    aircraftIndex = str2double(aircraftChoice);
+    if isnan(aircraftIndex) || aircraftIndex < 1 || aircraftIndex > length(aircraftNames)
+        error('❌ Invalid selection.');
+    end
+    name_plane = aircraftNames{aircraftIndex};
+end
+
+aircraftData = TFG_Amora.aircraft_data.(name_plane);
 fullAircraftName = strcat(name_plane, '_', name_structural_parameters);
 
 % Call addAircraftData to create the final aircraft entry with calculations
@@ -151,7 +267,6 @@ TFG_Amora = addAircraftData(name_plane, ...
     name_structural_parameters, datosEstructural);
 
 disp(['✅ Aircraft "', fullAircraftName, '" has been created and linked to structural parameters.']);
-
     elseif strcmp(choice, '4')
         %% 🔹 Step 4: Add or Select Material
         disp('----------------------------------------');
@@ -292,24 +407,24 @@ disp(['✅ Aircraft "', fullAircraftName, '" has been created and linked to stru
                     airfoil = naca6series(m, p, t, c, num_points, show_graph);
                     
                     % ✅ Retrieve wing geometry data
-                    wing_geom = avion.ala.geometria;
-                    
-                    % ✅ Extract x-coordinates (spanwise locations)
-                    x_span = avion.coordenadas.x_local_ala; % Spanwise positions
-                    
-                    % ✅ Compute chord distribution using front and rear spar lines
-                    y_front = wing_geom.linea_larguero_anterior; % y-coordinates of front spar
-                    y_rear = wing_geom.linea_larguero_posterior; % y-coordinates of rear spar
-                    
-                    % ✅ Chord length at each spanwise position
-                    chord_distribution = abs(y_rear - y_front); % Compute chord length as difference
-                
-                
-                    % 🔹 Compute wing box height along the span
-                    h_values = compute_wingbox_height(airfoil, chord_distribution);
+                    % wing_geom = avion.ala.geometria;
+                    % 
+                    % % ✅ Extract x-coordinates (spanwise locations)
+                    % x_span = avion.coordenadas.x_local_ala; % Spanwise positions
+                    % 
+                    % % ✅ Compute chord distribution using front and rear spar lines
+                    % y_front = wing_geom.linea_larguero_anterior; % y-coordinates of front spar
+                    % y_rear = wing_geom.linea_larguero_posterior; % y-coordinates of rear spar
+                    % 
+                    % % ✅ Chord length at each spanwise position
+                    % chord_distribution = abs(y_rear - y_front); % Compute chord length as difference
+                    % 
+                    % 
+                    % % 🔹 Compute wing box height along the span
+                    % h_values = compute_wingbox_height(airfoil, chord_distribution);
                     
                     % 🔹 Store in aircraft struct
-                    TFG_Amora.aviones.(name).perfil.h_values = h_values;
+                    % TFG_Amora.aviones.(name).perfil.h_values = h_values;
                     TFG_Amora.aviones.(name).perfil.airfoil = airfoil; % Save full airfoil struct
                     save(fullfile(database_computer, 'Data', 'TFG_Amora.mat'), 'TFG_Amora');
                     
@@ -333,18 +448,66 @@ disp(['✅ Aircraft "', fullAircraftName, '" has been created and linked to stru
         disp('✅ Database successfully updated.');
 
     elseif strcmp(choice, '7')
+        %% 🛠️ **Step 7: Delete Aircraft**
+        disp('----------------------------------------');
+        disp('🗑️ DELETE AIRCRAFT');
+        disp('----------------------------------------');
+        
+        % List available aircrafts
+        avionNames = fieldnames(TFG_Amora.aviones);
+        if isempty(avionNames)
+            disp('⚠️ No aircraft data available to delete.');
+            pause(1.5);
+            continue;
+        end
+        
+        % Display the available aircraft options
+        for i = 1:length(avionNames)
+            fprintf('%d) %s\n', i, avionNames{i});
+        end
+        fprintf('%d) 🔙 Return to Main Menu\n', length(avionNames) + 1);
+        
+        % Prompt the user to select an aircraft to delete
+        avionChoice = input('Select an aircraft to delete: ', 's');
+        avionIndex = str2double(avionChoice);
+        
+        if isnan(avionIndex) || avionIndex < 1 || avionIndex > (length(avionNames) + 1)
+            disp('❌ Invalid selection. Returning to menu.');
+            pause(1.5);
+            continue;
+        end
+        
+        if avionIndex == length(avionNames) + 1
+            disp('🔙 Returning to Main Menu...');
+            continue;
+        end
+        
+        % Confirm deletion
+        name = avionNames{avionIndex};
+        confirm = input(['❓ Are you sure you want to delete "', name, '"? (y/n): '], 's');
+        if strcmpi(confirm, 'y')
+            TFG_Amora.aviones = rmfield(TFG_Amora.aviones, name);
+            save(databasePath, 'TFG_Amora');
+            disp(['✅ Aircraft "', name, '" has been deleted.']);
+        else
+            disp('❌ Deletion cancelled.');
+        end
+        pause(1.5);
+
+    elseif strcmp(choice, '8')
+        backup
+     elseif strcmp(choice, '9')
         %% 🚪 Exit to Main Menu
-        disp('🔙 Returning to Main System...');
+        disp('🔙 Returning to Main Menu...');
         pause(1);
-        break;
+        run('main.m'); % Correct way to return to the main menu
+        return; % Ensure it doesn't continue executing main1.m
 
     else
-        disp('❌ Invalid choice. Please select 1-7.');
-        pause(2);
+        disp('❌ Invalid choice. Please select 1-8.');
+        pause(1.5);
     end
+    %% 🔹 Save Database
+    save(databasePath, 'TFG_Amora');
+    disp('💾 Database saved.');
 end
-
-
-%% 🔹 Save Database
-save(databasePath, 'TFG_Amora');
-disp('💾 Database saved.');

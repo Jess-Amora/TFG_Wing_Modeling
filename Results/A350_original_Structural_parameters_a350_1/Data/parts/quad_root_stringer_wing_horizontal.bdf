@@ -1,0 +1,14 @@
+CEND
+BEGIN BULK
+$ Material Record : mat1.1
+$ Description of Material :
+MAT1*   1       69000.          69000.          25939.8         
+*       .33             2.7e-09         
+PSHELL  1       1       2.100000        
+CQUAD4  1       1       71      2490    2472    2484    0.0     0.0     
+CQUAD4  2       1       2484    2472    73      91      0.0     0.0     
+CQUAD4  3       1       91      73      93      116     0.0     0.0     
+CQUAD4  4       1       2561    4980    4962    4974    0.0     0.0     
+CQUAD4  5       1       4974    4962    2563    2581    0.0     0.0     
+CQUAD4  6       1       2581    2563    2583    2606    0.0     0.0     
+ENDDATA

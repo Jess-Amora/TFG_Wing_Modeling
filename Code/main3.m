@@ -170,10 +170,10 @@ while true  % 🔁 Keep the menu active until the user exits
             end
             
             %% 🔹 Step 7: Run Pre-Dimensioning
-            x = avion.forces.R_i.eje(:,1);  % Spanwise positions
-            My = avion.forces.My;  
-            Vy = avion.forces.V.rear + avion.forces.V.front;  
-            T = avion.forces.T;  
+            x = avion.forces_n1.R_i.eje(:,1);  % Spanwise positions
+            My = avion.forces_n1.My;  
+            Vy = avion.forces_n1.V.rear + avion.forces_n1.V.front;  
+            T = avion.forces_n1.T;  
             geom = avion.geometria;
             datosEstructural = avion.datosEstructural;
             naca_wing = avion.perfil;
@@ -183,7 +183,8 @@ while true  % 🔁 Keep the menu active until the user exits
             structure = pre_dimensioning_graph(My, Vy, T, x, material, SF, geom, datosEstructural, false);
             
             num_cycles = 1e6; % Default fatigue cycles
-            strength_results = strength_analysis(material, datosEstructural, selected_larguerillo, selected_cordon, cajon_dims, naca_wing, My, Vy, T, num_cycles, database_computer);
+            rib_props = generate_rib_properties(avion.ala.mesh.nodos_anterior', avion.ala.mesh.nodos_posterior',avion.perfil.airfoil, false)
+            strength_results = strength_analysis(material, datosEstructural, rib_props, selected_larguerillo, selected_cordon, cajon_dims, naca_wing, My, Vy, T, num_cycles, database_computer);
             plot_strength_results(strength_results);
 
             % ✅ Ask the user for a name for this pre-dimensioning case
